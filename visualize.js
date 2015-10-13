@@ -26,25 +26,25 @@
 				percentage: 39.2
 			}
 		];
+
 		var rectData = [
-			{
-				w: 100,
-				h: 60,
-				color: '#c0392b',
-				type: 'Bier'
-			},
 			{
 				w: 175,
 				h: 60,
-				color: '#c0392b'
-				,
-				type: 'Bürli'
+				color: '#c0392b',
+				name: 'Brodworscht'
 			},
 			{
 				w: 125,
 				h: 60,
 				color: '#c0392b',
-				type: 'Brodworscht'
+				name: 'Bürli'
+			},
+			{
+				w: 200,
+				h: 60,
+				color: '#c0392b',
+				name: 'Bier'
 			}
 		];
 
@@ -53,69 +53,61 @@
 		var linkData = [
 			{
 				source: forceData[0],
-				target: forceData[1]
-			},
-			{
-				source: forceData[1],
 				target: forceData[2]
-			},
-			{
-				source: forceData[2],
-				target: forceData[0]
 			},
 			{
 				source: forceData[0],
 				target: forceData[3]
 			},
 			{
-				source: forceData[2],
-				target: forceData[4]
+				source: forceData[1],
+				target: forceData[2]
 			},
 			{
-				source: forceData[2],
+				source: forceData[1],
+				target: forceData[3]
+			},
+			{
+				source: forceData[1],
 				target: forceData[4]
 			}
 		];
+
+		var groups = svg
+			.selectAll('g')
+			.data(forceData)
+			.enter()
+			.append('g')
+			.attr('class', function(d) {
+				if (!!d.name) {
+					return 'attribute';
+				} else {
+					return 'frequency';
+				}
+
+			})
+			.call(force.drag)
+			.on('mousedown', function() { d3.event.stopPropagation(); });
+
+
+		var circle = svg.selectAll('.frequency').append('circle');
+		var rect = svg.selectAll('.attribute').append('rect');
+
+		var frequency = svg.selectAll('.frequency').append('text').text(function(d) {
+			return d.percentage + '%';
+		});
+
+		var attribute = svg.selectAll('.attribute').append('text').text(function(d) {
+			return d.name;
+		});
 
 		force
 			.nodes(forceData)
 			.links(linkData)
 			.charge(-100)
-			.linkDistance(400)
-			.start();
+			.linkDistance(400);
 
-		var circleGroups = svg
-			.selectAll('g')
-			.data(circleData)
-			.enter()
-			.append('g')
-			.attr('class', 'frequency')
-			.call(force.drag)
-			.on('mousedown', function() { d3.event.stopPropagation(); });
-
-		var circles = circleGroups.append('circle');
-
-		var rectGroups = svg
-			.selectAll('g')
-			.data(rectData)
-			.enter()
-			.append('g')
-			.attr('class', 'eigenschaft')
-			.call(force.drag)
-			.on('mousedown', function() { d3.event.stopPropagation(); });
-
-		var rects = svg.selectAll('.eigenschaft').append('rect');
-
-		//
-		//var rects = svg
-		//	.selectAll('rect')
-		//	.data(rectData)
-		//	.enter()
-		//	.append('rect')
-		//	.call(force.drag)
-		//	.on('mousedown', function() { d3.event.stopPropagation(); });
-
-		var links = svg
+		var link = svg
 			.selectAll('line')
 			.data(linkData)
 			.enter()
@@ -123,33 +115,37 @@
 			.style('stroke', '#333')
 			.style('stroke-width', '1px');
 
-		var circleText = svg.selectAll('.frequency')
-			.append('text')
-			.attr('dx', 12)
-			.attr('dy', '.25em')
-			.text(function(d) { return d.percentage + '%'; });
+		force.start();
 
 		force.on('tick', function() {
-			links
+			link
 				.attr('x1', function(d) { return d.source.x; })
 				.attr('y1', function(d) { return d.source.y; })
 				.attr('x2', function(d) { return d.target.x; })
 				.attr('y2', function(d) { return d.target.y; })
 
-			circles
+			circle
 				.attr('cx', function(d) { return d.x; })
 				.attr('cy', function(d) { return d.y; })
 				.attr('r', function(d) { return d.radius; })
 				.style('fill', function(d) { return d.color; });
 
-			rects
+			rect
 				.attr('x', function(d) { return d.x; })
 				.attr('y', function(d) { return d.y; })
 				.attr('width', function(d) { return d.w; })
 				.attr('height', function(d) { return d.h; })
 				.style('fill', function(d) { return d.color; });
 
-			circleText.attr('transform', function(d) { return 'translate(' + (d.x-30) + ', ' + d.y + ')'; })
+			svg.selectAll('.frequency text').attr('transform', function(d) {
+				return 'translate(' + (d.x-20) + ', ' + d.y + ')';
+			});
+
+			svg.selectAll('.attribute text').attr('transform', function(d) {
+				return 'translate(' + (d.x+30) + ', ' + (d.y+30) + ')';
+			});
+
+			//circleText.attr('transform', function(d) { return 'translate(' + (d.x-30) + ', ' + d.y + ')'; })
 		});
 	};
 
