@@ -16,19 +16,14 @@
 
 		var circleData = [
 			{
-				radius: 20,
+				radius: 40,
 				color: '#2980b9',
-				percentage: 5.9
+				percentage: 84.9
 			},
 			{
 				radius: 30,
 				color: '#2980b9',
-				percentage: 6.1
-			},
-			{
-				radius: 25,
-				color: '#2980b9',
-				percentage: 12.5
+				percentage: 39.2
 			}
 		];
 		var rectData = [
@@ -73,19 +68,19 @@
 				target: forceData[3]
 			},
 			{
-				source: forceData[1],
+				source: forceData[2],
 				target: forceData[4]
 			},
 			{
 				source: forceData[2],
-				target: forceData[5]
+				target: forceData[4]
 			}
 		];
 
 		force
 			.nodes(forceData)
 			.links(linkData)
-			.charge(100)
+			.charge(-100)
 			.linkDistance(400)
 			.start();
 
@@ -98,16 +93,27 @@
 			.call(force.drag)
 			.on('mousedown', function() { d3.event.stopPropagation(); });
 
-		var circles = circleGroups
-			.append('circle');
+		var circles = circleGroups.append('circle');
 
-		var rects = svg
-			.selectAll('rect')
+		var rectGroups = svg
+			.selectAll('g')
 			.data(rectData)
 			.enter()
-			.append('rect')
+			.append('g')
+			.attr('class', 'eigenschaft')
 			.call(force.drag)
 			.on('mousedown', function() { d3.event.stopPropagation(); });
+
+		var rects = svg.selectAll('.eigenschaft').append('rect');
+
+		//
+		//var rects = svg
+		//	.selectAll('rect')
+		//	.data(rectData)
+		//	.enter()
+		//	.append('rect')
+		//	.call(force.drag)
+		//	.on('mousedown', function() { d3.event.stopPropagation(); });
 
 		var links = svg
 			.selectAll('line')
@@ -117,12 +123,12 @@
 			.style('stroke', '#333')
 			.style('stroke-width', '1px');
 
-		var circleText = circleGroups
+		var circleText = svg.selectAll('.frequency')
 			.append('text')
 			.attr('dx', 12)
 			.attr('dy', '.25em')
 			.text(function(d) { return d.percentage + '%'; });
-		
+
 		force.on('tick', function() {
 			links
 				.attr('x1', function(d) { return d.source.x; })
