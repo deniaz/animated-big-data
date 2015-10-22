@@ -8,6 +8,8 @@
 
 
 		this.draw();
+
+		this.forceData = [];
 	}
 
 	Graph.prototype.draw = function () {
@@ -32,19 +34,19 @@
 				w: 175,
 				h: 60,
 				color: '#c0392b',
-				name: 'Brodworscht'
+				name: 'Käse'
 			},
 			{
 				w: 125,
 				h: 60,
 				color: '#c0392b',
-				name: 'Bürli'
+				name: 'Brot'
 			},
 			{
 				w: 200,
 				h: 60,
 				color: '#c0392b',
-				name: 'Bier'
+				name: 'Milch'
 			}
 		];
 
@@ -53,23 +55,28 @@
 		var linkData = [
 			{
 				source: forceData[0],
-				target: forceData[2]
+				target: forceData[2],
+				name: '80-brtwrst'
 			},
 			{
 				source: forceData[0],
-				target: forceData[3]
+				target: forceData[3],
+				name: '80-brot'
 			},
 			{
 				source: forceData[1],
-				target: forceData[2]
+				target: forceData[2],
+				name: '39-brtwrst'
 			},
 			{
 				source: forceData[1],
-				target: forceData[3]
+				target: forceData[3],
+				name: '39-brot'
 			},
 			{
 				source: forceData[1],
-				target: forceData[4]
+				target: forceData[4],
+				name: '39-bier'
 			}
 		];
 
@@ -104,8 +111,8 @@
 		force
 			.nodes(forceData)
 			.links(linkData)
-			.charge(-100)
-			.linkDistance(400);
+			.charge(-200)
+			.linkDistance(250);
 
 		var link = svg
 			.selectAll('line')
@@ -122,7 +129,7 @@
 				.attr('x1', function(d) { return d.source.x; })
 				.attr('y1', function(d) { return d.source.y; })
 				.attr('x2', function(d) { return d.target.x; })
-				.attr('y2', function(d) { return d.target.y; })
+				.attr('y2', function(d) { return d.target.y; });
 
 			circle
 				.attr('cx', function(d) { return d.x; })
@@ -147,6 +154,64 @@
 
 			//circleText.attr('transform', function(d) { return 'translate(' + (d.x-30) + ', ' + d.y + ')'; })
 		});
+
+		var interval = setInterval(function() {
+			if (Math.round(Math.random())) {
+				rect.
+					transition()
+					.duration(250)
+					.style('opacity', function(d) {
+						if (d.name === 'Milch') {
+							return 1;
+						}
+					});
+
+				circle
+					.transition()
+					.duration(250)
+					.style('opacity', function(d) {
+						if (d.percentage === 39.2) {
+							return 1;
+						}
+					});
+
+				link
+					.transition()
+					.duration(250)
+					.style('opacity', function(d) {
+						if (d.name === '39-bier' || d.name === '39-brot' || d.name === '39-brtwrst') {
+							return 1;
+						}
+					});
+			} else {
+				rect.
+					transition()
+					.duration(250)
+					.style('opacity', function(d) {
+						if (d.name === 'Milch') {
+							return 0;
+						}
+					});
+
+				circle
+					.transition()
+					.duration(250)
+					.style('opacity', function(d) {
+						if (d.percentage === 39.2) {
+							return 0;
+						}
+					});
+
+				link
+					.transition()
+					.duration(250)
+					.style('opacity', function(d) {
+						if (d.name === '39-bier' || d.name === '39-brot' || d.name === '39-brtwrst') {
+							return 0;
+						}
+					});
+			}
+		}, 2500);
 	};
 
 	function main() {
