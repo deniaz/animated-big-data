@@ -1,0 +1,47 @@
+{
+	"interval_frequency": 2500,
+	"interval_count": 10,
+	"sub_graphs": [
+		{
+			"data": [
+				{
+					"type": "attribute",
+					"label": "locIP=130.59.211.10"
+				},
+				{
+					"type": "attribute",
+					"label": "locPort=53"
+				},
+				{
+					"type": "attribute",
+					"label": "packet=2"
+				},
+				{
+					"type": "attribute",
+					"label": "prot=UDP"
+				},
+				{
+					"type": "attribute",
+					"label": "biflow"
+				},
+				{
+					"type": "frequency",
+					"percentage": 6.10725,
+					"label": 1025794
+				}
+			],
+			"interval": [
+				"visible",
+				"visible",
+				"invisible",
+				"visible",
+				"invisible",
+				"invisible",
+				"visible",
+				"visible",
+				"visible",
+				"invisible"
+			]
+		}
+	]
+}
