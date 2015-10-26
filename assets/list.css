@@ -1,0 +1,8 @@
+main .content {
+	padding: 1em;
+	font-family: 'Merriweather', serif;
+}
+
+main .content ul {
+	line-height: 2;
+}
