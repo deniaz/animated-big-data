@@ -11,6 +11,7 @@
 	var D3_ATTRIBUTE_WIDTH = 175;
 	var D3_ATTRIBUTE_HEIGHT = 60;
 	var D3_RADIUS_FACTOR = 10;
+	var D3_TRANSITION_DURATION = 250;
 
 	function log(msg) {
 		if (!!window.console.log) {
@@ -24,6 +25,8 @@
 
 		this.width = el.offsetWidth;
 		this.height = window.innerHeight;
+
+		this.steps = 0;
 
 		this.layout();
 	}
@@ -42,6 +45,7 @@
 
 			// TODO: Peeking isn't very nice!
 			this.sub_graphs = data.sub_graphs[0]['data'];
+			this.interval_visibility = data.sub_graphs[0]['interval'];
 
 			this.draw();
 		}.bind(this));
@@ -57,7 +61,9 @@
 				.attr('width', this.width)
 				.attr('height', this.height);
 
-		this.link = svg
+		var subgraphGroup = this.subgraphGroup = svg.append('g').attr('class', 'subgraph');
+
+		this.link = subgraphGroup
 			.selectAll('line')
 			.data(this.links())
 			.enter()
@@ -66,7 +72,7 @@
 			.style('stroke-width', '1px')
 			.attr('class', 'link');
 
-		var groups = this.groups = svg
+		var nodeGroup = this.nodeGroup = subgraphGroup
 			.selectAll('g')
 			.data(this.sub_graphs)
 			.enter()
@@ -76,8 +82,8 @@
 			.on('mousedown', function() { d3.event.stopPropagation(); });
 
 		var frequency = this.frequency = {
-			node: svg.selectAll('.frequency').append('circle'),
-			value: svg.selectAll('.frequency').append('text').text(function(d) {
+			node: subgraphGroup.selectAll('.frequency').append('circle'),
+			value: subgraphGroup.selectAll('.frequency').append('text').text(function(d) {
 				return d.percentage + '%';
 			})
 		};
@@ -104,6 +110,8 @@
 		this.force.start();
 
 		this.force.on('tick', this.onTick.bind(this));
+
+		this.interval = window.setInterval(this.step.bind(this), this.interval_frequency);
 	};
 
 	Hypergraph.prototype.links = function() {
@@ -152,6 +160,30 @@
 		this.svg.selectAll('.attribute text').attr('transform', function(d) {
 			return 'translate(' + (d.x+10) + ', ' + (d.y+35) + ')';
 		});
+	};
+
+	Hypergraph.prototype.step = function() {
+		if (this.steps === this.interval_count) {
+			window.clearInterval(this.interval);
+			log('Stepping through timeline done.')
+			return;
+		}
+
+		var opacity = 1;
+
+		if (this.interval_visibility[this.steps++] === 'invisible') {
+			opacity = 0;
+		}
+
+		log('Interval Step ' + this.steps);
+
+		this.svg
+			.selectAll('g.subgraph')
+			.transition()
+			.duration(D3_TRANSITION_DURATION)
+			.style('opacity', function() {
+				return opacity;
+			});
 	};
 
 
