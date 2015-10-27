@@ -1,0 +1,50 @@
+{
+  "nodes": {
+    "attr": [
+      {
+        "name": "Wein",
+        "id": "wine",
+        "type": "circle",
+        "color": "deeppink"
+      },
+      {
+        "name": "Bier",
+        "id": "beer",
+        "type": "circle",
+        "color": "deeppink"
+      },
+      {
+        "name": "Bratwurst",
+        "id": "brtwrst",
+        "type": "circle",
+        "color": "deeppink"
+      },
+      {
+        "name": "Bürli",
+        "id": "bread",
+        "type": "circle",
+        "color": "deeppink"
+      }
+    ],
+    "freq": [
+      {
+        "frequency": 80,
+        "id": "bread-brtwrst",
+        "type": "circle",
+        "color": "deepskyblue"
+      },
+      {
+        "frequency": 20,
+        "id": "bread-brtwrst-beer",
+        "type": "circle",
+        "color": "deepskyblue"
+      },
+      {
+        "frequency": 1,
+        "id": "wine-beer",
+        "type": "circle",
+        "color": "deepskyblue"
+      }
+    ]
+  }
+}
