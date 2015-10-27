@@ -1,27 +1,32 @@
 {
 	"interval_frequency": 2500,
 	"interval_count": 10,
-	"sub_graphs": [
+	"nodes": [
 		{
 			"data": [
 				{
 					"type": "attribute",
+					"id": "lIP_130.59.211.10",
 					"label": "locIP=130.59.211.10"
 				},
 				{
 					"type": "attribute",
+					"id": "lPo_53",
 					"label": "locPort=53"
 				},
 				{
 					"type": "attribute",
+					"id": "pkt_2",
 					"label": "packet=2"
 				},
 				{
 					"type": "attribute",
+					"id": "pro_17",
 					"label": "prot=UDP"
 				},
 				{
 					"type": "attribute",
+					"id": "dir_4",
 					"label": "biflow"
 				},
 				{
@@ -29,18 +34,63 @@
 					"percentage": 6.10725,
 					"label": 1025794
 				}
-			],
-			"interval": [
-				"visible",
-				"visible",
-				"invisible",
-				"visible",
-				"invisible",
-				"invisible",
-				"visible",
-				"invisible",
-				"visible",
-				"visible"
+			]
+		},
+		{
+			"data": [
+				{
+					"type": "attribute",
+					"id": "rPo_80",
+					"label": "remPort=80"
+				},
+				{
+					"type": "attribute",
+					"id": "pro_6",
+					"label": "prot=TCP"
+				},
+				{
+					"type": "attribute",
+					"id": "dir_4",
+					"label": "biflow"
+				},
+				{
+					"type": "frequency",
+					"percentage": 6.72839,
+					"label": 1130123
+				}
+			]
+		},
+		{
+			"data": [
+				{
+					"type": "attribute",
+					"id": "lIP_130.59.1.80",
+					"label": "locIP=130.59.1.80"
+				},
+				{
+					"type": "attribute",
+					"id": "lPo_53",
+					"label": "locPort=53"
+				},
+				{
+					"type": "attribute",
+					"id": "pkt_2",
+					"label": "packet=2"
+				},
+				{
+					"type": "attribute",
+					"id": "pro_17",
+					"label": "prot=UDP"
+				},
+				{
+					"type": "attribute",
+					"id": "dir_4",
+					"label": "biflow"
+				},
+				{
+					"type": "frequency",
+					"percentage": 6.79877
+				}
 			]
 		}
 	]
