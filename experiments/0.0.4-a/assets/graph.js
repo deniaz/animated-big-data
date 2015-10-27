@@ -1,24 +1,113 @@
 (function(window, document, d3, undefined) {
 	'use strict';
 
-	var D3_CHARGE = -200;
-	var D3_LINK_DISTANCE = 250;
-	var D3_FREQUENCY_COLOR = '#3498db';
-	var D3_FREQUENCY_STROKE = '#2980b9';
-	var D3_ATTRIBUTE_COLOR = '#e74c3c';
-	var D3_ATTRIBUTE_STROKE = '#c0392b';
-	var D3_LINK_COLOR = '#34495e';
-	var D3_ATTRIBUTE_WIDTH = 175;
-	var D3_ATTRIBUTE_HEIGHT = 60;
-	var D3_RADIUS_FACTOR = 10;
-	var D3_TRANSITION_DURATION = 250;
+	/**
+	 * Charge used for D3.js
+	 * @see https://github.com/mbostock/d3/wiki/Force-Layout#charge
+	 * @type {number}
+	 */
+	var D3_CHARGE = -1000;
 
+	/**
+	 * Friction used for D3.js
+	 * @see https://github.com/mbostock/d3/wiki/Force-Layout#friction
+	 * @type {number}
+	 */
+	var D3_FRICTION = 0.5;
+
+	/**
+	 * Gravity used for D3.js
+	 * @see https://github.com/mbostock/d3/wiki/Force-Layout#gravity
+	 * @type {number}
+	 */
+	var D3_GRAVITY = 0.25;
+
+	/**
+	 * Theta used for D3.js
+	 * @see https://github.com/mbostock/d3/wiki/Force-Layout#theta
+	 * @type {number}
+	 */
+	var D3_THETA = 0.75;
+
+	/**
+	 * Distance used for D3.js
+	 * @see https://github.com/mbostock/d3/wiki/Force-Layout#linkDistance
+	 * @type {number}
+	 */
+	var D3_LINK_DISTANCE = 250;
+
+	/**
+	 * Background Color for Frequency Circles
+	 * @type {string}
+	 */
+	var D3_FREQUENCY_COLOR = '#3498db';
+
+	/**
+	 * Border Color for Frequency Circles
+	 * @type {string}
+	 */
+	var D3_FREQUENCY_STROKE = '#2980b9';
+
+	/**
+	 * Background Color for Attribute Rectangles
+	 * @type {string}
+	 */
+	var D3_ATTRIBUTE_COLOR = '#e74c3c';
+
+	/**
+	 * Border Color for Attribute Rectangles
+	 * @type {string}
+	 */
+	var D3_ATTRIBUTE_STROKE = '#c0392b';
+
+	/**
+	 * Link Color
+	 * @type {string}
+	 */
+	var D3_LINK_COLOR = '#34495e';
+
+	/**
+	 * Attribute Rectangle Width
+	 * @type {number}
+	 */
+	var D3_ATTRIBUTE_WIDTH = 175;
+
+	/**
+	 * Attribtue Rectangle Height
+	 * @type {number}
+	 */
+	var D3_ATTRIBUTE_HEIGHT = 60;
+
+	/**
+	 * Frequency Circle Radius Multiplicator
+	 * @type {number}
+	 */
+	var D3_RADIUS_FACTOR = 10;
+
+	/**
+	 * Transition Duration
+	 * @type {number}
+	 */
+	var D3_TRANSITION_DURATION = 500;
+
+	/**
+	 * Helper function which checks for the existence of window.console before logging.
+	 * Prevents errors in old browsers.
+	 *
+	 * @param msg
+	 */
 	function log(msg) {
-		if (!!window.console.log) {
+		if (!!window.console && !!window.console.log) {
 			window.console.log(msg);
 		}
 	}
 
+	/**
+	 * Constructs Hypergraph.
+	 *
+	 * @param el HTMLNode to wrap the SVG
+	 * @constructor
+	 */
 	function Hypergraph(el) {
 		log('Init Hypergraph');
 		this.container = el;
@@ -31,26 +120,41 @@
 		this.layout();
 	}
 
+	/**
+	 * Starts D3's Force Layout.
+	 */
 	Hypergraph.prototype.layout = function() {
 		log('Force Layout');
 		this.force = d3.layout.force().size([this.width, this.height]);
 	};
 
+	/**
+	 * Loads JSON data asynchronously.
+	 */
 	Hypergraph.prototype.load = function() {
 		log('Loading Data');
-		d3.json('data.json', function(data) {
-			log('Data loaded');
-			this.interval_frequency = data.interval_frequency;
-			this.interval_count = data.interval_count;
-
-			// TODO: Peeking isn't very nice!
-			this.sub_graphs = data.sub_graphs[0]['data'];
-			this.interval_visibility = data.sub_graphs[0]['interval'];
-
-			this.draw();
-		}.bind(this));
+		d3.json('data.json', this.loaded.bind(this));
 	};
 
+	/**
+	 * AJAX Callback. Sets data as Hypergraph properties.
+	 * @param data JSON Graph Data
+	 */
+	Hypergraph.prototype.loaded = function(data) {
+		log('Data loaded');
+		this.interval_frequency = data.interval_frequency;
+		this.interval_count = data.interval_count;
+
+		// TODO: Peeking isn't very nice!
+		this.sub_graphs = data.sub_graphs[0]['data'];
+		this.interval_visibility = data.sub_graphs[0]['interval'];
+
+		this.draw();
+	};
+
+	/**
+	 * Draws the graph.
+	 */
 	Hypergraph.prototype.draw = function() {
 		log('Init Graph Drawing');
 
@@ -98,6 +202,9 @@
 		this.start();
 	};
 
+	/**
+	 * Starts the Force Layout and sets the Interval.
+	 */
 	Hypergraph.prototype.start = function() {
 		log('Injecting data into Layout');
 
@@ -105,6 +212,9 @@
 			.nodes(this.sub_graphs)
 			.links(this.links())
 			.charge(D3_CHARGE)
+			.friction(D3_FRICTION)
+			.gravity(D3_GRAVITY)
+			.theta(D3_THETA)
 			.linkDistance(D3_LINK_DISTANCE);
 
 		this.force.start();
@@ -114,6 +224,10 @@
 		this.interval = window.setInterval(this.step.bind(this), this.interval_frequency);
 	};
 
+	/**
+	 * Returns all links of the Hypergraph.
+	 * @returns {Array}
+	 */
 	Hypergraph.prototype.links = function() {
 		// Frequency is always the last element in the array
 		var subGraphs = this.sub_graphs,
@@ -131,6 +245,9 @@
 		return links;
 	};
 
+	/**
+	 * Adjusts graph on every minor Force Layout change.
+	 */
 	Hypergraph.prototype.onTick = function() {
 		this.frequency.node
 			.attr('cx', function(d) { return d.x; })
@@ -162,6 +279,9 @@
 		});
 	};
 
+	/**
+	 * Adjusts node/graph on animation iterations.
+	 */
 	Hypergraph.prototype.step = function() {
 		if (this.steps === this.interval_count) {
 			window.clearInterval(this.interval);
@@ -186,7 +306,9 @@
 			});
 	};
 
-
+	/**
+	 * Start Hypergraph on DOMContentLoaded.
+	 */
 	document.addEventListener('DOMContentLoaded', function() {
 		log('DOMContentLoaded');
 
