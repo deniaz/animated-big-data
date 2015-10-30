@@ -6,3 +6,12 @@
 .graph .frequency {
 	z-index: 20;
 }
+
+.graph {
+	cursor: default;
+}
+
+.graph circle,
+.graph rect {
+	cursor: grab;
+}
