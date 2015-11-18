@@ -20,7 +20,7 @@
 	 * @see https://github.com/mbostock/d3/wiki/Force-Layout#gravity
 	 * @type {number}
 	 */
-	var D3_GRAVITY = 0.1;
+	var D3_GRAVITY = 0.2;
 
 	/**
 	 * Theta used for D3.js
@@ -34,7 +34,7 @@
 	 * @see https://github.com/mbostock/d3/wiki/Force-Layout#linkDistance
 	 * @type {number}
 	 */
-	var D3_LINK_DISTANCE = 250;
+	var D3_LINK_DISTANCE = 30;
 
 	/**
 	 * Background Color for Frequency Circles
@@ -97,7 +97,7 @@
 	}
 
 	function normalize(n) {
-		return Math.pow(n, 4) / 20;
+		return Math.pow(n, 4) / 25;
 	}
 
 	function GraphBuilder() {
@@ -127,8 +127,11 @@
 
 	GraphBuilder.prototype.addNode = function(el) {
 		if (this.containsNode(el)) {
-			return this.nodes[this.getKey(el)];
+			var key = this.getKey(el);
+			this.nodes[key].instances++;
+			return this.nodes[key];
 		} else {
+			el.instances = 1;
 			return this.nodes.push(el) - 1;
 		}
 	};
@@ -140,6 +143,19 @@
 				target: target
 			})
 		}
+	};
+
+	GraphBuilder.prototype.getConnectedNodes = function(frequency) {
+		var subgraph = [];
+
+		for (var i = 0; i < this.links.length; i++) {
+			var link = this.links[i];
+			if (link.source.label === frequency.label) {
+				subgraph.push(link.target);
+			}
+		}
+
+		return subgraph;
 	};
 
 	/**
@@ -186,7 +202,7 @@
 		this.interval_count = data.interval_count;
 		this.threshold = data.threshold;
 
-		var builder = new GraphBuilder();
+		var builder = this.builder = new GraphBuilder();
 
 		for (var i = 0; i < data.nodes.length; i++) {
 			var subGraph = data.nodes[i].data,
@@ -245,30 +261,6 @@
 				return d.intervals[this.steps].percentage + '%';
 			}.bind(this))
 		};
-
-		console.info(this.frequency);
-
-		//var nodeGroup = this.nodeGroup = svg
-		//	.selectAll('g')
-		//	.data(this.nodes)
-		//	.enter()
-		//	.append('g')
-		//	.attr('class', function(d) {
-		//		return d.type;
-		//	})
-		//	.call(this.force.drag)
-		//	.on('mousedown', function() {
-		//		d3.event.stopPropagation();
-		//	});
-		//
-		//var frequency = this.frequency = {
-		//	node: svg.selectAll('.frequency').append('circle'),
-		//	value: svg.selectAll('.frequency').append('text').text(function(d) {
-		//		return d.intervals[this.steps].percentage + '%';
-		//	}.bind(this))
-		//};
-		//
-		//console.info(frequency);
 
 		var attribute = this.attribute = {
 			node: svg.selectAll('.attribute').append('rect'),
@@ -338,6 +330,15 @@
 	 * Adjusts graph on every minor Force Layout change.
 	 */
 	Hypergraph.prototype.onTick = function() {
+
+		var q = d3.geom.quadtree(this.nodes),
+			i = 0,
+			n = this.nodes.length;
+
+		while (++i < n) {
+			q.visit(this.collide(this.nodes[i]));
+		}
+
 		this.frequency.node
 			.attr('cx', function(d) {
 				return d.x;
@@ -387,27 +388,103 @@
 		});
 	};
 
+	Hypergraph.prototype.collide = function(node) {
+		var pad = 5,
+			step = this.steps,
+			r, nx1, nx2, ny1, ny2;
+
+		var collision = function(p1x1, p1y1, p1x2, p1y2, p2x1, p2y1, p2x2, p2y2) {
+			return (
+				p1x1 < p2x2 &&
+				p2x1 < p1x2 &&
+				p1y1 < p2y1 &&
+				p2y1 < p1y2
+			);
+		};
+
+		if ('frequency' === node.type) {
+			r = normalize(node.intervals[step].percentage);
+			nx1 = node.x - r;
+			nx2 = node.x + r;
+			ny1 = node.y - r;
+			ny2 = node.y + r;
+		} else {
+			nx1 = node.x;
+			nx2 = node.x + D3_ATTRIBUTE_WIDTH;
+			ny1 = node.y;
+			ny2 = node.y + D3_ATTRIBUTE_HEIGHT;
+		}
+
+		return function(quad, x1, y1, x2, y2) {
+			if (quad.point && (quad.point !== node)) {
+				var p = quad.point,
+					px1,
+					px2,
+					py1,
+					py2,
+					dx,
+					dy;
+
+				if ('frequency' === node.type) {
+					var r = normalize(node.intervals[step].percentage);
+					px1 = p.x - r;
+					px2 = p.x + r;
+					py1 = p.y - r;
+					py2 = p.y + r;
+				} else {
+					px1 = p.x;
+					px2 = p.x + D3_ATTRIBUTE_WIDTH;
+					py1 = p.y;
+					py2 = p.y + D3_ATTRIBUTE_WIDTH;
+				}
+
+				if (collision(nx1 - pad, ny1 - pad, nx2 + pad, ny2 + pad, px1, py1, px2, py2)) {
+					dx = Math.min(nx2 - px1, px2 - nx1) / 2;
+					node.x -= dx;
+					quad.point.x += dx;
+					dy = Math.min(ny2 - py1, py2 - ny1) / 2;
+					node.y -= dy;
+					quad.point.y += dy;
+				}
+			}
+
+			return (
+				x1 > nx2 ||
+				x2 < nx1 ||
+				y1 > ny2 ||
+				y2 < ny1
+			);
+		};
+	};
+
 	/**
 	 * Adjusts node/graph on animation iterations.
 	 */
 	Hypergraph.prototype.step = function() {
+
 		log('Interval ' + this.steps);
-		if (this.steps === this.interval_count - 1) {
+		if (this.steps++ === this.interval_count - 1) {
 			window.clearInterval(this.interval);
 			log('Done with intervals');
 			return;
 		}
 
-		++this.steps;
+		var hiddenFreq = [];
+		var attrToHide = [];
 
-		console.info(this);
-
-		//this.nodeGroup.selectAll('.frequency').selectAll('circle')
 		this.frequency.node
 			.transition()
 			.duration(D3_TRANSITION_DURATION)
 			.style('opacity', function(d) {
-				return d.intervals[this.steps].percentage >= this.threshold ? 1 : 0;
+				// keep track of newly hidden frequency
+				if (d.intervals[this.steps].percentage >= this.threshold) {
+					return 1;
+				} else {
+					hiddenFreq.push(d);
+					attrToHide = attrToHide.concat(this.builder.getConnectedNodes(d));
+					//newlyHidden.push(d);
+					return 0;
+				}
 			}.bind(this))
 			.attr('r', function(d) {
 				return normalize(d.intervals[this.steps].percentage);
@@ -420,6 +497,41 @@
 			.style('opacity', function(d) {
 				return d.intervals[this.steps].percentage >= this.threshold ? 1 : 0;
 			}.bind(this));
+
+		this.attribute.node
+			.transition()
+			.duration(D3_TRANSITION_DURATION)
+			.style('opacity', function(d) {
+				for (var i = 0; i < attrToHide.length; i++) {
+					var attr = attrToHide[i];
+					if (d.id === attr.id && attr.instances === 1) {
+						return 0;
+					}
+				}
+
+				return 1;
+			});
+
+		this.attribute.label
+			.transition()
+			.duration(D3_TRANSITION_DURATION)
+			.style('opacity', function(d) {
+				for (var i = 0; i < attrToHide.length; i++) {
+					var attr = attrToHide[i];
+					if (d.id === attr.id && attr.instances === 1) {
+						return 0;
+					}
+				}
+
+				return 1;
+			}.bind(this));
+
+		this.link
+			.transition()
+			.duration(D3_TRANSITION_DURATION)
+			.style('opacity', function(d) {
+				return attrToHide.indexOf(d.target) > -1 && hiddenFreq.indexOf(d.source) > -1 ? 0 : 1;
+			});
 	};
 
 	/**
