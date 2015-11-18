@@ -158,6 +158,23 @@
 		return subgraph;
 	};
 
+	GraphBuilder.prototype.getNodes = function() {
+		// Sorting doesn't seem to help
+		this.nodes.sort(function(a, b) {
+			if (a.instances < b.instances) {
+				return 1;
+			}
+
+			if (a.instances > b.instances) {
+				return -1;
+			}
+
+			return 0;
+		});
+
+		return this.nodes;
+	};
+
 	/**
 	 * Constructs Hypergraph.
 	 *
@@ -214,7 +231,7 @@
 			}
 		}
 
-		this.nodes = builder.nodes;
+		this.nodes = builder.getNodes();
 		this.links = builder.links;
 
 		this.draw();
@@ -331,13 +348,13 @@
 	 */
 	Hypergraph.prototype.onTick = function() {
 
-		var q = d3.geom.quadtree(this.nodes),
-			i = 0,
-			n = this.nodes.length;
-
-		while (++i < n) {
-			q.visit(this.collide(this.nodes[i]));
-		}
+		//var q = d3.geom.quadtree(this.nodes),
+		//	i = 0,
+		//	n = this.nodes.length;
+		//
+		//while (++i < n) {
+		//	q.visit(this.collide(this.nodes[i]));
+		//}
 
 		this.frequency.node
 			.attr('cx', function(d) {
