@@ -14,36 +14,19 @@
 <aside>
 	<div class="content">
 		<h1>D3 Timeline Experiment</h1>
+
 		<h2>Timeline data in Subgraph model</h2>
+
 		<p>
 			In this experiment the approach of storing the timeline data within the subgraph model was tested.
 		</p>
+
 		<p>
-			In this experiment nodes are not sorted. They are injected into the graph just as they are in the JSON file.
+			In this experiment nodes are sorted by the most connected node first. Frequencies are put last.
 		</p>
 		<p>
-			For this experiment some variations were built with sorting of the nodes. See the following links:
+			<a href="index.html">Back to unsorted nodes</a>
 		</p>
-		<ul>
-			<li>
-				<a href="index-mostconnected.html">Most connected nodes first</a>
-			</li>
-			<li>
-				<a href="index-leastconnected.html">Least connected nodes first</a>
-			</li>
-			<li>
-				<a href="index-freqmost.html">Frequencies first, than most connected attributes</a>
-			</li>
-			<li>
-				<a href="index-freqleast.html">Frequencies first, than least connected attributes</a>
-			</li>
-			<li>
-				<a href="index-mostfreq.html">Most connected attributes first, than frequencies</a>
-			</li>
-			<li>
-				<a href="index-leastfreq.html">Least connected attributes first, than frequencies</a>
-			</li>
-		</ul>
 	</div>
 </aside>
 
@@ -51,6 +34,27 @@
 	<div class="graph js-graph"></div>
 </main>
 
+<script type="text/javascript">
+	window.sortNodes = function(a, b) {
+		if (a.type === 'frequency' && b.type === 'attribute') {
+			return 1;
+		}
+
+		if (a.type === 'attribute' && b.type === 'frequency') {
+			return -1;
+		}
+
+		if (a.instances < b.instances) {
+			return 1;
+		}
+
+		if (a.instances > b.instances) {
+			return -1;
+		}
+
+		return 0;
+	};
+</script>
 <!--<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js" charset="utf-8"></script>-->
 <script src="assets/d3-3.5.6.js"></script>
 <script src="assets/graph.js"></script>

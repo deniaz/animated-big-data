@@ -159,20 +159,35 @@
 	};
 
 	GraphBuilder.prototype.getNodes = function() {
-		// Sorting doesn't seem to help
-		this.nodes.sort(function(a, b) {
-			if (a.instances < b.instances) {
-				return 1;
-			}
-
-			if (a.instances > b.instances) {
-				return -1;
-			}
-
-			return 0;
-		});
+		this.sort();
 
 		return this.nodes;
+	};
+
+	GraphBuilder.prototype.sort = function() {
+		if (window.sortNodes) {
+			this.nodes.sort(window.sortNodes);
+		}
+
+		/**
+		 * Randomizing the links-array doesn't change anything at all.
+		 */
+		//function shuffle(arr) {
+		//	var counter = arr.length,
+		//		tmp,
+		//		i;
+		//
+		//	while (counter > 0) {
+		//		i = Math.floor(Math.random() * counter--);
+		//		tmp = arr[counter];
+		//		arr[counter] = arr[i];
+		//		arr[i] = tmp;
+		//	}
+		//
+		//	return arr;
+		//}
+		//
+		//this.links = shuffle(this.links);
 	};
 
 	/**
@@ -224,6 +239,16 @@
 		for (var i = 0; i < data.nodes.length; i++) {
 			var subGraph = data.nodes[i].data,
 				frequency = subGraph[subGraph.length - 1];
+
+			/**
+			 * Currently the nodes are inserted as in the file:
+			 * [attr, attr, attr, attr, freq]
+			 *
+			 * The commented code puts freq in front:
+			 * [freq, attr, attr, attr, attr]
+			 */
+			//builder.addNode(frequency);
+			//for (var j = 0; j < subGraph.length-1; j++) {
 
 			for (var j = 0; j < subGraph.length; j++) {
 				var node = builder.addNode(subGraph[j]);
@@ -319,7 +344,7 @@
 
 		this.force.on('tick', this.onTick.bind(this));
 
-		this.interval = window.setInterval(this.step.bind(this), this.interval_frequency);
+		//this.interval = window.setInterval(this.step.bind(this), this.interval_frequency);
 	};
 
 	/**
