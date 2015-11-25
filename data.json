@@ -32,7 +32,7 @@
 				},
 				{
 					"type": "frequency",
-					"label": 1025794,
+					"id": 1025794,
 					"intervals": [
 						{
 							"percentage": 6.10725
@@ -87,7 +87,7 @@
 				},
 				{
 					"type": "frequency",
-					"label": 1130123,
+					"id": 1130123,
 					"intervals": [
 						{
 							"percentage": 6.72839
@@ -152,7 +152,7 @@
 				},
 				{
 					"type": "frequency",
-					"label": 3210311,
+					"id": 3210311,
 					"intervals": [
 						{
 							"percentage": 6.79877
