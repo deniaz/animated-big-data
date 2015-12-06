@@ -1,6 +1,10 @@
 .graph .hidden-link {
+
+}
+
+.graph .link {
 	z-index: 10;
-	stroke: lime;
+	stroke: #333;
 }
 
 .graph .attribute,

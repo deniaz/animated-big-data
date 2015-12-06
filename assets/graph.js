@@ -24,7 +24,8 @@
 		this.container = el;
 
 		this.interval_frequency = 2500;
-		this.interval_count = 0;
+		this.max_intervals = 0;
+		this.current_interval = 0;
 		this.threshold = 6.26;
 
 		this.width = el.offsetWidth;
@@ -34,7 +35,7 @@
 		this.force = d3.layout
 			.force()
 			.gravity(0.1)
-			.charge(.5)
+			.charge(100)
 			.linkStrength(function(l) {
 				return l.strength;
 			})
@@ -94,6 +95,19 @@
 				return d.target.y;
 			});
 
+		this.attributeLink.attr('x1', function(d) {
+			return d.source.x;
+		}).attr("y1", function(d) {
+			return d.source.y;
+		})
+			.attr("x2", function(d) {
+				return d.target.x;
+			})
+			.attr("y2", function(d) {
+				return d.target.y;
+			});
+
+
 		this.frequency.attr('transform', function(d) {
 			return 'translate(' + d.x + ',' + d.y + ')';
 		});
@@ -122,16 +136,15 @@
 		}
 	};
 
-	Hypergraph.prototype.addLink = function(source, target) {
+	Hypergraph.prototype.addLink = function(source, target, strength, distance) {
 		var source = this.findNode(source.id);
 		var target = this.findNode(target.id);
-		var distance = this.height * .9;
 
 		if (!!source && !!target) {
 			this.links.push({
 				source: source,
 				target: target,
-				strength: 1,
+				strength: strength,
 				distance: distance
 			});
 
@@ -164,11 +177,13 @@
 	};
 
 	Hypergraph.prototype.addFrequencies = function(data) {
+		var distance = this.height * .9;
+
 		data.forEach(function(o) {
 			var subgraph = o,
 				frequency = subgraph[subgraph.length - 1];
 
-			this.interval_count = frequency.intervals.length > this.interval_count ? frequency.intervals.length : this.interval_count;
+			this.max_intervals = frequency.intervals.length > this.max_intervals ? frequency.intervals.length : this.max_intervals;
 			this.addNode(frequency);
 		}.bind(this));
 
@@ -177,11 +192,11 @@
 				var current = this.nodes[i],
 					next = this.nodes[i + 1];
 
-				this.addLink(current, next);
+				this.addLink(current, next, 1, distance);
 			}
 		}
 
-		this.addLink(this.nodes[0], this.nodes[this.nodes.length - 1]);
+		this.addLink(this.nodes[0], this.nodes[this.nodes.length - 1], 1, distance);
 	};
 
 	Hypergraph.prototype.addAttributes = function(data) {
@@ -204,6 +219,7 @@
 			return o.type === 'attribute';
 		}).forEach(function(o) {
 			o.links.forEach(function(id) {
+				this.addLink(o, { id: id }, 1, 150);
 				//this.addLink(o, {id: id});
 			}.bind(this));
 		}.bind(this));
@@ -245,7 +261,10 @@
 			.attr('cy', function(d) {
 				return d.y;
 			})
-			.attr('r', '20px')
+			.attr('r', function(d) {
+				function normalize(n) { return Math.pow(n, 4) / 25; }
+				return normalize(d.intervals[this.current_interval].percentage);
+			}.bind(this))
 			.attr('fill', 'deepskyblue');
 
 		frequencyEnter.append('text')
@@ -285,10 +304,11 @@
 
 		var attributeEnter = attribute.enter().append('g').attr('class', 'attribute').call(this.force.drag);
 
-		attributeEnter.append('circle')
-			.attr('cx', function(d) { return d.x; })
-			.attr('cy', function(d) { return d.y; })
-			.attr('r', '20px')
+		attributeEnter.append('rect')
+			.attr('x', function(d) { return d.x; })
+			.attr('y', function(d) { return d.y; })
+			.attr('width', 175)
+			.attr('height', 60)
 			.attr('fill', 'deeppink');
 
 		attributeEnter.append('text')
