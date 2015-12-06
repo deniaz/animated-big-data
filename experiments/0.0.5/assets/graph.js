@@ -231,7 +231,7 @@
 	Hypergraph.prototype.loaded = function(data) {
 		log('Data loaded');
 		this.interval_frequency = data.interval_frequency;
-		this.interval_count = data.interval_count;
+		this.max_intervals = data.max_intervals;
 		this.threshold = data.threshold;
 
 		var builder = this.builder = new GraphBuilder();
@@ -344,7 +344,7 @@
 
 		this.force.on('tick', this.onTick.bind(this));
 
-		//this.interval = window.setInterval(this.step.bind(this), this.interval_frequency);
+		this.interval = window.setInterval(this.step.bind(this), this.interval_frequency);
 	};
 
 	/**
@@ -505,7 +505,7 @@
 	Hypergraph.prototype.step = function() {
 
 		log('Interval ' + this.steps);
-		if (this.steps++ === this.interval_count - 1) {
+		if (this.steps++ === this.max_intervals - 1) {
 			window.clearInterval(this.interval);
 			log('Done with intervals');
 			return;

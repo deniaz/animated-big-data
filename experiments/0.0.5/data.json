@@ -1,6 +1,6 @@
 {
 	"interval_frequency": 2500,
-	"interval_count": 10,
+	"max_intervals": 10,
 	"threshold": 6,
 	"nodes": [
 		{
