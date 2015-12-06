@@ -1,6 +1,6 @@
-.graph .link {
+.graph .hidden-link {
 	z-index: 10;
-	stroke: #333;
+	stroke: lime;
 }
 
 .graph .attribute,
@@ -17,6 +17,12 @@
 	cursor: grab;
 }
 
-.nodetext {
+.graph .label {
 	fill: #333;
+}
+
+.controls label,
+.controls label strong,
+.controls label span {
+	display: block;
 }
