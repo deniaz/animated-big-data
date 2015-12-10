@@ -82,6 +82,11 @@
 			}.bind(this));
 		}.bind(this));
 
+		var quad = d3.geom.quadtree(attributes);
+		attributes.forEach(function(attr) {
+			quad.visit(this.collide(attr));
+		}.bind(this));
+
 		this.frequencyLink.attr("x1", function(d) {
 			return d.source.x;
 		})
@@ -96,9 +101,9 @@
 			});
 
 		this.attributeLink.attr('x1', function(d) {
-			return d.source.x;
+			return d.source.x + (175 / 2);
 		}).attr("y1", function(d) {
-			return d.source.y;
+			return d.source.y + (60 / 2);
 		})
 			.attr("x2", function(d) {
 				return d.target.x;
@@ -328,6 +333,37 @@
 
 		// Restart the force layout.
 		this.force.start();
+	};
+
+	Hypergraph.prototype.collide = function(node) {
+		var padding = 32;
+
+		var nx1 = node.px - padding,
+			nx2 = node.x + padding,
+			ny1 = node.py - padding,
+			ny2 = node.y + padding;
+
+		function overlap(a, b) {
+			return a.px - padding < b.x && b.px < a.x + padding && a.py - padding < b.py && b.py < a.y + padding;
+		}
+
+		return function(quad, x1, y1, x2, y2) {
+			var dx, dy;
+
+			if (quad.point && (quad.point !== node)) {
+				if (overlap(node, quad.point)) {
+					dx = Math.min(node.x - quad.point.px, quad.point.x - node.px) / 2;
+					node.x -= dx;
+					quad.point.x -= dx;
+
+					dy = Math.min(node.y - quad.point.py, quad.point.y - node.py) / 2;
+					node.y -= dy;
+					quad.point.y += dy;
+				}
+			}
+
+			return x1 > nx2 || x2 < nx1 || y1 > ny2 || y2 < ny1;
+		};
 	};
 
 	Hypergraph.prototype.setInterval = function(interval) {
