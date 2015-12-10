@@ -28,6 +28,8 @@
 		this.current_interval = 0;
 		this.threshold = 6.26;
 
+		this.use_collision_detection = false;
+
 		this.width = el.offsetWidth;
 		this.height = window.innerHeight;
 
@@ -82,10 +84,12 @@
 			}.bind(this));
 		}.bind(this));
 
-		var quad = d3.geom.quadtree(attributes);
-		attributes.forEach(function(attr) {
-			quad.visit(this.collide(attr));
-		}.bind(this));
+		if (this.use_collision_detection) {
+			var quad = d3.geom.quadtree(attributes);
+			attributes.forEach(function(attr) {
+				quad.visit(this.collide(attr));
+			}.bind(this));
+		}
 
 		this.frequencyLink.attr("x1", function(d) {
 			return d.source.x;
@@ -376,6 +380,10 @@
 		return this.threshold;
 	};
 
+	Hypergraph.prototype.toggleCollisionDetection = function() {
+		this.use_collision_detection = !this.use_collision_detection;
+	};
+
 	document.addEventListener('DOMContentLoaded', function() {
 		log('DOMContentLoaded');
 		var graph = new Hypergraph(document.querySelector('.graph'));
@@ -387,6 +395,10 @@
 
 		document.querySelector('.js-threshold').addEventListener('change', function(e) {
 			document.querySelector('.js-current-threshold').textContent = graph.setThreshold(e.target.value);
+		});
+
+		document.querySelector('.js-collision').addEventListener('change', function(e) {
+			graph.toggleCollisionDetection();
 		});
 	});
 })(window, document, d3);

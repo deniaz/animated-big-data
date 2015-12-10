@@ -30,3 +30,5 @@
 .controls label span {
 	display: block;
 }
+
+.controls label { margin-bottom: 1em; }
