@@ -2,96 +2,6 @@
 	'use strict';
 
 	/**
-	 * Charge used for D3.js
-	 * @see https://github.com/mbostock/d3/wiki/Force-Layout#charge
-	 * @type {number}
-	 */
-	var D3_CHARGE = -1000;
-
-	/**
-	 * Friction used for D3.js
-	 * @see https://github.com/mbostock/d3/wiki/Force-Layout#friction
-	 * @type {number}
-	 */
-	var D3_FRICTION = 0.9;
-
-	/**
-	 * Gravity used for D3.js
-	 * @see https://github.com/mbostock/d3/wiki/Force-Layout#gravity
-	 * @type {number}
-	 */
-	var D3_GRAVITY = 0.1;
-
-	/**
-	 * Theta used for D3.js
-	 * @see https://github.com/mbostock/d3/wiki/Force-Layout#theta
-	 * @type {number}
-	 */
-	var D3_THETA = 0.8;
-
-	/**
-	 * Distance used for D3.js
-	 * @see https://github.com/mbostock/d3/wiki/Force-Layout#linkDistance
-	 * @type {number}
-	 */
-	var D3_LINK_DISTANCE = 250;
-
-	/**
-	 * Background Color for Frequency Circles
-	 * @type {string}
-	 */
-	var D3_FREQUENCY_COLOR = '#3498db';
-
-	/**
-	 * Border Color for Frequency Circles
-	 * @type {string}
-	 */
-	var D3_FREQUENCY_STROKE = '#2980b9';
-
-	/**
-	 * Background Color for Attribute Rectangles
-	 * @type {string}
-	 */
-	var D3_ATTRIBUTE_COLOR = '#e74c3c';
-
-	/**
-	 * Border Color for Attribute Rectangles
-	 * @type {string}
-	 */
-	var D3_ATTRIBUTE_STROKE = '#c0392b';
-
-	/**
-	 * Link Color
-	 * @type {string}
-	 */
-	var D3_LINK_COLOR = '#34495e';
-
-	/**
-	 * Attribute Rectangle Width
-	 * @type {number}
-	 */
-	var D3_ATTRIBUTE_WIDTH = 120;
-
-	/**
-	 * Attribtue Rectangle Height
-	 * @type {number}
-	 */
-	var D3_ATTRIBUTE_HEIGHT = 60;
-
-	/**
-	 * Transition Duration
-	 * @type {number}
-	 */
-	var D3_TRANSITION_DURATION = 500;
-	
-	var ATTRIBUTE_PADDING = 15;
-	var ATTRIBUTE_TEXT_SIZE = 10;
-	var FREQUENCY_PADDING = 100;
-	var FREQUENCY_HIDE_SIZE = 5;
-	var COLLISION_PADDING = 5;
-	var STEPS = 0;
-
-	/**
 	 * Helper function which checks for the existence of window.console before logging.
 	 * Prevents errors in old browsers.
 	 *
@@ -101,85 +11,6 @@
 		if (!!window.console && !!window.console.log) {
 			window.console.log(msg);
 		}
-	}
-
-	function normalize(n) {
-		return Math.pow(n, 4) / 20;
-	}
-
-	function GraphBuilder() {
-		this.nodes = [];
-		this.links = [];
-	}
-
-	GraphBuilder.prototype.getKey = function(el) {
-		for (var i = 0; i < this.nodes.length; i++) {
-			var n = this.nodes[i];
-			if (!!n.id && !!el.id && n.id === el.id) {
-				return i;
-			}
-		}
-
-		throw Error('Element not found.');
-	};
-
-	GraphBuilder.prototype.containsNode = function(el) {
-		try {
-			this.getKey(el);
-			return true;
-		} catch (e) {
-			return false;
-		}
-	};
-
-	GraphBuilder.prototype.addNode = function(el) {
-		if (this.containsNode(el)) {
-			return this.nodes[this.getKey(el)];
-		} else {
-			return this.nodes.push(el) - 1;
-		}
-	};
-
-	GraphBuilder.prototype.link = function(source, target) {
-		//if (target.type !== 'frequency') {
-		//	this.links.push({
-		//		source: source,
-		//		target: target
-		//	})
-	    //}
-	    this.links.push({
-	        source: source,
-	        target: target
-	    })
-	};
-
-	function AttributeBuilder() {
-	    this.attributes = [];
-	}
-
-	AttributeBuilder.prototype.getKey = function (el) {
-	    for (var i = 0; i < this.attributes.length; i++) {
-	        var a = this.attributes[i];
-	        if (!!a.id && !!el.id && a.id === el.id) {
-	            return i;
-	        }
-	    }
-	    throw Error('Element not foung.');
-	}
-
-	AttributeBuilder.prototype.contains = function (el) {
-	    try {
-	        this.getKey(el);
-	        return true;
-	    } catch (e) {
-	        return false;
-	    }
-	}
-
-	AttributeBuilder.prototype.add = function (el) {
-	    if (!this.contains(el)) {
-	        this.attributes.push(el);
-	    }
 	}
 
 	/**
@@ -192,457 +23,382 @@
 		log('Init Hypergraph');
 		this.container = el;
 
+		this.interval_frequency = 2500;
+		this.max_intervals = 0;
+		this.current_interval = 0;
+		this.threshold = 6.26;
+
+		this.use_collision_detection = false;
+
 		this.width = el.offsetWidth;
 		this.height = window.innerHeight;
 
-		STEPS = 0;
+		this.vis = d3.select(el).append('svg:svg').attr('width', this.width).attr('height', this.height);
+		this.force = d3.layout
+			.force()
+			.gravity(0.1)
+			.charge(100)
+			.linkStrength(function(l) {
+				return l.strength;
+			})
+			.linkDistance(function(l) {
+				return l.distance;
+			})
+			.size([this.width, this.height])
+			.on('tick', this.tick.bind(this));
 
-		this.layout();
+		window.focii = this.focii = {};
+
+		this.nodes = this.force.nodes();
+		this.links = this.force.links();
+
+		this.update();
 	}
 
-	/**
-	 * Starts D3's Force Layout.
-	 */
-	Hypergraph.prototype.layout = function() {
-		log('Force Layout');
-		this.force = d3.layout.force().size([this.width, this.height]);
+	Hypergraph.prototype.tick = function(e) {
+		var k = .5 * e.alpha;
+
+		var frequencies = this.nodes.filter(function(o) {
+			return o.type === 'frequency';
+		});
+
+		frequencies.forEach(function(o) {
+			this.focii[o.id] = {
+				x: o.x,
+				y: o.y
+			};
+		}.bind(this));
+
+		var attributes = this.nodes.filter(function(o) {
+			return o.type === 'attribute';
+		});
+
+		attributes.forEach(function(o, i) {
+			o.links.forEach(function(l) {
+
+				var deviation = (i % 2) ? -10*(i+1) : 10*(i+1);
+
+				o.y += (this.focii[l].y - o.y + deviation) * k;
+				o.x += (this.focii[l].x - o.x + deviation*2) * k;
+
+			}.bind(this));
+		}.bind(this));
+
+		if (this.use_collision_detection) {
+			var quad = d3.geom.quadtree(attributes);
+			attributes.forEach(function(attr) {
+				quad.visit(this.collide(attr));
+			}.bind(this));
+		}
+
+		this.frequencyLink.attr("x1", function(d) {
+			return d.source.x;
+		})
+			.attr("y1", function(d) {
+				return d.source.y;
+			})
+			.attr("x2", function(d) {
+				return d.target.x;
+			})
+			.attr("y2", function(d) {
+				return d.target.y;
+			});
+
+		this.attributeLink.attr('x1', function(d) {
+			return d.source.x + (175 / 2);
+		}).attr("y1", function(d) {
+			return d.source.y + (60 / 2);
+		})
+			.attr("x2", function(d) {
+				return d.target.x;
+			})
+			.attr("y2", function(d) {
+				return d.target.y;
+			});
+
+
+		this.frequency.attr('transform', function(d) {
+			return 'translate(' + d.x + ',' + d.y + ')';
+		});
+
+		this.attribute.attr('transform', function(d) {
+			return 'translate(' + d.x + ',' + d.y + ')';
+		});
+
+		//this.update();
 	};
 
-	/**
-	 * Loads JSON data asynchronously.
-	 */
+	Hypergraph.prototype.addNode = function(node) {
+		this.nodes.push(node);
+		this.update();
+	};
+
+	Hypergraph.prototype.addAttribute = function(node, frequency) {
+		var existing = this.findNode(node.id)
+		if (existing === null) {
+			node.links = [frequency.id];
+			this.nodes.push(node);
+		} else {
+			if (existing.links.indexOf(frequency.id) === -1) {
+				existing.links.push(frequency.id);
+			}
+		}
+	};
+
+	Hypergraph.prototype.addLink = function(source, target, strength, distance) {
+		var source = this.findNode(source.id);
+		var target = this.findNode(target.id);
+
+		if (!!source && !!target) {
+			this.links.push({
+				source: source,
+				target: target,
+				strength: strength,
+				distance: distance
+			});
+
+			this.update();
+		}
+	};
+
+	Hypergraph.prototype.findNode = function(id) {
+		for (var i = 0; i < this.nodes.length; i++) {
+			var node = this.nodes[i];
+			if (node.id === id) {
+				return node;
+			}
+		}
+
+		return null;
+	};
+
 	Hypergraph.prototype.load = function() {
 		log('Loading Data');
 		d3.json('data.json', this.loaded.bind(this));
 	};
 
-	function compareSubGraph(a, b) {
-	    var numberOfEqual = 0;
-	    for (var i = 0; i < a.attributes.length; i++) {
-	        for (var j = 0; j < b.attributes.length; j++) {
-	            if (b.attributes[j].id == a.attributes[i].id) {
-	                numberOfEqual++;
-	                break;
-	            }
-	        }
-	    }
-	    return numberOfEqual;
-	}
-
-	/**
-	 * AJAX Callback. Sets data as Hypergraph properties.
-	 * @param data JSON Graph Data
-	 */
 	Hypergraph.prototype.loaded = function(data) {
 		log('Data loaded');
-		this.interval_frequency = data.interval_frequency;
-		this.interval_count = data.interval_count;
-		this.threshold = data.threshold;
-		this.numberOfAttributes = data.number_of_attributes;
-		this.numberOfFrequencies = data.number_of_frequencies;
 
-		var subGraphs = data.subGraphs;
-		var comparisonList = [];
-
-        // Compare all Frequencies (quantity of same attribute)
-		for (var i = 0; i < subGraphs.length - 1; i++) {
-		    for (var j = i + 1; j < subGraphs.length; j++) {
-		        var result = {
-		            indexA: i,
-		            indexB: j,
-		            equal: compareSubGraph(subGraphs[i], subGraphs[j])
-		        }
-		        comparisonList.push(result);		        
-		    }
-		}
-		
-		comparisonList.sort(function (a, b) {
-		    if (a.equal < b.equal)
-		        return 1;
-		    if (a.equal > b.equal)
-		        return -1;
-		    return 0;
-		});
-
-		var nodeBuilder = new GraphBuilder(),
-            tempBuilder,
-            attributeLength = (this.numberOfAttributes * D3_ATTRIBUTE_WIDTH) + ((this.numberOfAttributes - 1) * ATTRIBUTE_PADDING),
-            positionX = (this.width - attributeLength) / 2,
-            positionY = (this.height - D3_ATTRIBUTE_HEIGHT) / 2,
-            frequencies = [];
-
-		for (var i = 0; i < comparisonList.length; i++) {
-
-		    var nodeGroup = comparisonList[i],
-                frequencyA = subGraphs[nodeGroup.indexA].frequency,
-                frequencyB = subGraphs[nodeGroup.indexB].frequency;
-
-		    // if (frequencies contains A or B => false)
-		    var condition = false;		    
-		    for (var j = 0; j < frequencies.length; j++) {
-		        if (frequencies[j].frequency.label == frequencyA.label || frequencies[j].frequency.label == frequencyB.label) {
-		            condition = true;
-		            break;
-		        }		            
-		    }
-
-		    if (!condition) {
-		        var tempBuilder = new AttributeBuilder();
-
-		        for (var j = 0; j < subGraphs[nodeGroup.indexA].attributes.length; j++) {
-		            tempBuilder.add(subGraphs[nodeGroup.indexA].attributes[j]);
-		        }
-
-		        for (var j = 0; j < subGraphs[nodeGroup.indexB].attributes.length; j++) {
-		            tempBuilder.add(subGraphs[nodeGroup.indexB].attributes[j]);
-		        }
-
-		        tempBuilder.attributes.sort(function (a, b) {
-		            if (a.numberOfLinks > b.numberOfLinks)
-		                return 1;
-		            if (a.numberOfLinks < b.numberOfLinks)
-		                return -1;
-		            return 0;
-		        });
-
-		        var groupPositionX = positionX;
-
-		        for (var j = 0; j < tempBuilder.attributes.length; j++) {
-		            if (!nodeBuilder.containsNode(tempBuilder.attributes[j])) {
-		                tempBuilder.attributes[j].x = positionX;
-		                tempBuilder.attributes[j].y = positionY;
-
-		                positionX += D3_ATTRIBUTE_WIDTH + ATTRIBUTE_PADDING;
-		                nodeBuilder.addNode(tempBuilder.attributes[j]);
-		            }
-		        }
-
-		        var frequencyPositionX = (groupPositionX + (tempBuilder.attributes.length * D3_ATTRIBUTE_WIDTH) + ((tempBuilder.attributes.length - 1) * ATTRIBUTE_PADDING)) / 2;
-
-		        frequencyA.x = frequencyPositionX;
-		        frequencyA.y = positionY - (normalize(frequencyA.intervals[STEPS].percentage) + FREQUENCY_PADDING)
-		        frequencies.push(subGraphs[nodeGroup.indexA]);
-
-		        frequencyB.x = frequencyPositionX;
-		        frequencyB.y = positionY + (normalize(frequencyB.intervals[STEPS].percentage) + FREQUENCY_PADDING + D3_ATTRIBUTE_HEIGHT);
-		        frequencies.push(subGraphs[nodeGroup.indexB]);
-		    }
-		}
-
-		if ((this.numberOfFrequencies % 2) != 0) {
-		    for (var i = 0; i < subGraphs.length; i++) {
-		        var found = false;
-		        for (var j = 0; j < frequencies.length; j++) {
-		            if (subGraphs[i].frequency.label == frequencies[j].frequency.label)
-		                found = true;
-		        }
-		        if (!found) {
-		            var tempBuilder = new AttributeBuilder();
-
-		            for (var j = 0; j < subGraphs[i].attributes.length; j++) {
-		                tempBuilder.add(subGraphs[i].attributes[j]);
-		            }
-
-		            tempBuilder.attributes.sort(function (a, b) {
-		                if (a.numberOfLinks > b.numberOfLinks)
-		                    return 1;
-		                if (a.numberOfLinks < b.numberOfLinks)
-		                    return -1;
-		                return 0;
-		            });
-
-		            var groupPositionX = positionX,
-                        numberOfAttributes = 0;
-
-		            for (var j = 0; j < tempBuilder.attributes.length; j++) {
-		                if (!nodeBuilder.containsNode(tempBuilder.attributes[j])) {
-		                    tempBuilder.attributes[j].x = positionX;
-		                    tempBuilder.attributes[j].y = positionY;
-
-		                    positionX += D3_ATTRIBUTE_WIDTH + ATTRIBUTE_PADDING;
-		                    nodeBuilder.addNode(tempBuilder.attributes[j]);
-		                    numberOfAttributes++;
-		                }
-		            }
-
-		            //var frequencyPositionX = (groupPositionX + (numberOfAttributes * D3_ATTRIBUTE_WIDTH) + ((numberOfAttributes - 1) * ATTRIBUTE_PADDING)) / 2;
-		            var frequencyPositionX = ((positionX - groupPositionX) / 2) + groupPositionX;
-
-		            subGraphs[i].frequency.x = frequencyPositionX;
-		            subGraphs[i].frequency.y = positionY - (normalize(subGraphs[i].frequency.intervals[STEPS].percentage) + FREQUENCY_PADDING)
-		            frequencies.push(subGraphs[i]);
-		        }
-		    }
-		}
-
-		for (var i = 0; i < frequencies.length; i++) {
-		    for (var j = 0; j < frequencies[i].attributes.length; j++) {
-		        //nodeBuilder.link(frequencies[i].frequency, frequencies[i].attributes[j]);
-		        nodeBuilder.link(frequencies[i].frequency, nodeBuilder.nodes[nodeBuilder.getKey(frequencies[i].attributes[j])]);
-		    }
-		    nodeBuilder.addNode(frequencies[i].frequency);
-		}
-
-		this.nodes = nodeBuilder.nodes;
-		this.links = nodeBuilder.links;
-
-		//var builder = new GraphBuilder();
-
-		//for (var i = 0; i < data.nodes.length; i++) {
-		//	var subGraph = data.nodes[i].data,
-		//		frequency = subGraph[subGraph.length - 1];
-
-		//	for (var j = 0; j < subGraph.length; j++) {
-		//		var node = builder.addNode(subGraph[j]);
-		//		builder.link(frequency, node);
-		//	}
-		//}
-
-		//this.nodes = builder.nodes;
-		//this.links = builder.links;
-
-		this.draw();
+		this.addFrequencies(data);
+		this.addAttributes(data);
+		this.addLinks();
 	};
 
-	/**
-	 * Draws the graph.
-	 */
-	Hypergraph.prototype.draw = function() {
-		log('Init Graph Drawing');
+	Hypergraph.prototype.addFrequencies = function(data) {
+		var distance = this.height * .9;
 
-		var svg = this.svg =
-			d3
-				.select('.js-graph')
-				.append('svg')
-				.attr('width', this.width)
-				.attr('height', this.height);
+		data.forEach(function(o) {
+			var subgraph = o,
+				frequency = subgraph[subgraph.length - 1];
 
-		this.link = svg
-			.selectAll('line')
-			.data(this.links)
-			.enter()
-			.insert('line')
-			.style('stroke', D3_LINK_COLOR)
-			.style('stroke-width', '1px')
-			.attr('class', 'link');
+			this.max_intervals = frequency.intervals.length > this.max_intervals ? frequency.intervals.length : this.max_intervals;
+			this.addNode(frequency);
+		}.bind(this));
 
-	    // https://jsfiddle.net/NovasTaylor/o1qesn6k/
-		var drag = this.force.drag()
-                .on("dragstart", dragstart);
+		for (var i = 0; i < this.nodes.length; i++) {
+			if (!!this.nodes[i] && !!this.nodes[i + 1]) {
+				var current = this.nodes[i],
+					next = this.nodes[i + 1];
 
-		this.frequency = {
-			node: svg.selectAll('g')
-				.data(this.nodes)
-				.enter()
-				.append('g')
-				.attr('class', function(d) {
-					return d.type;
-				})
-				//.call(this.force.drag)
-                .call(drag)
-				.on('mousedown', function(d) {
-					return d.type;
-				})
-				.filter('.frequency')
-				.append('circle'),
-			value: svg.selectAll('.frequency').append('text').text(function(d) {
-				return d.intervals[STEPS].percentage + '%';
-			}.bind(this))
-		};
+				this.addLink(current, next, 1, distance);
+			}
+		}
 
-		//var nodeGroup = this.nodeGroup = svg
-		//	.selectAll('g')
-		//	.data(this.nodes)
-		//	.enter()
-		//	.append('g')
-		//	.attr('class', function(d) {
-		//		return d.type;
-		//	})
-		//	.call(this.force.drag)
-		//	.on('mousedown', function() {
-		//		d3.event.stopPropagation();
-		//	});
-		//
-		//var frequency = this.frequency = {
-		//	node: svg.selectAll('.frequency').append('circle'),
-		//	value: svg.selectAll('.frequency').append('text').text(function(d) {
-		//		return d.intervals[STEPS].percentage + '%';
-		//	}.bind(this))
-		//};
-		//
-		//console.info(frequency);
-
-		var attribute = this.attribute = {
-		    node: svg.selectAll('.attribute')
-                .append('rect')
-                .call(drag),
-		    label: svg.selectAll('.attribute')
-                .append('text')
-                .style({"font-size":"10px"})
-                .text(function (d) {
-				return d.label;
-			})
-		};
-
-		this.start();
+		this.addLink(this.nodes[0], this.nodes[this.nodes.length - 1], 1, distance);
 	};
 
-	/**
-	 * Starts the Force Layout and sets the Interval.
-	 */
-	Hypergraph.prototype.start = function() {
-		log('Injecting data into Layout');
+	Hypergraph.prototype.addAttributes = function(data) {
+		data.forEach(function(subgraph) {
+			var frequency = subgraph[subgraph.length - 1];
 
-		this.force
-			.nodes(this.nodes)
-			.links(this.links)
-			.charge(function(node) {
-				if (node.type === 'attribute') {
-					return D3_CHARGE;
-				} else {
-					return node.intervals[STEPS].percentage * 200 * (-1);
+			subgraph.forEach(function(o, i) {
+				// 2 is because the last one is a frequency
+				if (i < subgraph.length - 1) {
+					this.addAttribute(o, frequency);
 				}
-			}.bind(this))
-			.friction(D3_FRICTION)
-			.gravity(D3_GRAVITY)
-			.theta(D3_THETA)
-			.linkDistance(function(link, index) {
-				return parseInt(Math.round(Math.random() * 750))
-			})
-			.linkStrength(function(link, index) {
-				return Math.random();
-			});
+			}.bind(this));
+		}.bind(this));
 
-		this.force.start();
-
-		this.force.on('tick', this.onTick.bind(this));
-
-		this.interval = window.setInterval(this.step.bind(this), this.interval_frequency);
+		this.update();
 	};
 
-	function dragstart(d) {
-	    d3.select(this).classed("fixed", d.fixed = true); // TODO: <= d.fixed = true eventuell anders hinkriegen
-	}
-
-	/**
-	 * Returns all links of the Hypergraph.
-	 * @returns {Array}
-	 */
-	Hypergraph.prototype.links = function() {
-		// Frequency is always the last element in the array
-		var subGraphs = this.nodes,
-			frequencyIndex = subGraphs.length - 1,
-			frequency = subGraphs[frequencyIndex],
-			links = [];
-
-		for (var i = 0; i <= frequencyIndex; i++) {
-			links.push({
-				source: frequency,
-				target: subGraphs[i]
-			});
-		}
-
-		return links;
+	Hypergraph.prototype.addLinks = function() {
+		this.nodes.filter(function(o) {
+			return o.type === 'attribute';
+		}).forEach(function(o) {
+			o.links.forEach(function(id) {
+				this.addLink(o, { id: id }, 1, 150);
+				//this.addLink(o, {id: id});
+			}.bind(this));
+		}.bind(this));
 	};
 
-	/**
-	 * Adjusts graph on every minor Force Layout change.
-	 */
-	Hypergraph.prototype.onTick = function() {
+	Hypergraph.prototype.updateFrequencies = function() {
+		var frequencyLink = this.frequencyLink = this.vis
+			.selectAll("line.hidden-link")
+			.data(this.links.filter(function (link) {
+				return link.source.type === 'frequency' && link.target.type === 'frequency';
+			}), function(d) {
+				return d.source.id + "-" + d.target.id;
+			});
 
-		this.frequency.node
-			.attr('cx', function (d) {
+		frequencyLink
+			.enter()
+			.insert("line")
+			.attr("class", "hidden-link");
+
+		frequencyLink.exit().remove();
+
+		var frequency = this.frequency = this.vis
+			.selectAll('g.frequency')
+			.data(this.nodes.filter(function (node) {
+				return node.type === 'frequency';
+			}), function(d) {
+				return d.id;
+			});
+
+		var frequencyEnter = frequency.enter().append('g')
+			.attr('class', 'frequency')
+			.call(this.force.drag);
+
+		frequencyEnter.append('circle')
+			.attr('class', 'circle')
+			.attr('cx', function(d) {
 				return d.x;
 			})
 			.attr('cy', function(d) {
 				return d.y;
 			})
 			.attr('r', function(d) {
-				if (d.intervals[STEPS].percentage >= this.threshold) {
-					return normalize(d.intervals[STEPS].percentage);
-				} else {
-					return FREQUENCY_HIDE_SIZE;
-				}				
+				function normalize(n) { return Math.pow(n, 4) / 25; }
+				return normalize(d.intervals[this.current_interval].percentage);
 			}.bind(this))
-			.style('fill', D3_FREQUENCY_COLOR)
-			.style('stroke', D3_FREQUENCY_STROKE);
+			.attr('fill', 'deepskyblue');
 
-		this.attribute.node
-			.attr('x', function(d) {
-				return d.x;
-			})
-			.attr('y', function(d) {
-				return d.y;
-			})
-			.attr('width', D3_ATTRIBUTE_WIDTH)
-			.attr('height', D3_ATTRIBUTE_HEIGHT)
-			.style('fill', D3_ATTRIBUTE_COLOR)
-			.style('stroke', D3_ATTRIBUTE_STROKE);
-
-		this.link
-			.attr('x1', function(d) {
-				return d.source.x;
-			})
-			.attr('y1', function(d) {
-				return d.source.y;
-			})
-			.attr('x2', function(d) {
-				return d.target.x + (D3_ATTRIBUTE_WIDTH / 2);
-			})
-			.attr('y2', function(d) {
-				return d.target.y + (D3_ATTRIBUTE_HEIGHT / 2);
+		frequencyEnter.append('text')
+			.attr('class', 'label')
+			.attr('dx', 12)
+			.attr('d', '.35em')
+			.text(function(d) {
+				return d.id;
 			});
 
-		this.svg.selectAll('.frequency text').attr('transform', function(d) {
-		    return 'translate(' + (d.x - 30) + ', ' + d.y + ')';
-		});
-
-		this.svg.selectAll('.attribute text').attr('transform', function(d) {
-			return 'translate(' + (d.x + 10) + ', ' + (d.y + 35) + ')';
-		});
+		frequency.exit().remove();
 	};
 
-	/**
-	 * Adjusts node/graph on animation iterations.
-	 */
-	Hypergraph.prototype.step = function() {
-		 //log('Interval ' + STEPS);
-		 //if (STEPS === this.interval_count - 1) {
-		 //    window.clearInterval(this.interval);
-		 //    log('Done with intervals');
-		 //    return;
-		 //}
+	Hypergraph.prototype.updateAttributes = function() {
+		var attributeLink = this.attributeLink = this.vis
+			.selectAll('line.link')
+			.data(this.links.filter(function(link) {
+				return link.source.type === 'attribute' || link.target.type === 'attribute;'
+			}), function(d) {
+				return d.source.id + '-' + d.target.id;
+			});
 
-		 //++STEPS;
+		attributeLink
+			.enter()
+			.insert('line')
+			.attr('class', 'link');
 
-		 //console.info(this);
+		attributeLink.exit().remove();
 
-		 //this.frequency.node
-		 //    .transition()
-		 //    .duration(D3_TRANSITION_DURATION)
-		 //    .attr('r', function(d) {
-		 //   	 if (d.intervals[STEPS].percentage >= this.threshold) {
-		 //   		 return normalize(d.intervals[STEPS].percentage);
-		 //   	 } else {
-		 //   		 return FREQUENCY_HIDE_SIZE;
-		 //   	 }				
-		 //    }.bind(this));
+		var attribute = this.attribute = this.vis
+			.selectAll('g.attribute')
+			.data(this.nodes.filter(function(node) {
+				return node.type === 'attribute';
+			}), function(d) {
+				return d.id;
+			});
 
-		 //this.frequency.value
-		 //    .text(function(d) {
-		 //   	 return d.intervals[STEPS].percentage + '%';
-		 //    }.bind(this))
-		 //    .style('opacity', function(d) {
-		 //   	 return d.intervals[STEPS].percentage >= this.threshold ? 1 : 0;
-		 //    }.bind(this));
+		var attributeEnter = attribute.enter().append('g').attr('class', 'attribute').call(this.force.drag);
+
+		attributeEnter.append('rect')
+			.attr('x', function(d) { return d.x; })
+			.attr('y', function(d) { return d.y; })
+			.attr('width', 175)
+			.attr('height', 60)
+			.attr('fill', 'deeppink');
+
+		attributeEnter.append('text')
+			.attr('class', 'label')
+			.attr('dx', 12)
+			.attr('d', '.35em')
+			.text(function(d) {
+				return d.id;
+			});
+
+		attribute.exit().remove();
 	};
 
-	/**
-	 * Start Hypergraph on DOMContentLoaded.
-	 */
+	Hypergraph.prototype.update = function() {
+		this.updateFrequencies();
+		this.updateAttributes();
+
+		// Restart the force layout.
+		this.force.start();
+	};
+
+	Hypergraph.prototype.collide = function(node) {
+		var padding = 32;
+
+		var nx1 = node.px - padding,
+			nx2 = node.x + padding,
+			ny1 = node.py - padding,
+			ny2 = node.y + padding;
+
+		function overlap(a, b) {
+			return a.px - padding < b.x && b.px < a.x + padding && a.py - padding < b.py && b.py < a.y + padding;
+		}
+
+		return function(quad, x1, y1, x2, y2) {
+			var dx, dy;
+
+			if (quad.point && (quad.point !== node)) {
+				if (overlap(node, quad.point)) {
+					dx = Math.min(node.x - quad.point.px, quad.point.x - node.px) / 2;
+					node.x -= dx;
+					quad.point.x -= dx;
+
+					dy = Math.min(node.y - quad.point.py, quad.point.y - node.py) / 2;
+					node.y -= dy;
+					quad.point.y += dy;
+				}
+			}
+
+			return x1 > nx2 || x2 < nx1 || y1 > ny2 || y2 < ny1;
+		};
+	};
+
+	Hypergraph.prototype.setInterval = function(interval) {
+		this.interval_frequency = parseInt(interval);
+		return this.interval_frequency;
+	};
+
+	Hypergraph.prototype.setThreshold = function(threshold) {
+		this.threshold = parseFloat(threshold);
+		return this.threshold;
+	};
+
+	Hypergraph.prototype.toggleCollisionDetection = function() {
+		this.use_collision_detection = !this.use_collision_detection;
+	};
+
 	document.addEventListener('DOMContentLoaded', function() {
 		log('DOMContentLoaded');
+		var graph = new Hypergraph(document.querySelector('.graph'));
+		graph.load();
 
-		(new Hypergraph(document.querySelector('.graph'))).load();
+		document.querySelector('.js-interval').addEventListener('change', function(e) {
+			document.querySelector('.js-current-interval').textContent = graph.setInterval(e.target.value);
+		});
+
+		document.querySelector('.js-threshold').addEventListener('change', function(e) {
+			document.querySelector('.js-current-threshold').textContent = graph.setThreshold(e.target.value);
+		});
+
+		document.querySelector('.js-collision').addEventListener('change', function(e) {
+			graph.toggleCollisionDetection();
+		});
 	});
 })(window, document, d3);

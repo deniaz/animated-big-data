@@ -1,7 +1,3 @@
-.graph .hidden-link {
-
-}
-
 .graph .link {
 	z-index: 10;
 	stroke: #333;
@@ -21,14 +17,6 @@
 	cursor: grab;
 }
 
-.graph .label {
+.nodetext {
 	fill: #333;
 }
-
-.controls label,
-.controls label strong,
-.controls label span {
-	display: block;
-}
-
-.controls label { margin-bottom: 1em; }

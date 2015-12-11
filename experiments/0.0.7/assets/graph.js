@@ -2,6 +2,89 @@
 	'use strict';
 
 	/**
+	 * Charge used for D3.js
+	 * @see https://github.com/mbostock/d3/wiki/Force-Layout#charge
+	 * @type {number}
+	 */
+	var D3_CHARGE = -1000;
+
+	/**
+	 * Friction used for D3.js
+	 * @see https://github.com/mbostock/d3/wiki/Force-Layout#friction
+	 * @type {number}
+	 */
+	var D3_FRICTION = 0.9;
+
+	/**
+	 * Gravity used for D3.js
+	 * @see https://github.com/mbostock/d3/wiki/Force-Layout#gravity
+	 * @type {number}
+	 */
+	var D3_GRAVITY = 0.2;
+
+	/**
+	 * Theta used for D3.js
+	 * @see https://github.com/mbostock/d3/wiki/Force-Layout#theta
+	 * @type {number}
+	 */
+	var D3_THETA = 0.8;
+
+	/**
+	 * Distance used for D3.js
+	 * @see https://github.com/mbostock/d3/wiki/Force-Layout#linkDistance
+	 * @type {number}
+	 */
+	var D3_LINK_DISTANCE = 30;
+
+	/**
+	 * Background Color for Frequency Circles
+	 * @type {string}
+	 */
+	var D3_FREQUENCY_COLOR = '#3498db';
+
+	/**
+	 * Border Color for Frequency Circles
+	 * @type {string}
+	 */
+	var D3_FREQUENCY_STROKE = '#2980b9';
+
+	/**
+	 * Background Color for Attribute Rectangles
+	 * @type {string}
+	 */
+	var D3_ATTRIBUTE_COLOR = '#e74c3c';
+
+	/**
+	 * Border Color for Attribute Rectangles
+	 * @type {string}
+	 */
+	var D3_ATTRIBUTE_STROKE = '#c0392b';
+
+	/**
+	 * Link Color
+	 * @type {string}
+	 */
+	var D3_LINK_COLOR = '#34495e';
+
+	/**
+	 * Attribute Rectangle Width
+	 * @type {number}
+	 */
+	var D3_ATTRIBUTE_WIDTH = 175;
+
+	/**
+	 * Attribtue Rectangle Height
+	 * @type {number}
+	 */
+	var D3_ATTRIBUTE_HEIGHT = 60;
+
+	/**
+	 * Transition Duration
+	 * @type {number}
+	 */
+	var D3_TRANSITION_DURATION = 500;
+
+	/**
 	 * Helper function which checks for the existence of window.console before logging.
 	 * Prevents errors in old browsers.
 	 *
@@ -11,6 +94,10 @@
 		if (!!window.console && !!window.console.log) {
 			window.console.log(msg);
 		}
+	}
+
+	function normalize(n) {
+		return Math.pow(n, 4) / 25;
 	}
 
 	/**
@@ -23,109 +110,69 @@
 		log('Init Hypergraph');
 		this.container = el;
 
-		this.interval_frequency = 2500;
-		this.max_intervals = 0;
-		this.current_interval = 0;
-		this.threshold = 6.26;
-
-		this.use_collision_detection = false;
-
 		this.width = el.offsetWidth;
 		this.height = window.innerHeight;
 
 		this.vis = d3.select(el).append('svg:svg').attr('width', this.width).attr('height', this.height);
-		this.force = d3.layout
-			.force()
-			.gravity(0.1)
-			.charge(100)
-			.linkStrength(function(l) {
-				return l.strength;
-			})
-			.linkDistance(function(l) {
-				return l.distance;
-			})
-			.size([this.width, this.height])
-			.on('tick', this.tick.bind(this));
-
-		window.focii = this.focii = {};
+		this.force = d3.layout.force().gravity(.05).distance(100).charge(-100).size([this.width, this.height]);
 
 		this.nodes = this.force.nodes();
 		this.links = this.force.links();
 
 		this.update();
+
+		window.update = this.update.bind(this);
+
 	}
 
-	Hypergraph.prototype.tick = function(e) {
-		var k = .5 * e.alpha;
+	Hypergraph.prototype.update = function() {
+		var link = this.vis
+			.selectAll("line.link")
+			.data(this.links, function(d) { return d.source.id + "-" + d.target.id; });
 
-		var frequencies = this.nodes.filter(function(o) {
-			return o.type === 'frequency';
-		});
+		link
+			.enter()
+			.insert("line")
+			.attr("class", "link");
 
-		frequencies.forEach(function(o) {
-			this.focii[o.id] = {
-				x: o.x,
-				y: o.y
-			};
-		}.bind(this));
+		link.exit().remove();
 
-		var attributes = this.nodes.filter(function(o) {
-			return o.type === 'attribute';
-		});
+		var node = this.vis
+			.selectAll("g.node")
+			.data(this.nodes, function(d) { return d.id;});
 
-		attributes.forEach(function(o, i) {
-			o.links.forEach(function(l) {
+		var nodeEnter = node.enter().append("g")
+			.attr("class", "node")
+			.call(this.force.drag);
 
-				var deviation = (i % 2) ? -10*(i+1) : 10*(i+1);
+		nodeEnter.append("circle")
+			.attr("class", "circle")
+			.attr("cx", "-8px")
+			.attr("cy", "-8px")
+			.attr("r", "8px")
+			.attr('fill', 'deepskyblue');
 
-				o.y += (this.focii[l].y - o.y + deviation) * k;
-				o.x += (this.focii[l].x - o.x + deviation*2) * k;
-
-			}.bind(this));
-		}.bind(this));
-
-		if (this.use_collision_detection) {
-			var quad = d3.geom.quadtree(attributes);
-			attributes.forEach(function(attr) {
-				quad.visit(this.collide(attr));
-			}.bind(this));
-		}
-
-		this.frequencyLink.attr("x1", function(d) {
-			return d.source.x;
-		})
-			.attr("y1", function(d) {
-				return d.source.y;
-			})
-			.attr("x2", function(d) {
-				return d.target.x;
-			})
-			.attr("y2", function(d) {
-				return d.target.y;
+		nodeEnter.append("text")
+			.attr("class", "nodetext")
+			.attr("dx", 12)
+			.attr("dy", ".35em")
+			.text(function(d) {
+				return d.id
 			});
 
-		this.attributeLink.attr('x1', function(d) {
-			return d.source.x + (175 / 2);
-		}).attr("y1", function(d) {
-			return d.source.y + (60 / 2);
-		})
-			.attr("x2", function(d) {
-				return d.target.x;
-			})
-			.attr("y2", function(d) {
-				return d.target.y;
-			});
+		node.exit().remove();
 
+		this.force.on("tick", function() {
+			link.attr("x1", function(d) { return d.source.x; })
+				.attr("y1", function(d) { return d.source.y; })
+				.attr("x2", function(d) { return d.target.x; })
+				.attr("y2", function(d) { return d.target.y; });
 
-		this.frequency.attr('transform', function(d) {
-			return 'translate(' + d.x + ',' + d.y + ')';
+			node.attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; });
 		});
 
-		this.attribute.attr('transform', function(d) {
-			return 'translate(' + d.x + ',' + d.y + ')';
-		});
-
-		//this.update();
+		// Restart the force layout.
+		this.force.start();
 	};
 
 	Hypergraph.prototype.addNode = function(node) {
@@ -133,28 +180,14 @@
 		this.update();
 	};
 
-	Hypergraph.prototype.addAttribute = function(node, frequency) {
-		var existing = this.findNode(node.id)
-		if (existing === null) {
-			node.links = [frequency.id];
-			this.nodes.push(node);
-		} else {
-			if (existing.links.indexOf(frequency.id) === -1) {
-				existing.links.push(frequency.id);
-			}
-		}
-	};
-
-	Hypergraph.prototype.addLink = function(source, target, strength, distance) {
+	Hypergraph.prototype.addLink = function(source, target) {
 		var source = this.findNode(source.id);
 		var target = this.findNode(target.id);
 
 		if (!!source && !!target) {
 			this.links.push({
 				source: source,
-				target: target,
-				strength: strength,
-				distance: distance
+				target: target
 			});
 
 			this.update();
@@ -168,237 +201,58 @@
 				return node;
 			}
 		}
-
-		return null;
 	};
 
+	/**
+	 * Loads JSON data asynchronously.
+	 */
 	Hypergraph.prototype.load = function() {
 		log('Loading Data');
 		d3.json('data.json', this.loaded.bind(this));
 	};
 
+	/**
+	 * AJAX Callback. Sets data as Hypergraph properties.
+	 * @param data JSON Graph Data
+	 */
 	Hypergraph.prototype.loaded = function(data) {
 		log('Data loaded');
+		this.interval_frequency = data.interval_frequency;
+		this.max_intervals = data.max_intervals;
+		this.threshold = data.threshold;
 
-		this.addFrequencies(data);
-		this.addAttributes(data);
-		this.addLinks();
-	};
+		//var subgraph = data.nodes[0].data,
+		//	frequency = subgraph[subgraph.length - 1];
+		//
+		//this.addNode(frequency);
+		//
+		//for (var i = 0; i < subgraph.length - 1; i++) {
+		//	var node = data.nodes[0].data[i];
+		//	this.addNode(node);
+		//	this.addLink(frequency, node);
+		//}
 
-	Hypergraph.prototype.addFrequencies = function(data) {
-		var distance = this.height * .9;
-
-		data.forEach(function(o) {
-			var subgraph = o,
+		for (var i = 0; i < data.nodes.length; i++) {
+			var subgraph = data.nodes[i].data,
 				frequency = subgraph[subgraph.length - 1];
 
-			this.max_intervals = frequency.intervals.length > this.max_intervals ? frequency.intervals.length : this.max_intervals;
 			this.addNode(frequency);
-		}.bind(this));
 
-		for (var i = 0; i < this.nodes.length; i++) {
-			if (!!this.nodes[i] && !!this.nodes[i + 1]) {
-				var current = this.nodes[i],
-					next = this.nodes[i + 1];
-
-				this.addLink(current, next, 1, distance);
+			for (var j = 0; j < subgraph.length - 1; j++) {
+				var node = subgraph[j];
+				this.addNode(node);
+				this.addLink(frequency, node);
 			}
 		}
-
-		this.addLink(this.nodes[0], this.nodes[this.nodes.length - 1], 1, distance);
 	};
 
-	Hypergraph.prototype.addAttributes = function(data) {
-		data.forEach(function(subgraph) {
-			var frequency = subgraph[subgraph.length - 1];
-
-			subgraph.forEach(function(o, i) {
-				// 2 is because the last one is a frequency
-				if (i < subgraph.length - 1) {
-					this.addAttribute(o, frequency);
-				}
-			}.bind(this));
-		}.bind(this));
-
-		this.update();
-	};
-
-	Hypergraph.prototype.addLinks = function() {
-		this.nodes.filter(function(o) {
-			return o.type === 'attribute';
-		}).forEach(function(o) {
-			o.links.forEach(function(id) {
-				this.addLink(o, { id: id }, 1, 150);
-				//this.addLink(o, {id: id});
-			}.bind(this));
-		}.bind(this));
-	};
-
-	Hypergraph.prototype.updateFrequencies = function() {
-		var frequencyLink = this.frequencyLink = this.vis
-			.selectAll("line.hidden-link")
-			.data(this.links.filter(function (link) {
-				return link.source.type === 'frequency' && link.target.type === 'frequency';
-			}), function(d) {
-				return d.source.id + "-" + d.target.id;
-			});
-
-		frequencyLink
-			.enter()
-			.insert("line")
-			.attr("class", "hidden-link");
-
-		frequencyLink.exit().remove();
-
-		var frequency = this.frequency = this.vis
-			.selectAll('g.frequency')
-			.data(this.nodes.filter(function (node) {
-				return node.type === 'frequency';
-			}), function(d) {
-				return d.id;
-			});
-
-		var frequencyEnter = frequency.enter().append('g')
-			.attr('class', 'frequency')
-			.call(this.force.drag);
-
-		frequencyEnter.append('circle')
-			.attr('class', 'circle')
-			.attr('cx', function(d) {
-				return d.x;
-			})
-			.attr('cy', function(d) {
-				return d.y;
-			})
-			.attr('r', function(d) {
-				function normalize(n) { return Math.pow(n, 4) / 25; }
-				return normalize(d.intervals[this.current_interval].percentage);
-			}.bind(this))
-			.attr('fill', 'deepskyblue');
-
-		frequencyEnter.append('text')
-			.attr('class', 'label')
-			.attr('dx', 12)
-			.attr('d', '.35em')
-			.text(function(d) {
-				return d.id;
-			});
-
-		frequency.exit().remove();
-	};
-
-	Hypergraph.prototype.updateAttributes = function() {
-		var attributeLink = this.attributeLink = this.vis
-			.selectAll('line.link')
-			.data(this.links.filter(function(link) {
-				return link.source.type === 'attribute' || link.target.type === 'attribute;'
-			}), function(d) {
-				return d.source.id + '-' + d.target.id;
-			});
-
-		attributeLink
-			.enter()
-			.insert('line')
-			.attr('class', 'link');
-
-		attributeLink.exit().remove();
-
-		var attribute = this.attribute = this.vis
-			.selectAll('g.attribute')
-			.data(this.nodes.filter(function(node) {
-				return node.type === 'attribute';
-			}), function(d) {
-				return d.id;
-			});
-
-		var attributeEnter = attribute.enter().append('g').attr('class', 'attribute').call(this.force.drag);
-
-		attributeEnter.append('rect')
-			.attr('x', function(d) { return d.x; })
-			.attr('y', function(d) { return d.y; })
-			.attr('width', 175)
-			.attr('height', 60)
-			.attr('fill', 'deeppink');
-
-		attributeEnter.append('text')
-			.attr('class', 'label')
-			.attr('dx', 12)
-			.attr('d', '.35em')
-			.text(function(d) {
-				return d.id;
-			});
-
-		attribute.exit().remove();
-	};
-
-	Hypergraph.prototype.update = function() {
-		this.updateFrequencies();
-		this.updateAttributes();
-
-		// Restart the force layout.
-		this.force.start();
-	};
-
-	Hypergraph.prototype.collide = function(node) {
-		var padding = 32;
-
-		var nx1 = node.px - padding,
-			nx2 = node.x + padding,
-			ny1 = node.py - padding,
-			ny2 = node.y + padding;
-
-		function overlap(a, b) {
-			return a.px - padding < b.x && b.px < a.x + padding && a.py - padding < b.py && b.py < a.y + padding;
-		}
-
-		return function(quad, x1, y1, x2, y2) {
-			var dx, dy;
-
-			if (quad.point && (quad.point !== node)) {
-				if (overlap(node, quad.point)) {
-					dx = Math.min(node.x - quad.point.px, quad.point.x - node.px) / 2;
-					node.x -= dx;
-					quad.point.x -= dx;
-
-					dy = Math.min(node.y - quad.point.py, quad.point.y - node.py) / 2;
-					node.y -= dy;
-					quad.point.y += dy;
-				}
-			}
-
-			return x1 > nx2 || x2 < nx1 || y1 > ny2 || y2 < ny1;
-		};
-	};
-
-	Hypergraph.prototype.setInterval = function(interval) {
-		this.interval_frequency = parseInt(interval);
-		return this.interval_frequency;
-	};
-
-	Hypergraph.prototype.setThreshold = function(threshold) {
-		this.threshold = parseFloat(threshold);
-		return this.threshold;
-	};
-
-	Hypergraph.prototype.toggleCollisionDetection = function() {
-		this.use_collision_detection = !this.use_collision_detection;
-	};
-
+	/**
+	 * Start Hypergraph on DOMContentLoaded.
+	 */
 	document.addEventListener('DOMContentLoaded', function() {
 		log('DOMContentLoaded');
 		var graph = new Hypergraph(document.querySelector('.graph'));
 		graph.load();
 
-		document.querySelector('.js-interval').addEventListener('change', function(e) {
-			document.querySelector('.js-current-interval').textContent = graph.setInterval(e.target.value);
-		});
-
-		document.querySelector('.js-threshold').addEventListener('change', function(e) {
-			document.querySelector('.js-current-threshold').textContent = graph.setThreshold(e.target.value);
-		});
-
-		document.querySelector('.js-collision').addEventListener('change', function(e) {
-			graph.toggleCollisionDetection();
-		});
 	});
 })(window, document, d3);

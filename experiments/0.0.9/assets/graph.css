@@ -1,6 +1,5 @@
 .graph .link {
 	z-index: 10;
-	stroke: #333;
 }
 
 .graph .attribute,
@@ -15,8 +14,4 @@
 .graph circle,
 .graph rect {
 	cursor: grab;
-}
-
-.nodetext {
-	fill: #333;
 }

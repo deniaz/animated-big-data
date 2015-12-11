@@ -1,5 +1,10 @@
+.graph .hidden-link {
+
+}
+
 .graph .link {
 	z-index: 10;
+	stroke: #333;
 }
 
 .graph .attribute,
@@ -15,3 +20,15 @@
 .graph rect {
 	cursor: grab;
 }
+
+.graph .label {
+	fill: #333;
+}
+
+.controls label,
+.controls label strong,
+.controls label span {
+	display: block;
+}
+
+.controls label { margin-bottom: 1em; }
