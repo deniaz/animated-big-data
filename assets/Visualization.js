@@ -34,16 +34,16 @@ var Visualization = (function() {
 	}
 
 	function rect(node) {
-		node._ui = _s.rect(node.x, node.y, node.width, node.height);
+		node._ui = _s.rect(node.x, node.y, 120, 45);
 		node._ui.attr({
-			'fill': node.color
+			'fill': 'deeppink'
 		});
 	}
 
 	function circle(node) {
-		node._ui = _s.circle(node.x, node.y, node.r);
+		node._ui = _s.circle(node.x, node.y, node.intervals[0].percentage);
 		node._ui.attr({
-			'fill': node.color
+			'fill': 'deepskyblue'
 		});
 	}
 

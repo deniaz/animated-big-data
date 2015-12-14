@@ -57,7 +57,10 @@ var Hypergraph = (function(builder) {
 	 */
 	var _graphBuilder = GraphBuilder;
 
-	var _containerSelector = null;
+	var _container = null;
+
+	var _height = 0;
+	var _width = 0;
 
 	/**
 	 * Loads JSON
@@ -76,11 +79,11 @@ var Hypergraph = (function(builder) {
 				var data = JSON.parse(this.response);
 
 				data.forEach(function(subgraph) {
-					var frequency = subgraph[subgraph.length - 1];;
+					var frequency = subgraph.frequency;
 					_noOfIntervals = frequency.intervals.length > _noOfIntervals ? frequency.intervals.length : _noOfIntervals;
 				});
 
-				_graphBuilder.buildFromArray(data);
+				_graphBuilder.buildFromArray(data, _width, _height);
 				draw();
 			}
 		};
@@ -92,13 +95,11 @@ var Hypergraph = (function(builder) {
 		var nodes = _graphBuilder.getNodes();
 		var links = _graphBuilder.getLinks();
 
-		var container = document.querySelector(_containerSelector);
-
 		var svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-		svg.setAttribute('height', window.innerHeight);
-		svg.setAttribute('width', container.offsetWidth);
+		svg.setAttribute('height', _height);
+		svg.setAttribute('width', _width);
 
-		container.appendChild(svg);
+		_container.appendChild(svg);
 
 		Visualization.start(Snap(svg), nodes, links);
 	}
@@ -147,7 +148,9 @@ var Hypergraph = (function(builder) {
 
 	return {
 		start: function(el, file) {
-			_containerSelector = el;
+			_container = document.querySelector(el);
+			_height = window.innerHeight;
+			_width = _container.offsetWidth;
 			load(file);
 		},
 		isPlaying: function() { return _isPlaying; },
