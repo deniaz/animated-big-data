@@ -48,7 +48,15 @@ var Hypergraph = (function(builder) {
 	 */
 	var _noOfIntervals = 0;
 
+	/**
+	 * GraphBuilder.
+	 *
+	 * @type {GraphBuilder}
+	 * @private
+	 */
 	var _graphBuilder = GraphBuilder;
+
+	var _containerSelector = null;
 
 	/**
 	 * Loads JSON
@@ -82,6 +90,16 @@ var Hypergraph = (function(builder) {
 	function draw() {
 		var nodes = _graphBuilder.getNodes();
 		var links = _graphBuilder.getLinks();
+
+		var container = document.querySelector(_containerSelector);
+
+		var svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+		svg.setAttribute('height', window.innerHeight);
+		svg.setAttribute('width', container.offsetWidth);
+
+		container.appendChild(svg);
+
+		Visualization.start(Snap(svg), nodes, links);
 	}
 
 	/**
@@ -91,7 +109,9 @@ var Hypergraph = (function(builder) {
 		if (!_isPlaying) {
 			_isPlaying = !_isPlaying;
 
-			_interval = window.setInterval(function() { console.info('Interval Step! ' + _velocity); }, _velocity);
+			_interval = window.setInterval(function() {
+				console.info('Interval Step! ' + _velocity);
+			}, _velocity);
 		}
 	}
 
@@ -125,7 +145,10 @@ var Hypergraph = (function(builder) {
 	}
 
 	return {
-		start: load,
+		start: function(el, file) {
+			_containerSelector = el;
+			load(file);
+		},
 		isPlaying: function() { return _isPlaying; },
 		play: play,
 		pause: pause,

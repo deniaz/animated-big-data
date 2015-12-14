@@ -46,15 +46,17 @@
 	<div class="graph js-graph"></div>
 </main>
 
+<script src="assets/snap.svg-0.4.1.min.js"></script>
 <script src="assets/Controls.js"></script>
 <script src="assets/GraphBuilder.js"></script>
+<script src="assets/Visualization.js"></script>
 <script src="assets/Hypergraph.js"></script>
 
 <script type="text/javascript">
 	document.addEventListener('DOMContentLoaded', function() {
 		var graph = Hypergraph;
 		Controls.start(graph);
-		graph.start();
+		graph.start('.js-graph');
 	});
 </script>
 </body>

@@ -5,7 +5,27 @@ var GraphBuilder = (function() {
 		_nodes.push(el);
 	}
 
-	function getNodes() {}
+	function getNodes() {
+		return [
+			{
+				x: 150,
+				y: 150,
+				r: 40,
+				color: 'deepskyblue',
+				label: 'foo',
+				type: 'frequency'
+			},
+			{
+				x: 300,
+				y: 250,
+				width: 250,
+				height: 60,
+				color: 'deeppink',
+				label: 'bar',
+				type: 'attribute'
+			}
+		]
+	}
 
 	function getLinks() {}
 
