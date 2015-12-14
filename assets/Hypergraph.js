@@ -1,4 +1,4 @@
-var Hypergraph = (function(builder) {
+var Hypergraph = (function(layoutEngine) {
 	'use strict';
 
 	/**
@@ -50,12 +50,12 @@ var Hypergraph = (function(builder) {
 	var _noOfIntervals = 0;
 
 	/**
-	 * GraphBuilder.
+	 * LayoutEngine.
 	 *
-	 * @type {GraphBuilder}
+	 * @type {LayoutEngine}
 	 * @private
 	 */
-	var _graphBuilder = GraphBuilder;
+	var _layoutEngine = layoutEngine;
 
 	var _container = null;
 
@@ -83,7 +83,7 @@ var Hypergraph = (function(builder) {
 					_noOfIntervals = frequency.intervals.length > _noOfIntervals ? frequency.intervals.length : _noOfIntervals;
 				});
 
-				_graphBuilder.buildFromArray(data, _width, _height);
+				_layoutEngine.buildFromArray(data, _width, _height);
 				draw();
 			}
 		};
@@ -92,8 +92,8 @@ var Hypergraph = (function(builder) {
 	}
 
 	function draw() {
-		var nodes = _graphBuilder.getNodes();
-		var links = _graphBuilder.getLinks();
+		var nodes = _layoutEngine.getNodes();
+		var links = _layoutEngine.getLinks();
 
 		var svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
 		svg.setAttribute('height', _height);
@@ -159,4 +159,4 @@ var Hypergraph = (function(builder) {
 		changeVelocity: changeVelocity,
 		setThreshold: function(threshold) { return _threshold = threshold; }
 	}
-})(GraphBuilder);
+})(LayoutEngine);

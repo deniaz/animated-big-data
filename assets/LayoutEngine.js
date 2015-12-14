@@ -1,4 +1,4 @@
-var GraphBuilder = (function() {
+var LayoutEngine = (function() {
 	'use strict';
 
 	var D3_ATTRIBUTE_WIDTH = 120;
@@ -45,12 +45,12 @@ var GraphBuilder = (function() {
 		}
 	}
 
-	function GraphBuilder() {
+	function InternalGraphBuilder() {
 		this.nodes = [];
 		this.links = [];
 	}
 
-	GraphBuilder.prototype.getKey = function(el) {
+	InternalGraphBuilder.prototype.getKey = function(el) {
 		for (var i = 0; i < this.nodes.length; i++) {
 			var n = this.nodes[i];
 			if (!!n.id && !!el.id && n.id === el.id) {
@@ -61,7 +61,7 @@ var GraphBuilder = (function() {
 		throw Error('Element not found.');
 	};
 
-	GraphBuilder.prototype.containsNode = function(el) {
+	InternalGraphBuilder.prototype.containsNode = function(el) {
 		try {
 			this.getKey(el);
 			return true;
@@ -70,7 +70,7 @@ var GraphBuilder = (function() {
 		}
 	};
 
-	GraphBuilder.prototype.addNode = function(el) {
+	InternalGraphBuilder.prototype.addNode = function(el) {
 		if (this.containsNode(el)) {
 			return this.nodes[this.getKey(el)];
 		} else {
@@ -78,7 +78,7 @@ var GraphBuilder = (function() {
 		}
 	};
 
-	GraphBuilder.prototype.link = function(source, target) {
+	InternalGraphBuilder.prototype.link = function(source, target) {
 		//if (target.type !== 'frequency') {
 		//	this.links.push({
 		//		source: source,
@@ -254,7 +254,7 @@ var GraphBuilder = (function() {
 		// calculate Y-Koordinates
 		var lastY = 0,
 			y = 0,
-			nodeBuilder = new GraphBuilder();
+			nodeBuilder = new InternalGraphBuilder();
 
 		for (var i = 0; i < multipleLinkedAttributes.attributes.length; i++) {
 			multipleLinkedAttributes.attributes[i].x = x3;
