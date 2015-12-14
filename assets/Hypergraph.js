@@ -48,14 +48,19 @@ var Hypergraph = (function(builder) {
 	 */
 	var _noOfIntervals = 0;
 
-	var _graphBuilder = null;
+	var _graphBuilder = GraphBuilder;
 
 	/**
 	 * Loads JSON
 	 */
-	function load() {
+	function load(file) {
+
+		if (!file) {
+			file = 'data.json';
+		}
+
 		var xhr = new XMLHttpRequest();
-		xhr.open('GET', 'data_arr.json', true);
+		xhr.open('GET', file, true);
 
 		xhr.onload = function() {
 			if (this.status >= 200 && this.status < 400) {
@@ -113,9 +118,8 @@ var Hypergraph = (function(builder) {
 
 		if (_isPlaying) {
 			pause();
+			play();
 		}
-
-		play();
 
 		return _velocity;
 	}
