@@ -1,4 +1,6 @@
 var GraphBuilder = (function() {
+	'use strict';
+
 	var _nodes = [
 		{
 			x: 150,

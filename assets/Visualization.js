@@ -1,4 +1,5 @@
 var Visualization = (function() {
+	'use strict';
 
 	var _nodes;
 

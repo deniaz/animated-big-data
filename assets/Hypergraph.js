@@ -1,4 +1,5 @@
 var Hypergraph = (function(builder) {
+	'use strict';
 
 	/**
 	 * Whether the animation is playing.
