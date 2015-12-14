@@ -18,13 +18,17 @@ var Visualization = (function() {
 				rect(node);
 			}
 
-			node._ui.drag(function(dx, dy) {
-				this.attr({
-					transform: this.data('transform') + (this.data('transform') ? 'T' : 't') + [dx, dy]
-				});
-			}, function() {
-				this.data('transform', this.transform().local);
+			draggable(node);
+		});
+
+		_links.forEach(function(link) {
+			link._ui = _s.line(link.source.x, link.source.y, link.target.x, link.target.y);
+			link._ui.attr({
+				stroke: '#333'
 			});
+
+			link.source._link = link;
+			link.target._link = link;
 		});
 	}
 
@@ -33,14 +37,38 @@ var Visualization = (function() {
 		node._ui.attr({
 			'fill': node.color
 		});
-
-
 	}
 
 	function circle(node) {
 		node._ui = _s.circle(node.x, node.y, node.r);
 		node._ui.attr({
 			'fill': node.color
+		});
+	}
+
+	function draggable(node) {
+		node._ui.drag(function(dx, dy, x, y) {
+			this.attr({
+				transform: this.data('transform') + (this.data('transform') ? 'T' : 't') + [dx, dy]
+			});
+
+			node.x = x;
+			node.y = y;
+
+			if (node._link.source === node) {
+				node._link._ui.attr({
+					x1: node.x,
+					y1: node.y
+				});
+			} else if (node._link.target === node) {
+				node._link._ui.attr({
+					x2: node.x,
+					y2: node.y
+				});
+			}
+
+		}, function() {
+			this.data('transform', this.transform().local);
 		});
 	}
 
