@@ -13,6 +13,7 @@ var Visualization = (function() {
 		_links = links;
 
 		_nodes.forEach(function(node) {
+			node._links = [];
 			if ('frequency' === node.type) {
 				circle(node);
 			} else if ('attribute' === node.type) {
@@ -34,8 +35,8 @@ var Visualization = (function() {
 				stroke: '#333'
 			});
 
-			link.source._link = link;
-			link.target._link = link;
+			link.source._links.push(link);
+			link.target._links.push(link);
 		});
 	}
 
@@ -56,6 +57,7 @@ var Visualization = (function() {
 
 	function draggable(node) {
 		node._ui.drag(function(dx, dy, x, y) {
+
 			this.attr({
 				transform: this.data('transform') + (this.data('transform') ? 'T' : 't') + [dx, dy]
 			});
@@ -65,17 +67,19 @@ var Visualization = (function() {
 
 			var boundingBox = node._ui.getBBox();
 
-			if (node._link.source === node) {
-				node._link._ui.attr({
-					x1: boundingBox.cx,
-					y1: boundingBox.cy
-				});
-			} else {
-				node._link._ui.attr({
-					x2: boundingBox.cx,
-					y2: boundingBox.cy
-				});
-			}
+			node._links.forEach(function(link) {
+				if (link.source === node) {
+					link._ui.attr({
+						x1: boundingBox.cx,
+						y1: boundingBox.cy
+					});
+				} else if (link.target === node) {
+					link._ui.attr({
+						x2: boundingBox.cx,
+						y2: boundingBox.cy
+					});
+				}
+			});
 
 		}, function() {
 			this.data('transform', this.transform().local);
