@@ -83,7 +83,7 @@
 	 * @type {number}
 	 */
 	var D3_TRANSITION_DURATION = 500;
-	
+
 	var ATTRIBUTE_PADDING = 15;
 	var ATTRIBUTE_TEXT_SIZE = 10;
 	var FREQUENCY_PADDING = 100;
@@ -146,40 +146,40 @@
 		//		source: source,
 		//		target: target
 		//	})
-	    //}
-	    this.links.push({
-	        source: source,
-	        target: target
-	    })
+		//}
+		this.links.push({
+			source: source,
+			target: target
+		})
 	};
 
 	function AttributeBuilder() {
-	    this.attributes = [];
+		this.attributes = [];
 	}
 
-	AttributeBuilder.prototype.getKey = function (el) {
-	    for (var i = 0; i < this.attributes.length; i++) {
-	        var a = this.attributes[i];
-	        if (!!a.id && !!el.id && a.id === el.id) {
-	            return i;
-	        }
-	    }
-	    throw Error('Element not foung.');
+	AttributeBuilder.prototype.getKey = function(el) {
+		for (var i = 0; i < this.attributes.length; i++) {
+			var a = this.attributes[i];
+			if (!!a.id && !!el.id && a.id === el.id) {
+				return i;
+			}
+		}
+		throw Error('Element not foung.');
 	}
 
-	AttributeBuilder.prototype.contains = function (el) {
-	    try {
-	        this.getKey(el);
-	        return true;
-	    } catch (e) {
-	        return false;
-	    }
+	AttributeBuilder.prototype.contains = function(el) {
+		try {
+			this.getKey(el);
+			return true;
+		} catch (e) {
+			return false;
+		}
 	}
 
-	AttributeBuilder.prototype.add = function (el) {
-	    if (!this.contains(el)) {
-	        this.attributes.push(el);
-	    }
+	AttributeBuilder.prototype.add = function(el) {
+		if (!this.contains(el)) {
+			this.attributes.push(el);
+		}
 	}
 
 	/**
@@ -220,148 +220,148 @@
 	};
 
 	function compareSubGraph(a, b) {
-	    var numberOfEqual = 0;
-	    for (var i = 0; i < a.attributes.length; i++) {
-	        for (var j = 0; j < b.attributes.length; j++) {
-	            if (b.attributes[j].id == a.attributes[i].id) {
-	                numberOfEqual++;
-	                break;
-	            }
-	        }
-	    }
-	    return numberOfEqual;
+		var numberOfEqual = 0;
+		for (var i = 0; i < a.attributes.length; i++) {
+			for (var j = 0; j < b.attributes.length; j++) {
+				if (b.attributes[j].id == a.attributes[i].id) {
+					numberOfEqual++;
+					break;
+				}
+			}
+		}
+		return numberOfEqual;
 	}
 
-	Hypergraph.prototype.calculateGraphLayout = function (subGraphs) {
-	    var comparisonList = [];
+	Hypergraph.prototype.calculateGraphLayout = function(subGraphs) {
+		var comparisonList = [];
 
-	    // Compare all Frequencies (quantity of same attribute)
-	    for (var i = 0; i < subGraphs.length - 1; i++) {
-	        for (var j = i + 1; j < subGraphs.length; j++) {
-	            var result = {
-	                indexA: i,
-	                indexB: j,
-	                equal: compareSubGraph(subGraphs[i], subGraphs[j])
-	            }
-	            comparisonList.push(result);
-	        }
-	    }
+		// Compare all Frequencies (quantity of same attribute)
+		for (var i = 0; i < subGraphs.length - 1; i++) {
+			for (var j = i + 1; j < subGraphs.length; j++) {
+				var result = {
+					indexA: i,
+					indexB: j,
+					equal: compareSubGraph(subGraphs[i], subGraphs[j])
+				}
+				comparisonList.push(result);
+			}
+		}
 
-	    comparisonList.sort(function (a, b) {
-	        if (a.equal < b.equal)
-	            return 1;
-	        if (a.equal > b.equal)
-	            return -1;
-	        return 0;
-	    });
+		comparisonList.sort(function(a, b) {
+			if (a.equal < b.equal)
+				return 1;
+			if (a.equal > b.equal)
+				return -1;
+			return 0;
+		});
 
-	    var frequencies = [],
-	        subGraphGroups = [];
+		var frequencies = [],
+			subGraphGroups = [];
 
-	    for (var i = 0; i < comparisonList.length; i++) {
-	        var nodeGroup = comparisonList[i],
-                frequencyA = subGraphs[nodeGroup.indexA].frequency,
-                frequencyB = subGraphs[nodeGroup.indexB].frequency;
+		for (var i = 0; i < comparisonList.length; i++) {
+			var nodeGroup = comparisonList[i],
+				frequencyA = subGraphs[nodeGroup.indexA].frequency,
+				frequencyB = subGraphs[nodeGroup.indexB].frequency;
 
-	        var condition = false;
-	        for (var j = 0; j < frequencies.length; j++) {
-	            if (frequencies[j].frequency.label == frequencyA.label || frequencies[j].frequency.label == frequencyB.label) {
-	                condition = true;
-	                break;
-	            }
-	        }
+			var condition = false;
+			for (var j = 0; j < frequencies.length; j++) {
+				if (frequencies[j].frequency.label == frequencyA.label || frequencies[j].frequency.label == frequencyB.label) {
+					condition = true;
+					break;
+				}
+			}
 
-	        // if (frequencies contains A or B => false)
-	        if (!condition) {
-	            var item = {
-	                subGraphA: subGraphs[nodeGroup.indexA],
-	                subGraphB: subGraphs[nodeGroup.indexB]
-	            }
-	            subGraphGroups.push(item);
-	            frequencies.push(item.subGraphA);
-	            frequencies.push(item.subGraphB);
-	        }
-	    }
+			// if (frequencies contains A or B => false)
+			if (!condition) {
+				var item = {
+					subGraphA: subGraphs[nodeGroup.indexA],
+					subGraphB: subGraphs[nodeGroup.indexB]
+				}
+				subGraphGroups.push(item);
+				frequencies.push(item.subGraphA);
+				frequencies.push(item.subGraphB);
+			}
+		}
 
-	    if ((this.numberOfFrequencies % 2) != 0) {
-	        for (var i = 0; i < subGraphs.length; i++) {
-	            var found = false;
-	            for (var j = 0; j < frequencies.length; j++) {
-	                if (subGraphs[i].frequency.label == frequencies[j].frequency.label) {
-	                    found = true;
-	                    break;
-	                }
-	            }
-	            if (!found) {
-	                var item = {
-	                    subGraphA: subGraphs[i],
-	                    subGraphB: null
-	                }
-	                subGraphGroups.push(item);
-	                frequencies.push(item.subGraphA);
-	            }
-	        }
-	    }
+		if ((this.numberOfFrequencies % 2) != 0) {
+			for (var i = 0; i < subGraphs.length; i++) {
+				var found = false;
+				for (var j = 0; j < frequencies.length; j++) {
+					if (subGraphs[i].frequency.label == frequencies[j].frequency.label) {
+						found = true;
+						break;
+					}
+				}
+				if (!found) {
+					var item = {
+						subGraphA: subGraphs[i],
+						subGraphB: null
+					}
+					subGraphGroups.push(item);
+					frequencies.push(item.subGraphA);
+				}
+			}
+		}
 
-	    var singleLinkedAttributes = [],
-            multipleLinkedAttributes = new AttributeBuilder();
+		var singleLinkedAttributes = [],
+			multipleLinkedAttributes = new AttributeBuilder();
 
-	    for (var i = 0; i < subGraphGroups.length; i++) {
+		for (var i = 0; i < subGraphGroups.length; i++) {
 
-	        var attributes = subGraphGroups[i].subGraphA.attributes,
-                tempSingleLinkedAttributes = [],
-                tempMultipleLinkedAttributes = new AttributeBuilder();
+			var attributes = subGraphGroups[i].subGraphA.attributes,
+				tempSingleLinkedAttributes = [],
+				tempMultipleLinkedAttributes = new AttributeBuilder();
 
-	        for (var j = 0; j < attributes.length; j++) {
-	            if (attributes[j].numberOfLinks == 1) {
-	                tempSingleLinkedAttributes.push(attributes[j]);
-	            } else {
-	                tempMultipleLinkedAttributes.add(attributes[j]);
-	            }
-	        }
-	        singleLinkedAttributes.push(tempSingleLinkedAttributes);
+			for (var j = 0; j < attributes.length; j++) {
+				if (attributes[j].numberOfLinks == 1) {
+					tempSingleLinkedAttributes.push(attributes[j]);
+				} else {
+					tempMultipleLinkedAttributes.add(attributes[j]);
+				}
+			}
+			singleLinkedAttributes.push(tempSingleLinkedAttributes);
 
-	        if (subGraphGroups[i].subGraphB != null) {
-	            attributes = subGraphGroups[i].subGraphB.attributes;
-	            tempSingleLinkedAttributes = [];
+			if (subGraphGroups[i].subGraphB != null) {
+				attributes = subGraphGroups[i].subGraphB.attributes;
+				tempSingleLinkedAttributes = [];
 
-	            for (var j = 0; j < attributes.length; j++) {
-	                if (attributes[j].numberOfLinks == 1) {
-	                    tempSingleLinkedAttributes.push(attributes[j]);
-	                } else {
-	                    tempMultipleLinkedAttributes.add(attributes[j]);
-	                }
-	            }
+				for (var j = 0; j < attributes.length; j++) {
+					if (attributes[j].numberOfLinks == 1) {
+						tempSingleLinkedAttributes.push(attributes[j]);
+					} else {
+						tempMultipleLinkedAttributes.add(attributes[j]);
+					}
+				}
 
-	            singleLinkedAttributes.push(tempSingleLinkedAttributes);
-	        }
+				singleLinkedAttributes.push(tempSingleLinkedAttributes);
+			}
 
-	        tempMultipleLinkedAttributes.attributes.sort(function (a, b) {
-	            if (a.numberOfLinks > b.numberOfLinks)
-	                return 1;
-	            if (a.numberOfLinks < b.numberOfLinks)
-	                return -1;
-	            return 0;
-	        });
+			tempMultipleLinkedAttributes.attributes.sort(function(a, b) {
+				if (a.numberOfLinks > b.numberOfLinks)
+					return 1;
+				if (a.numberOfLinks < b.numberOfLinks)
+					return -1;
+				return 0;
+			});
 
-	        for (var j = 0; j < tempMultipleLinkedAttributes.attributes.length; j++) {
-	            multipleLinkedAttributes.add(tempMultipleLinkedAttributes.attributes[j]);
-	        }
-	    }
+			for (var j = 0; j < tempMultipleLinkedAttributes.attributes.length; j++) {
+				multipleLinkedAttributes.add(tempMultipleLinkedAttributes.attributes[j]);
+			}
+		}
 
-	    // TODO: Positionen berechnen
+		// TODO: Positionen berechnen
 
 
-	    // TODO: Knoten verlinken
+		// TODO: Knoten verlinken
 
-	    //var nodeBuilder = new GraphBuilder();        
+		//var nodeBuilder = new GraphBuilder();
 
-	    //for (var i = 0; i < frequencies.length; i++) {
-	    //    for (var j = 0; j < frequenci es[i].attributes.length; j++) {
-	    //        nodeBuilder.link(frequencies[i].frequency, nodeBuilder.nodes[nodeBuilder.getKey(frequencies[i].attributes[j])]);
-	    //    }
-	    //    nodeBuilder.addNode(frequencies[i].frequency);
-	    //}
+		//for (var i = 0; i < frequencies.length; i++) {
+		//    for (var j = 0; j < frequenci es[i].attributes.length; j++) {
+		//        nodeBuilder.link(frequencies[i].frequency, nodeBuilder.nodes[nodeBuilder.getKey(frequencies[i].attributes[j])]);
+		//    }
+		//    nodeBuilder.addNode(frequencies[i].frequency);
+		//}
 	}
 
 	/**
@@ -373,12 +373,12 @@
 		this.interval_frequency = data.interval_frequency;
 		this.interval_count = data.interval_count;
 		this.threshold = data.threshold;
-        // TODO: numberOfAttributes eventuell entfernen
+		// TODO: numberOfAttributes eventuell entfernen
 		this.numberOfAttributes = data.number_of_attributes;
 		this.numberOfFrequencies = data.number_of_frequencies;
 
 		var subGraphs = data.subGraphs;
-		
+
 		this.calculateGraphLayout(subGraphs);
 
 		this.nodes = nodeBuilder.nodes;
@@ -409,9 +409,9 @@
 			.style('stroke-width', '1px')
 			.attr('class', 'link');
 
-	    // https://jsfiddle.net/NovasTaylor/o1qesn6k/
+		// https://jsfiddle.net/NovasTaylor/o1qesn6k/
 		var drag = this.force.drag()
-                .on("dragstart", dragstart);
+			.on("dragstart", dragstart);
 
 		this.frequency = {
 			node: svg.selectAll('g')
@@ -422,7 +422,7 @@
 					return d.type;
 				})
 				//.call(this.force.drag)
-                .call(drag)
+				.call(drag)
 				.on('mousedown', function(d) {
 					return d.type;
 				})
@@ -456,15 +456,15 @@
 		//console.info(frequency);
 
 		var attribute = this.attribute = {
-		    node: svg.selectAll('.attribute')
-                .append('rect')
-                .call(drag),
-		    label: svg.selectAll('.attribute')
-                .append('text')
-                .style({"font-size":"10px"})
-                .text(function (d) {
-				return d.label;
-			})
+			node: svg.selectAll('.attribute')
+				.append('rect')
+				.call(drag),
+			label: svg.selectAll('.attribute')
+				.append('text')
+				.style({"font-size": "10px"})
+				.text(function(d) {
+					return d.label;
+				})
 		};
 
 		this.start();
@@ -504,7 +504,7 @@
 	};
 
 	function dragstart(d) {
-	    d3.select(this).classed("fixed", d.fixed = true); // TODO: <= d.fixed = true eventuell anders hinkriegen
+		d3.select(this).classed("fixed", d.fixed = true); // TODO: <= d.fixed = true eventuell anders hinkriegen
 	}
 
 	/**
@@ -534,7 +534,7 @@
 	Hypergraph.prototype.onTick = function() {
 
 		this.frequency.node
-			.attr('cx', function (d) {
+			.attr('cx', function(d) {
 				return d.x;
 			})
 			.attr('cy', function(d) {
@@ -545,7 +545,7 @@
 					return normalize(d.intervals[STEPS].percentage);
 				} else {
 					return FREQUENCY_HIDE_SIZE;
-				}				
+				}
 			}.bind(this))
 			.style('fill', D3_FREQUENCY_COLOR)
 			.style('stroke', D3_FREQUENCY_STROKE);
@@ -577,7 +577,7 @@
 			});
 
 		this.svg.selectAll('.frequency text').attr('transform', function(d) {
-		    return 'translate(' + (d.x - 30) + ', ' + d.y + ')';
+			return 'translate(' + (d.x - 30) + ', ' + d.y + ')';
 		});
 
 		this.svg.selectAll('.attribute text').attr('transform', function(d) {
@@ -589,35 +589,35 @@
 	 * Adjusts node/graph on animation iterations.
 	 */
 	Hypergraph.prototype.step = function() {
-		 //log('Interval ' + STEPS);
-		 //if (STEPS === this.interval_count - 1) {
-		 //    window.clearInterval(this.interval);
-		 //    log('Done with intervals');
-		 //    return;
-		 //}
+		//log('Interval ' + STEPS);
+		//if (STEPS === this.interval_count - 1) {
+		//    window.clearInterval(this.interval);
+		//    log('Done with intervals');
+		//    return;
+		//}
 
-		 //++STEPS;
+		//++STEPS;
 
-		 //console.info(this);
+		//console.info(this);
 
-		 //this.frequency.node
-		 //    .transition()
-		 //    .duration(D3_TRANSITION_DURATION)
-		 //    .attr('r', function(d) {
-		 //   	 if (d.intervals[STEPS].percentage >= this.threshold) {
-		 //   		 return normalize(d.intervals[STEPS].percentage);
-		 //   	 } else {
-		 //   		 return FREQUENCY_HIDE_SIZE;
-		 //   	 }				
-		 //    }.bind(this));
+		//this.frequency.node
+		//    .transition()
+		//    .duration(D3_TRANSITION_DURATION)
+		//    .attr('r', function(d) {
+		//   	 if (d.intervals[STEPS].percentage >= this.threshold) {
+		//   		 return normalize(d.intervals[STEPS].percentage);
+		//   	 } else {
+		//   		 return FREQUENCY_HIDE_SIZE;
+		//   	 }
+		//    }.bind(this));
 
-		 //this.frequency.value
-		 //    .text(function(d) {
-		 //   	 return d.intervals[STEPS].percentage + '%';
-		 //    }.bind(this))
-		 //    .style('opacity', function(d) {
-		 //   	 return d.intervals[STEPS].percentage >= this.threshold ? 1 : 0;
-		 //    }.bind(this));
+		//this.frequency.value
+		//    .text(function(d) {
+		//   	 return d.intervals[STEPS].percentage + '%';
+		//    }.bind(this))
+		//    .style('opacity', function(d) {
+		//   	 return d.intervals[STEPS].percentage >= this.threshold ? 1 : 0;
+		//    }.bind(this));
 	};
 
 	/**

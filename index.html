@@ -17,6 +17,28 @@
 		<p>
 			In this experiment the approach to center all Attributes vertical and surround them with frequencies was tested.
 		</p>
+
+		<form class="controls">
+			<label>
+				<strong data-alt-text="Playing" class="js-play-label">Paused</strong>
+				<input class="js-play" type="button" value="&#9658;" data-alt-symbol="&#10074;&#10074;">
+			</label>
+			<label>
+				<strong>Velocity</strong>
+				<span class="block">
+					<span class="js-velocity-label">2500</span>ms
+				</span>
+				<input class="js-velocity" type="range" min="1000" max="10000" step="500" value="2500">
+			</label>
+
+			<label>
+				<strong>Threshold</strong>
+				<span class="block">
+					<span class="js-threshold-label">6.25</span>%
+				</span>
+				<input class="js-threshold" type="number" step="0.01" value="6.25">
+			</label>
+		</form>
 	</div>
 </aside>
 
@@ -24,7 +46,16 @@
 	<div class="graph js-graph"></div>
 </main>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js" charset="utf-8"></script>
-<script src="assets/graph.js"></script>
+<script src="assets/Controls.js"></script>
+<script src="assets/GraphBuilder.js"></script>
+<script src="assets/Hypergraph.js"></script>
+
+<script type="text/javascript">
+	document.addEventListener('DOMContentLoaded', function() {
+		var graph = Hypergraph;
+		Controls.start(graph);
+		graph.start();
+	});
+</script>
 </body>
 </html>

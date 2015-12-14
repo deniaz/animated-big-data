@@ -15,3 +15,12 @@
 .graph rect {
 	cursor: grab;
 }
+
+
+.controls label,
+.controls label strong,
+.controls label span.block {
+	display: block;
+}
+
+.controls label { margin-bottom: 1em; }
