@@ -23,7 +23,13 @@ var Visualization = (function() {
 		});
 
 		_links.forEach(function(link) {
-			link._ui = _s.line(link.source.x, link.source.y, link.target.x, link.target.y);
+			link._ui = _s.line(
+				link.source._ui.getBBox().cx,
+				link.source._ui.getBBox().cy,
+				link.target._ui.getBBox().cx,
+				link.target._ui.getBBox().cy
+			);
+
 			link._ui.attr({
 				stroke: '#333'
 			});
@@ -57,15 +63,17 @@ var Visualization = (function() {
 			node.x = x;
 			node.y = y;
 
+			var boundingBox = node._ui.getBBox();
+
 			if (node._link.source === node) {
 				node._link._ui.attr({
-					x1: node.x,
-					y1: node.y
+					x1: boundingBox.cx,
+					y1: boundingBox.cy
 				});
-			} else if (node._link.target === node) {
+			} else {
 				node._link._ui.attr({
-					x2: node.x,
-					y2: node.y
+					x2: boundingBox.cx,
+					y2: boundingBox.cy
 				});
 			}
 
