@@ -41,7 +41,8 @@ var Visualization = (function() {
 	}
 
 	function circle(node) {
-		node._ui = _s.circle(node.x, node.y, node.intervals[0].percentage);
+		var r = Math.pow(node.intervals[0].percentage, 4) / 30;
+		node._ui = _s.circle(node.x, node.y, r);
 		node._ui.attr({
 			'fill': 'deepskyblue'
 		});
