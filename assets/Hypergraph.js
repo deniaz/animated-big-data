@@ -57,9 +57,12 @@ var Hypergraph = (function(layoutEngine) {
 	 */
 	var _layoutEngine = layoutEngine;
 
+	var _visualization;
+
 	var _container = null;
 
 	var _height = 0;
+
 	var _width = 0;
 
 	/**
@@ -101,7 +104,8 @@ var Hypergraph = (function(layoutEngine) {
 
 		_container.appendChild(svg);
 
-		Visualization.start(Snap(svg), nodes, links);
+		_visualization = Visualization;
+		_visualization.start(Snap(svg), nodes, links);
 	}
 
 	/**
@@ -111,9 +115,7 @@ var Hypergraph = (function(layoutEngine) {
 		if (!_isPlaying) {
 			_isPlaying = !_isPlaying;
 
-			_interval = window.setInterval(function() {
-				console.info('Interval Step! ' + _velocity);
-			}, _velocity);
+			_interval = window.setInterval(animationStep, _velocity);
 		}
 	}
 
@@ -144,6 +146,10 @@ var Hypergraph = (function(layoutEngine) {
 		}
 
 		return _velocity;
+	}
+
+	function animationStep() {
+		_visualization.step(_currentInterval++);
 	}
 
 	return {

@@ -5,6 +5,8 @@ var Visualization = (function() {
 
 	var _links;
 
+	var _frequencies = [];
+
 	var _s;
 
 	function start(s, nodes, links) {
@@ -15,6 +17,7 @@ var Visualization = (function() {
 		_nodes.forEach(function(node) {
 			node._links = [];
 			if ('frequency' === node.type) {
+				_frequencies.push(node);
 				circle(node);
 			} else if ('attribute' === node.type) {
 				rect(node);
@@ -86,7 +89,12 @@ var Visualization = (function() {
 		});
 	}
 
+	function step(step) {
+		console.info(_frequencies);
+	}
+
 	return {
-		start: start
+		start: start,
+		step: step
 	};
 })();
