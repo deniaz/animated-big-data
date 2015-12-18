@@ -9,11 +9,7 @@ var Visualization = (function() {
 
 	var _s;
 
-	function start(s, nodes, links) {
-		_s = s;
-		_nodes = nodes;
-		_links = links;
-
+	function injectLinks() {
 		_links.forEach(function(link) {
 			link._ui = _s.line(
 				0, 0, 0, 0
@@ -35,7 +31,20 @@ var Visualization = (function() {
 				link.target._links = [link];
 			}
 		});
+	}
 
+	function placeLinks() {
+		_links.forEach(function(link) {
+			link._ui.attr({
+				x1: link.source._ui.getBBox().cx,
+				x2: link.target._ui.getBBox().cx,
+				y1: link.source._ui.getBBox().cy,
+				y2: link.target._ui.getBBox().cy
+			});
+		});
+	}
+
+	function createNodes() {
 		_nodes.forEach(function(node) {
 			//node._links = [];
 			if ('frequency' === node.type) {
@@ -47,21 +56,24 @@ var Visualization = (function() {
 
 			draggable(node);
 		});
+	}
 
-		_links.forEach(function(link) {
-			link._ui.attr({
-				x1: link.source._ui.getBBox().cx,
-				x2: link.target._ui.getBBox().cx,
-				y1: link.source._ui.getBBox().cy,
-				y2: link.target._ui.getBBox().cy
-			});
-		});
+	function start(s, nodes, links) {
+		_s = s;
+		_nodes = nodes;
+		_links = links;
+
+		injectLinks();
+
+		createNodes();
+
+		placeLinks();
 	}
 
 	function rect(node) {
 		node._ui = _s.rect(node.x, node.y, 120, 45);
 		node._ui.attr({
-			'fill': 'deeppink'
+			'fill': '#e74c3c'
 		});
 	}
 
@@ -69,7 +81,7 @@ var Visualization = (function() {
 		var r = Math.pow(node.intervals[0].percentage, 4) / 30;
 		node._ui = _s.circle(node.x, node.y, r);
 		node._ui.attr({
-			'fill': 'deepskyblue'
+			'fill': '#3498db'
 		});
 	}
 
@@ -104,48 +116,57 @@ var Visualization = (function() {
 		});
 	}
 
-	function step(step) {
+	function hideSubgraph(frequency) {
+		frequency._ui.animate({
+			opacity: 0
+		}, 1000, mina.easeinout);
+
+		frequency._links.forEach(function(link) {
+			if (link.target.numberOfLinks === 1) {
+				link.target._ui.animate({
+					opacity: 0
+				}, 1000, mina.easeinout);
+
+				link.target.numberOfLinks--;
+			}
+
+			link._ui.animate({
+				opacity: 0
+			}, 1000, mina.easeinout);
+		});
+	}
+
+	function showSubgraph(frequency) {
+		frequency._ui.animate({
+			opacity: 1
+		}, 1000, mina.easeinout);
+
+		frequency._links.forEach(function(link) {
+			if (link.target.numberOfLinks === 0) {
+				link.target._ui.animate({
+					opacity: 1
+				}, 1000, mina.easeinout);
+
+				link.target.numberOfLinks++;
+			}
+
+			link._ui.animate({
+				opacity: 1
+			}, 1000, mina.easeinout);
+		})
+	}
+
+	function step(step, threshold) {
 		_frequencies.forEach(function(frequency) {
 			var intervals = frequency.intervals;
 
 			if (!!intervals[step]) {
 
-				if (intervals[step].percentage < 6) {
-					frequency._ui.attr({
-						opacity: 0
-					});
+				if (intervals[step].percentage < threshold) {
+					hideSubgraph(frequency);
 
-					frequency._links.forEach(function(link) {
-						if (link.target.numberOfLinks === 1) {
-							link.target._ui.attr({
-								opacity: 0
-							});
-
-							link.target.numberOfLinks--;
-						}
-
-						link._ui.attr({
-							opacity: 0
-						});
-					});
 				} else {
-					frequency._ui.attr({
-						opacity: 1
-					});
-
-					frequency._links.forEach(function(link) {
-						if (link.target.numberOfLinks === 0) {
-							link.target._ui.attr({
-								opacity: 1
-							});
-
-							link.target.numberOfLinks++;
-						}
-
-						link._ui.attr({
-							opacity: 1
-						});
-					})
+					showSubgraph(frequency);
 				}
 			}
 		});

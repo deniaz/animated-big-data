@@ -155,7 +155,7 @@ var Hypergraph = (function(layoutEngine) {
 			_currentInterval = 0;
 			_isPlaying = false;
 		} else {
-			_visualization.step(_currentInterval++);
+			_visualization.step(_currentInterval++, _threshold);
 		}
 	}
 
