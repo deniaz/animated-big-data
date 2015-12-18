@@ -90,7 +90,51 @@ var Visualization = (function() {
 	}
 
 	function step(step) {
-		console.info(_frequencies);
+		console.info('Step ' + step);
+		_frequencies.forEach(function(frequency) {
+			var intervals = frequency.intervals;
+
+			if (!!intervals[step]) {
+
+				if (intervals[step].percentage < 6) {
+					frequency._ui.attr({
+						opacity: 0
+					});
+
+					frequency._links.forEach(function(link) {
+						if (link.target.numberOfLinks === 1) {
+							link.target._ui.attr({
+								opacity: 0
+							});
+
+							link.target.numberOfLinks--;
+						}
+
+						link._ui.attr({
+							opacity: 0
+						});
+					});
+				} else {
+					frequency._ui.attr({
+						opacity: 1
+					});
+
+					frequency._links.forEach(function(link) {
+						if (link.target.numberOfLinks === 0) {
+							link.target._ui.attr({
+								opacity: 1
+							});
+
+							link.target.numberOfLinks++;
+						}
+
+						link._ui.attr({
+							opacity: 1
+						});
+					})
+				}
+			}
+		});
 	}
 
 	return {

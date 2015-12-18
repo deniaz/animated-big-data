@@ -15,7 +15,7 @@ var Hypergraph = (function(layoutEngine) {
 	 * @type {number}
 	 * @private
 	 */
-	var _velocity = 2500;
+	var _velocity = 1000;
 
 	/**
 	 * The lower threshold to display/hide subgraphs.
@@ -149,7 +149,14 @@ var Hypergraph = (function(layoutEngine) {
 	}
 
 	function animationStep() {
-		_visualization.step(_currentInterval++);
+		if (_currentInterval === _noOfIntervals) {
+			document.dispatchEvent(new Event('animation.finished'));
+			window.clearInterval(_interval);
+			_currentInterval = 0;
+			_isPlaying = false;
+		} else {
+			_visualization.step(_currentInterval++);
+		}
 	}
 
 	return {

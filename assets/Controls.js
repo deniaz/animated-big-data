@@ -12,23 +12,29 @@ var Controls = (function() {
 		document.querySelector(selector).addEventListener(event, callback);
 	}
 
+	function togglePlayIcon() {
+		var labelEl = document.querySelector('.js-play-label'),
+			altText = labelEl.getAttribute('data-alt-text');
+
+		labelEl.setAttribute('data-alt-text', labelEl.textContent);
+		labelEl.textContent = altText;
+
+		var buttonEl = document.querySelector('.js-play'),
+			altSymbol = buttonEl.getAttribute('data-alt-symbol');
+
+		buttonEl.setAttribute('data-alt-symbol', buttonEl.getAttribute('value'));
+		buttonEl.setAttribute('value', altSymbol);
+	}
+
 	/**
 	 * Adds the controls event listeners.
 	 * @param graph
 	 */
 	function start(graph) {
+		document.addEventListener('animation.finished', togglePlayIcon);
+
 		addEventListener('.js-play', 'click', function() {
-			var labelEl = document.querySelector('.js-play-label'),
-				altText = labelEl.getAttribute('data-alt-text');
-
-			labelEl.setAttribute('data-alt-text', labelEl.textContent);
-			labelEl.textContent = altText;
-
-			var buttonEl = document.querySelector('.js-play'),
-				altSymbol = buttonEl.getAttribute('data-alt-symbol');
-
-			buttonEl.setAttribute('data-alt-symbol', buttonEl.getAttribute('value'));
-			buttonEl.setAttribute('value', altSymbol);
+			togglePlayIcon();
 
 			if (graph.isPlaying()) {
 				graph.pause();
