@@ -46,13 +46,28 @@ var Visualization = (function() {
 
 	function createNodes() {
 		_nodes.forEach(function(node) {
-			//node._links = [];
+			var group = _s.group(),
+				x, y;
+
 			if ('frequency' === node.type) {
 				_frequencies.push(node);
 				circle(node);
+				x = node._ui.attr('cx');
+				y = node._ui.attr('cy');
+				x -= 25;
 			} else if ('attribute' === node.type) {
 				rect(node);
+				x = parseFloat(node._ui.attr('x'));
+				y = parseFloat(node._ui.attr('y'));
+				y += 28;
+				x += 10;
 			}
+
+			group.append(node._ui);
+
+			group.append(
+				_s.text(x, y, node.label)
+			);
 
 			draggable(node);
 		});
@@ -71,7 +86,7 @@ var Visualization = (function() {
 	}
 
 	function rect(node) {
-		node._ui = _s.rect(node.x, node.y, 120, 45);
+		node._ui = _s.rect(node.x, node.y, 150, 45);
 		node._ui.attr({
 			'fill': '#e74c3c'
 		});
