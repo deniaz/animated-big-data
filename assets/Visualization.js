@@ -69,7 +69,7 @@ var Visualization = (function() {
 				_s.text(x, y, node.label)
 			);
 
-			draggable(node);
+			draggable(group, node);
 		});
 	}
 
@@ -100,8 +100,8 @@ var Visualization = (function() {
 		});
 	}
 
-	function draggable(node) {
-		node._ui.drag(function(dx, dy, x, y) {
+	function draggable(group, node) {
+		group.drag(function(dx, dy, x, y) {
 
 			this.attr({
 				transform: this.data('transform') + (this.data('transform') ? 'T' : 't') + [dx, dy]
@@ -110,7 +110,7 @@ var Visualization = (function() {
 			node.x = x;
 			node.y = y;
 
-			var boundingBox = node._ui.getBBox();
+			var boundingBox = group.getBBox();
 
 			node._links.forEach(function(link) {
 				if (link.source === node) {
