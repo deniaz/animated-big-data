@@ -5,6 +5,8 @@ var Visualization = (function() {
 
 	var _links;
 
+	var _groupped = [];
+
 	var _frequencies = [];
 
 	var _s;
@@ -47,27 +49,33 @@ var Visualization = (function() {
 	function createNodes() {
 		_nodes.forEach(function(node) {
 			var group = _s.group(),
-				x, y;
+				x, y, text;
 
 			if ('frequency' === node.type) {
-				_frequencies.push(node);
 				circle(node);
 				x = node._ui.attr('cx');
 				y = node._ui.attr('cy');
 				x -= 25;
+				group.append(node._ui);
+				group.append(
+					_s.text(x, y, node.label)
+				);
+
+				_groupped.push({
+					group: group,
+					node: node
+				})
 			} else if ('attribute' === node.type) {
 				rect(node);
 				x = parseFloat(node._ui.attr('x'));
 				y = parseFloat(node._ui.attr('y'));
 				y += 28;
 				x += 10;
+				group.append(node._ui);
+				group.append(
+					_s.text(x, y, node.label)
+				);
 			}
-
-			group.append(node._ui);
-
-			group.append(
-				_s.text(x, y, node.label)
-			);
 
 			draggable(group, node);
 		});
@@ -131,8 +139,8 @@ var Visualization = (function() {
 		});
 	}
 
-	function hideSubgraph(frequency) {
-		frequency._ui.animate({
+	function hideSubgraph(frequency, group) {
+		group.animate({
 			opacity: 0
 		}, 1000, mina.easeinout);
 
@@ -151,8 +159,8 @@ var Visualization = (function() {
 		});
 	}
 
-	function showSubgraph(frequency) {
-		frequency._ui.animate({
+	function showSubgraph(frequency, group) {
+		group.animate({
 			opacity: 1
 		}, 1000, mina.easeinout);
 
@@ -172,16 +180,14 @@ var Visualization = (function() {
 	}
 
 	function step(step, threshold) {
-		_frequencies.forEach(function(frequency) {
-			var intervals = frequency.intervals;
+		_groupped.forEach(function(_group) {
+			var intervals = _group.node.intervals;
 
 			if (!!intervals[step]) {
-
 				if (intervals[step].percentage < threshold) {
-					hideSubgraph(frequency);
-
+					hideSubgraph(_group.node, _group.group);
 				} else {
-					showSubgraph(frequency);
+					showSubgraph(_group.node, _group.group);
 				}
 			}
 		});
