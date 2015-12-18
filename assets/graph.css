@@ -16,6 +16,9 @@
 	cursor: grab;
 }
 
+.graph text {
+	font-size: 12px;
+}
 
 .controls label,
 .controls label strong,
