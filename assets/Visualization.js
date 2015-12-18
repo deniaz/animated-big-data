@@ -14,8 +14,30 @@ var Visualization = (function() {
 		_nodes = nodes;
 		_links = links;
 
+		_links.forEach(function(link) {
+			link._ui = _s.line(
+				0, 0, 0, 0
+			);
+
+			link._ui.attr({
+				stroke: '#333'
+			});
+
+			if (!!link.source._links) {
+				link.source._links.push(link);
+			} else {
+				link.source._links = [link];
+			}
+
+			if (!!link.target._links) {
+				link.target._links.push(link);
+			} else {
+				link.target._links = [link];
+			}
+		});
+
 		_nodes.forEach(function(node) {
-			node._links = [];
+			//node._links = [];
 			if ('frequency' === node.type) {
 				_frequencies.push(node);
 				circle(node);
@@ -27,19 +49,12 @@ var Visualization = (function() {
 		});
 
 		_links.forEach(function(link) {
-			link._ui = _s.line(
-				link.source._ui.getBBox().cx,
-				link.source._ui.getBBox().cy,
-				link.target._ui.getBBox().cx,
-				link.target._ui.getBBox().cy
-			);
-
 			link._ui.attr({
-				stroke: '#333'
+				x1: link.source._ui.getBBox().cx,
+				x2: link.target._ui.getBBox().cx,
+				y1: link.source._ui.getBBox().cy,
+				y2: link.target._ui.getBBox().cy
 			});
-
-			link.source._links.push(link);
-			link.target._links.push(link);
 		});
 	}
 
