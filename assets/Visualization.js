@@ -90,7 +90,6 @@ var Visualization = (function() {
 	}
 
 	function step(step) {
-		console.info('Step ' + step);
 		_frequencies.forEach(function(frequency) {
 			var intervals = frequency.intervals;
 
