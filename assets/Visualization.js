@@ -204,6 +204,7 @@ var Visualization = (function() {
 	 * Hides a subgraph based on its frequency.
 	 * @param frequency
 	 * @param group
+	 * @todo Refactoring! This and showSubgraph() Are quite alike and stuff could be done easier with lambdas.
 	 */
 	function hideSubgraph(frequency, group) {
 		// Only do something if frequency is visible
