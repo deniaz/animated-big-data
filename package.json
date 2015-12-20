@@ -1,7 +1,7 @@
 {
   "name": "animated-big-data-visualization",
   "version": "0.1.0",
-  "description": "",
+  "description": "Animated Visualization of Frequent Itemsets as Hypergraphs",
   "dependencies": {
     "gulp": "^3.9.0",
     "gulp-concat": "^2.6.0",

@@ -4,15 +4,16 @@ var gulp = require('gulp'),
 	uglify = require('gulp-uglify');
 
 gulp.task('default', ['lint'], function() {
+	var version = require('./package.json').version;
 	return gulp.src([
-		'vendor/snap.svg-0.4.1.min.js',
+		'vendor/*.js',
 		'src/Controls.js',
 		'src/LayoutEngine.js',
 		'src/Visualization.js',
 		'src/Hypergraph.js'
 	])
 	.pipe(uglify())
-	.pipe(concat('abdv.min.js'))
+	.pipe(concat('abdv-' + version + '.min.js'))
 	.pipe(gulp.dest('dist'))
 });
 
