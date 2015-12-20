@@ -70,7 +70,7 @@ var Visualization = (function() {
 				x = parseFloat(node._ui.attr('x'));
 				y = parseFloat(node._ui.attr('y'));
 				y += 28;
-				x += 10;
+				x += 5;
 				group.append(node._ui);
 				group.append(
 					_s.text(x, y, node.label)
@@ -94,7 +94,7 @@ var Visualization = (function() {
 	}
 
 	function rect(node) {
-		node._ui = _s.rect(node.x, node.y, 150, 45);
+		node._ui = _s.rect(node.x, node.y, 120, 45);
 		node._ui.attr({
 			'fill': '#e74c3c'
 		});
@@ -140,43 +140,47 @@ var Visualization = (function() {
 	}
 
 	function hideSubgraph(frequency, group) {
-		group.animate({
-			opacity: 0
-		}, 1000, mina.easeinout);
-
-		frequency._links.forEach(function(link) {
-			if (link.target.numberOfLinks === 1) {
-				link.target._ui.animate({
-					opacity: 0
-				}, 1000, mina.easeinout);
-
-				link.target.numberOfLinks--;
-			}
-
-			link._ui.animate({
+		if (group.attr('opacity') == 1) {
+			group.animate({
 				opacity: 0
 			}, 1000, mina.easeinout);
-		});
+
+			frequency._links.forEach(function(link) {
+				if (link.target.numberOfLinks === 1) {
+					link.target._ui.animate({
+						opacity: 0
+					}, 1000, mina.easeinout);
+				}
+
+				link.target.numberOfLinks--;
+
+				link._ui.animate({
+					opacity: 0
+				}, 1000, mina.easeinout);
+			});
+		}
 	}
 
 	function showSubgraph(frequency, group) {
-		group.animate({
-			opacity: 1
-		}, 1000, mina.easeinout);
-
-		frequency._links.forEach(function(link) {
-			if (link.target.numberOfLinks === 0) {
-				link.target._ui.animate({
-					opacity: 1
-				}, 1000, mina.easeinout);
-
-				link.target.numberOfLinks++;
-			}
-
-			link._ui.animate({
+		if (group.attr('opacity') == 0) {
+			group.animate({
 				opacity: 1
 			}, 1000, mina.easeinout);
-		})
+
+			frequency._links.forEach(function(link) {
+				if (link.target.numberOfLinks === 0) {
+					link.target._ui.animate({
+						opacity: 1
+					}, 1000, mina.easeinout);
+				}
+
+				link.target.numberOfLinks++;
+
+				link._ui.animate({
+					opacity: 1
+				}, 1000, mina.easeinout);
+			});
+		}
 	}
 
 	function step(step, threshold) {
