@@ -1,0 +1,29 @@
+.graph .link {
+	z-index: 10;
+}
+
+.graph .attribute,
+.graph .frequency {
+	z-index: 20;
+}
+
+.graph {
+	cursor: default;
+}
+
+.graph circle,
+.graph rect {
+	cursor: grab;
+}
+
+.graph text {
+	font-size: 12px;
+}
+
+.controls label,
+.controls label strong,
+.controls label span.block {
+	display: block;
+}
+
+.controls label { margin-bottom: 1em; }

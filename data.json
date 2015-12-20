@@ -1,0 +1,248 @@
+[
+	{
+		"frequency": {
+			"type": "frequency",
+			"label": 1025794,
+			"fixed":"TRUE",
+			"x": null,
+			"y": null,
+			"intervals": [
+				{
+					"percentage": 6.10725
+				},
+				{
+					"percentage": 5.52701
+				},
+				{
+					"percentage": 5.27016
+				},
+				{
+					"percentage": 6.70152
+				},
+				{
+					"percentage": 7.01527
+				},
+				{
+					"percentage": 6.10725
+				},
+				{
+					"percentage": 5.52701
+				},
+				{
+					"percentage": 5.27016
+				},
+				{
+					"percentage": 6.70152
+				},
+				{
+					"percentage": 7.01527
+				}
+			]
+		},
+		"attributes": [
+			{
+				"id": "lIP_130.59.211.10",
+				"type": "attribute",
+				"label": "locIP=130.59.211.10",
+				"numberOfLinks": 1,
+				"fixed":"TRUE",
+				"x": null,
+				"y": null
+			},
+			{
+				"id": "lPo_53",
+				"type": "attribute",
+				"label": "locPort=53",
+				"numberOfLinks": 2,
+				"fixed":"TRUE",
+				"x": null,
+				"y": null
+			},
+			{
+				"id": "pkt_2",
+				"type": "attribute",
+				"label": "packet=2",
+				"numberOfLinks": 2,
+				"fixed":"TRUE",
+				"x": null,
+				"y": null
+			},
+			{
+				"id": "pro_17",
+				"type": "attribute",
+				"label": "prot=UDP",
+				"numberOfLinks": 2,
+				"fixed":"TRUE",
+				"x": null,
+				"y": null
+			},
+			{
+				"id": "dir_4",
+				"type": "attribute",
+				"label": "biflow",
+				"numberOfLinks": 3,
+				"fixed":"TRUE",
+				"x": null,
+				"y": null
+			}
+		]
+	},
+	{
+		"frequency": {
+			"type": "frequency",
+			"label": 1130123,
+			"fixed":"TRUE",
+			"x": null,
+			"y": null,
+			"intervals": [
+				{
+					"percentage": 6.72839
+				},
+				{
+					"percentage": 5.93827
+				},
+				{
+					"percentage": 6.38279
+				},
+				{
+					"percentage": 5.28397
+				},
+				{
+					"percentage": 7.38279
+				},
+				{
+					"percentage": 6.72839
+				},
+				{
+					"percentage": 5.93827
+				},
+				{
+					"percentage": 6.38279
+				},
+				{
+					"percentage": 5.28397
+				},
+				{
+					"percentage": 7.38279
+				}
+			]
+		},
+		"attributes": [
+			{
+				"id": "rPo_80",
+				"type": "attribute",
+				"label": "remPort=80",
+				"numberOfLinks": 1,
+				"fixed":"TRUE",
+				"x": null,
+				"y": null
+			},
+			{
+				"id": "pro_6",
+				"type": "attribute",
+				"label": "prot=TCP",
+				"numberOfLinks": 1,
+				"fixed":"TRUE",
+				"x": null,
+				"y": null
+			},
+			{
+				"id": "dir_4",
+				"type": "attribute",
+				"label": "biflow",
+				"numberOfLinks": 3,
+				"fixed":"TRUE",
+				"x": null,
+				"y": null
+			}
+		]
+	},
+	{
+		"frequency": {
+			"type": "frequency",
+			"label": 3210311,
+			"fixed":"TRUE",
+			"x": null,
+			"y": null,
+			"intervals": [
+				{
+					"percentage": 6.79877
+				},
+				{
+					"percentage": 6.77897
+				},
+				{
+					"percentage": 6.78977
+				},
+				{
+					"percentage": 7.89777
+				},
+				{
+					"percentage": 5.97778
+				},
+				{
+					"percentage": 6.77789
+				},
+				{
+					"percentage": 6.79877
+				},
+				{
+					"percentage": 6.77897
+				},
+				{
+					"percentage": 6.78977
+				},
+				{
+					"percentage": 7.89777
+				}
+			]
+		},
+		"attributes": [
+			{
+				"id": "lIP_130.59.1.80",
+				"type": "attribute",
+				"label": "locIP=130.59.1.80",
+				"numberOfLinks": 1,
+				"fixed":"TRUE",
+				"x": null,
+				"y": null
+			},
+			{
+				"id": "lPo_53",
+				"type": "attribute",
+				"label": "locPort=53",
+				"numberOfLinks": 2,
+				"fixed":"TRUE",
+				"x": null,
+				"y": null
+			},
+			{
+				"id": "pkt_2",
+				"type": "attribute",
+				"label": "packet=2",
+				"numberOfLinks": 2,
+				"fixed":"TRUE",
+				"x": null,
+				"y": null
+			},
+			{
+				"id": "pro_17",
+				"type": "attribute",
+				"label": "prot=UDP",
+				"numberOfLinks": 2,
+				"fixed":"TRUE",
+				"x": null,
+				"y": null
+			},
+			{
+				"id": "dir_4",
+				"type": "attribute",
+				"label": "biflow",
+				"numberOfLinks": 3,
+				"fixed":"TRUE",
+				"x": null,
+				"y": null
+			}
+		]
+	}
+]
