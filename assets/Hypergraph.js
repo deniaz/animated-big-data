@@ -1,3 +1,10 @@
+/**
+ * Hypergraph Module.
+ *
+ * Hypergraph using the Revealing Module Pattern.
+ *
+ * This module controls the data flow through all components.
+ */
 var Hypergraph = (function(layoutEngine) {
 	'use strict';
 
@@ -57,12 +64,33 @@ var Hypergraph = (function(layoutEngine) {
 	 */
 	var _layoutEngine = layoutEngine;
 
+	/**
+	 * Visualization.
+	 *
+	 * @type {Visualization}
+	 */
 	var _visualization;
 
+	/**
+	 * Container DOM Node.
+	 *
+	 * @type Element
+	 * @private
+	 */
 	var _container = null;
 
+	/**
+	 * Calculated canvas height.
+	 * @type {number}
+	 * @private
+	 */
 	var _height = 0;
 
+	/**
+	 * Calculated canvas width.
+	 * @type {number}
+	 * @private
+	 */
 	var _width = 0;
 
 	/**
@@ -94,6 +122,9 @@ var Hypergraph = (function(layoutEngine) {
 		xhr.send();
 	}
 
+	/**
+	 * Draws SVG Element and invokes the Visualization.
+	 */
 	function draw() {
 		var nodes = _layoutEngine.getNodes();
 		var links = _layoutEngine.getLinks();
@@ -148,6 +179,9 @@ var Hypergraph = (function(layoutEngine) {
 		return _velocity;
 	}
 
+	/**
+	 * An animation step is called on each animation interval.
+	 */
 	function animationStep() {
 		if (_currentInterval === _noOfIntervals) {
 			document.dispatchEvent(new Event('animation.finished'));
@@ -160,16 +194,32 @@ var Hypergraph = (function(layoutEngine) {
 	}
 
 	return {
+		/**
+		 * Assigns initial values to variables and starts loading data.
+		 *
+		 * @param el
+		 * @param file
+		 */
 		start: function(el, file) {
 			_container = document.querySelector(el);
 			_height = window.innerHeight;
 			_width = _container.offsetWidth;
 			load(file);
 		},
+		/**
+		 * Returns whether the animation is currently playing.
+		 * @returns {boolean}
+		 */
 		isPlaying: function() { return _isPlaying; },
 		play: play,
 		pause: pause,
 		changeVelocity: changeVelocity,
+		/**
+		 * Setter for the Threshold.
+		 *
+		 * @param threshold
+		 * @returns {*}
+		 */
 		setThreshold: function(threshold) { return _threshold = threshold; }
 	}
 })(LayoutEngine);

@@ -1,18 +1,53 @@
+/**
+ * Visualization Module
+ *
+ * Visualization using the Revealing Module Pattern.
+ *
+ * This component is responsible for the visualization of the graph and therefore the UI layer.
+ * It depends on Snap.svg for SVG drawing.
+ */
 var Visualization = (function() {
 	'use strict';
 
+	/**
+	 * Array containing all hypergraph nodes.
+	 *
+	 * @type {Array}
+	 * @private
+	 */
 	var _nodes;
 
+	/**
+	 * Array containing all hypergraph edges/links.
+	 *
+	 * @type {Array}
+	 * @private
+	 */
 	var _links;
 
+	/**
+	 * Array containing all node-text groups.
+	 *
+	 * @type {Array}
+	 * @private
+	 */
 	var _groupped = [];
 
-	var _frequencies = [];
-
+	/**
+	 * Snap.svg instance
+	 *
+	 * @type {Paper}
+	 * @private
+	 */
 	var _s;
 
+	/**
+	 * Injects all <line> Elements in the DOM without any positioning and adds relations to link objects.
+	 */
 	function injectLinks() {
 		_links.forEach(function(link) {
+			// Lines are repositioned in placeLinks(). As there is no z-index in SVG the Links need to be injected
+			// before the nodes.
 			link._ui = _s.line(
 				0, 0, 0, 0
 			);
@@ -35,6 +70,9 @@ var Visualization = (function() {
 		});
 	}
 
+	/**
+	 * Adds positioning to links based on their source/target nodes bound box values.
+	 */
 	function placeLinks() {
 		_links.forEach(function(link) {
 			link._ui.attr({
@@ -46,6 +84,9 @@ var Visualization = (function() {
 		});
 	}
 
+	/**
+	 * Injects nodes with text labels into the DOM.
+	 */
 	function createNodes() {
 		_nodes.forEach(function(node) {
 			var group = _s.group(),
@@ -81,6 +122,13 @@ var Visualization = (function() {
 		});
 	}
 
+	/**
+	 * Constructor.
+	 *
+	 * @param s
+	 * @param nodes
+	 * @param links
+	 */
 	function start(s, nodes, links) {
 		_s = s;
 		_nodes = nodes;
@@ -93,6 +141,10 @@ var Visualization = (function() {
 		placeLinks();
 	}
 
+	/**
+	 * Draws a rectangle based on a node's positioning.
+	 * @param node
+	 */
 	function rect(node) {
 		node._ui = _s.rect(node.x, node.y, 120, 45);
 		node._ui.attr({
@@ -100,6 +152,10 @@ var Visualization = (function() {
 		});
 	}
 
+	/**
+	 * Draws a circle based on a node's positioning and size.
+	 * @param node
+	 */
 	function circle(node) {
 		var r = Math.pow(node.intervals[0].percentage, 4) / 30;
 		node._ui = _s.circle(node.x, node.y, r);
@@ -108,6 +164,11 @@ var Visualization = (function() {
 		});
 	}
 
+	/**
+	 * Make node-text groups draggable.
+	 * @param group
+	 * @param node
+	 */
 	function draggable(group, node) {
 		group.drag(function(dx, dy, x, y) {
 
@@ -139,21 +200,32 @@ var Visualization = (function() {
 		});
 	}
 
+	/**
+	 * Hides a subgraph based on its frequency.
+	 * @param frequency
+	 * @param group
+	 */
 	function hideSubgraph(frequency, group) {
+		// Only do something if frequency is visible
 		if (group.attr('opacity') == 1) {
+			// Hide the frequency/label
 			group.animate({
 				opacity: 0
 			}, 1000, mina.easeinout);
 
+			// Loop through all the frequency's links and therefore their targets
 			frequency._links.forEach(function(link) {
+				// If the target only has one link (to the frequency), hide the target.
 				if (link.target.numberOfLinks === 1) {
 					link.target._ui.animate({
 						opacity: 0
 					}, 1000, mina.easeinout);
 				}
 
+				// Decrement the target's number of links as the link is going to be hidden in the next few lines
 				link.target.numberOfLinks--;
 
+				// See, as I promised you, the link is hidden! Wow!
 				link._ui.animate({
 					opacity: 0
 				}, 1000, mina.easeinout);
@@ -161,21 +233,32 @@ var Visualization = (function() {
 		}
 	}
 
+	/**
+	 * Shows a subgraph based on its frequency.
+	 * @param frequency
+	 * @param group
+	 */
 	function showSubgraph(frequency, group) {
+		// Only do something if frequency i shidden
 		if (group.attr('opacity') == 0) {
+			// Show the frequency/label
 			group.animate({
 				opacity: 1
 			}, 1000, mina.easeinout);
 
+			// Loop through all the frequency's links and therefore their targets
 			frequency._links.forEach(function(link) {
+				// If the target has no links, show the target.
 				if (link.target.numberOfLinks === 0) {
 					link.target._ui.animate({
 						opacity: 1
 					}, 1000, mina.easeinout);
 				}
 
+				// Increment the target's number of links as the link is going to be shown in the next few lines
 				link.target.numberOfLinks++;
 
+				// See, as I promised you, the link is shown! Even more wow!
 				link._ui.animate({
 					opacity: 1
 				}, 1000, mina.easeinout);
@@ -183,10 +266,17 @@ var Visualization = (function() {
 		}
 	}
 
+	/**
+	 * Interval step, called from the Hypergraph.
+	 * @param step
+	 * @param threshold
+	 */
 	function step(step, threshold) {
+		// Iterate over all subgraphs/frequencies
 		_groupped.forEach(function(_group) {
 			var intervals = _group.node.intervals;
 
+			// Checks if the current step is actually defined for the subgraph
 			if (!!intervals[step]) {
 				if (intervals[step].percentage < threshold) {
 					hideSubgraph(_group.node, _group.group);

@@ -1,3 +1,10 @@
+/**
+ * Controls Module
+ *
+ * Controls using the Revealing Module Pattern.
+ *
+ * This module is responsible for the Animation Control son the left-hand side.
+ */
 var Controls = (function() {
 	'use strict';
 
@@ -12,6 +19,9 @@ var Controls = (function() {
 		document.querySelector(selector).addEventListener(event, callback);
 	}
 
+	/**
+	 * Toggles the Play buttons icon.
+	 */
 	function togglePlayIcon() {
 		var labelEl = document.querySelector('.js-play-label'),
 			altText = labelEl.getAttribute('data-alt-text');
@@ -56,6 +66,9 @@ var Controls = (function() {
 		});
 	}
 
+	/**
+	 * Returns the module's public methods.
+	 */
 	return {
 		start: start
 	};
