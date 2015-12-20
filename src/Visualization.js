@@ -94,12 +94,16 @@ var Visualization = (function() {
 
 			if ('frequency' === node.type) {
 				circle(node);
-				x = node._ui.attr('cx');
-				y = node._ui.attr('cy');
-				x -= 25;
+				x = parseFloat(node._ui.attr('cx'));
+				y = parseFloat(node._ui.attr('cy'));
 				group.append(node._ui);
+
 				group.append(
-					_s.text(x, y, node.label)
+					_s.text(x-15, y-10, node.intervals[0].percentage.toFixed(2) + '%').addClass('bold')
+				);
+
+				group.append(
+					_s.text(x-25, y+10, '(' + node.label + ')')
 				);
 
 				_groupped.push({

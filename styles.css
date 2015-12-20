@@ -78,6 +78,10 @@ main text {
 	font-size: 12px;
 }
 
+.graph text.bold {
+	font-weight: bold;
+}
+
 .controls label,
 .controls label strong,
 .controls label span.block {
