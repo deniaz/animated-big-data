@@ -25,4 +25,8 @@ gulp.task('lint', function() {
 	])
 	.pipe(jshint())
 	.pipe(jshint.reporter('default'));
-})
+});
+
+gulp.task('watch', function() {
+	gulp.watch('src/*.js', ['default']);
+});
