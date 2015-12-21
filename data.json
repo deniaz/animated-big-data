@@ -3,9 +3,6 @@
 		"frequency": {
 			"type": "frequency",
 			"label": 1025794,
-			"fixed":"TRUE",
-			"x": null,
-			"y": null,
 			"intervals": [
 				{
 					"percentage": 6.10725
@@ -43,47 +40,31 @@
 			{
 				"id": "lIP_<local_IP_1>",
 				"type": "attribute",
-				"label": "locIP=<local_IP>",
-				"numberOfLinks": 1,
-				"fixed":"TRUE",
-				"x": null,
-				"y": null
+				"label": "locIP=<local_IP>"
 			},
 			{
 				"id": "lPo_53",
 				"type": "attribute",
 				"label": "locPort=53",
-				"numberOfLinks": 2,
-				"fixed":"TRUE",
-				"x": null,
-				"y": null
+				"numberOfLinks": 2
 			},
 			{
 				"id": "pkt_2",
 				"type": "attribute",
 				"label": "packet=2",
-				"numberOfLinks": 2,
-				"fixed":"TRUE",
-				"x": null,
-				"y": null
+				"numberOfLinks": 2
 			},
 			{
 				"id": "pro_17",
 				"type": "attribute",
 				"label": "prot=UDP",
-				"numberOfLinks": 2,
-				"fixed":"TRUE",
-				"x": null,
-				"y": null
+				"numberOfLinks": 2
 			},
 			{
 				"id": "dir_4",
 				"type": "attribute",
 				"label": "biflow",
-				"numberOfLinks": 3,
-				"fixed":"TRUE",
-				"x": null,
-				"y": null
+				"numberOfLinks": 3
 			}
 		]
 	},
@@ -91,9 +72,6 @@
 		"frequency": {
 			"type": "frequency",
 			"label": 1130123,
-			"fixed":"TRUE",
-			"x": null,
-			"y": null,
 			"intervals": [
 				{
 					"percentage": 6.72839
@@ -132,28 +110,19 @@
 				"id": "rPo_80",
 				"type": "attribute",
 				"label": "remPort=80",
-				"numberOfLinks": 1,
-				"fixed":"TRUE",
-				"x": null,
-				"y": null
+				"numberOfLinks": 1
 			},
 			{
 				"id": "pro_6",
 				"type": "attribute",
 				"label": "prot=TCP",
-				"numberOfLinks": 1,
-				"fixed":"TRUE",
-				"x": null,
-				"y": null
+				"numberOfLinks": 1
 			},
 			{
 				"id": "dir_4",
 				"type": "attribute",
 				"label": "biflow",
-				"numberOfLinks": 3,
-				"fixed":"TRUE",
-				"x": null,
-				"y": null
+				"numberOfLinks": 3
 			}
 		]
 	},
@@ -161,9 +130,6 @@
 		"frequency": {
 			"type": "frequency",
 			"label": 3210311,
-			"fixed":"TRUE",
-			"x": null,
-			"y": null,
 			"intervals": [
 				{
 					"percentage": 6.79877
@@ -202,46 +168,31 @@
 				"id": "lIP_<local_IP_2>",
 				"type": "attribute",
 				"label": "locIP=<local_IP>",
-				"numberOfLinks": 1,
-				"fixed":"TRUE",
-				"x": null,
-				"y": null
+				"numberOfLinks": 1
 			},
 			{
 				"id": "lPo_53",
 				"type": "attribute",
 				"label": "locPort=53",
-				"numberOfLinks": 2,
-				"fixed":"TRUE",
-				"x": null,
-				"y": null
+				"numberOfLinks": 2
 			},
 			{
 				"id": "pkt_2",
 				"type": "attribute",
 				"label": "packet=2",
-				"numberOfLinks": 2,
-				"fixed":"TRUE",
-				"x": null,
-				"y": null
+				"numberOfLinks": 2
 			},
 			{
 				"id": "pro_17",
 				"type": "attribute",
 				"label": "prot=UDP",
-				"numberOfLinks": 2,
-				"fixed":"TRUE",
-				"x": null,
-				"y": null
+				"numberOfLinks": 2
 			},
 			{
 				"id": "dir_4",
 				"type": "attribute",
 				"label": "biflow",
-				"numberOfLinks": 3,
-				"fixed":"TRUE",
-				"x": null,
-				"y": null
+				"numberOfLinks": 3
 			}
 		]
 	}
