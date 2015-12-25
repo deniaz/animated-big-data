@@ -227,8 +227,6 @@ var Visualization = (function() {
 					}, 500, mina.easeinout);
 				}
 
-				var debugLabel = link.target.label;
-				var noOfLinks = link.target.numberOfLinks;
 				// Decrement the target's number of links as the link is going to be hidden in the next few lines
 				link.target.numberOfLinks--;
 
@@ -263,8 +261,6 @@ var Visualization = (function() {
 				}
 
 				// Increment the target's number of links as the link is going to be shown in the next few lines
-				var debugLabel = link.target.label;
-				var noOfLinks = link.target.numberOfLinks;
 				link.target.numberOfLinks++;
 
 				// See, as I promised you, the link is shown! Even more wow!
