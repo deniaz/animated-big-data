@@ -216,7 +216,7 @@ var Visualization = (function() {
 			// Hide the frequency/label
 			group.animate({
 				opacity: 0
-			}, 1000, mina.easeinout);
+			}, 500, mina.easeinout);
 
 			// Loop through all the frequency's links and therefore their targets
 			frequency._links.forEach(function(link) {
@@ -224,16 +224,18 @@ var Visualization = (function() {
 				if (link.target.numberOfLinks === 1) {
 					link.target._ui.animate({
 						opacity: 0
-					}, 1000, mina.easeinout);
+					}, 500, mina.easeinout);
 				}
 
+				var debugLabel = link.target.label;
+				var noOfLinks = link.target.numberOfLinks;
 				// Decrement the target's number of links as the link is going to be hidden in the next few lines
 				link.target.numberOfLinks--;
 
 				// See, as I promised you, the link is hidden! Wow!
 				link._ui.animate({
 					opacity: 0
-				}, 1000, mina.easeinout);
+				}, 500, mina.easeinout);
 			});
 		}
 	}
@@ -249,7 +251,7 @@ var Visualization = (function() {
 			// Show the frequency/label
 			group.animate({
 				opacity: 1
-			}, 1000, mina.easeinout);
+			}, 500, mina.easeinout);
 
 			// Loop through all the frequency's links and therefore their targets
 			frequency._links.forEach(function(link) {
@@ -257,16 +259,18 @@ var Visualization = (function() {
 				if (link.target.numberOfLinks === 0) {
 					link.target._ui.animate({
 						opacity: 1
-					}, 1000, mina.easeinout);
+					}, 500, mina.easeinout);
 				}
 
 				// Increment the target's number of links as the link is going to be shown in the next few lines
+				var debugLabel = link.target.label;
+				var noOfLinks = link.target.numberOfLinks;
 				link.target.numberOfLinks++;
 
 				// See, as I promised you, the link is shown! Even more wow!
 				link._ui.animate({
 					opacity: 1
-				}, 1000, mina.easeinout);
+				}, 500, mina.easeinout);
 			});
 		}
 	}
