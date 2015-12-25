@@ -40,7 +40,8 @@
 			{
 				"id": "lIP_<local_IP_1>",
 				"type": "attribute",
-				"label": "locIP=<local_IP>"
+				"label": "locIP=<local_IP>",
+				"numberOfLinks": 1
 			},
 			{
 				"id": "lPo_53",
