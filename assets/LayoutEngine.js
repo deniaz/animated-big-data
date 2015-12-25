@@ -5,10 +5,10 @@
  *
  * This module builds the Layout of the Hypergraph.
  */
-var LayoutEngine = (function () {
+var LayoutEngine = (function() {
 	'use strict';
 
-    /**
+	/**
 	 * The Width of all Attributes
 	 *
 	 * @type {number}
@@ -16,7 +16,7 @@ var LayoutEngine = (function () {
 	 */
 	var ATTRIBUTE_WIDTH = 120;
 
-    /**
+	/**
 	 * The Height of all Attributes
 	 *
 	 * @type {number}
@@ -24,7 +24,7 @@ var LayoutEngine = (function () {
 	 */
 	var ATTRIBUTE_HEIGHT = 45;
 
-    /**
+	/**
 	 * The Padding between two Attributes
 	 *
 	 * @type {number}
@@ -32,7 +32,7 @@ var LayoutEngine = (function () {
 	 */
 	var ATTRIBUTE_PADDING = 15;
 
-    /**
+	/**
 	 * The Padding between two Frequencies
 	 *
 	 * @type {number}
@@ -40,12 +40,12 @@ var LayoutEngine = (function () {
 	 */
 	var FREQUENCY_PADDING = 50;
 
-    /**
-	* Calculates the radius of a frequency
-	*
-	* @param n - percentage-value of the frequency
-	* @returns {number} - radius of the frequency
-	*/
+	/**
+	 * Calculates the radius of a frequency
+	 *
+	 * @param n - percentage-value of the frequency
+	 * @returns {number} - radius of the frequency
+	 */
 	function normalize(n) {
 		return Math.pow(n, 4) / 30;
 	}
@@ -114,18 +114,18 @@ var LayoutEngine = (function () {
 		return _links;
 	}
 
-    /**
+	/**
 	 * builds the Layout of the Hypergraph
 	 *
 	 * @param {object} subGraphs - List of all subGraphs
-     * @param {number} width - Width of the display
-     * @param {number} height - Heigth of the display
+	 * @param {number} width - Width of the display
+	 * @param {number} height - Heigth of the display
 	 */
 	function buildFromArray(subGraphs, width, height) {
 
-	    _subGraphs = subGraphs;
-	    _width = width;
-	    _height = height;
+		_subGraphs = subGraphs;
+		_width = width;
+		_height = height;
 
 		var comparisonList = compareAllSubGraphs();
 		var subGraphGroups = getSubGraphGroups(comparisonList);
@@ -140,320 +140,320 @@ var LayoutEngine = (function () {
 		_links = nodeBuilder.links;
 	}
 
-    /**
+	/**
 	 * Compares all SubGraphs on their quantity of same attributes and sort them.
 	 *
 	 * @returns {number}
 	 */
 	function compareAllSubGraphs() {
-	    var comparisonList = [];
-	    for (var i = 0; i < _subGraphs.length - 1; i++) {
-	        for (var j = i + 1; j < _subGraphs.length; j++) {
-	            var result = {
-	                indexA: i,
-	                indexB: j,
-	                equal: countEqualAttributes(_subGraphs[i], _subGraphs[j])
-	            }
-	            comparisonList.push(result);
-	        }
-	    }
+		var comparisonList = [];
+		for (var i = 0; i < _subGraphs.length - 1; i++) {
+			for (var j = i + 1; j < _subGraphs.length; j++) {
+				var result = {
+					indexA: i,
+					indexB: j,
+					equal: countEqualAttributes(_subGraphs[i], _subGraphs[j])
+				}
+				comparisonList.push(result);
+			}
+		}
 
-	    comparisonList.sort(function (a, b) {
-	        if (a.equal < b.equal)
-	            return 1;
-	        if (a.equal > b.equal)
-	            return -1;
-	        return 0;
-	    });
+		comparisonList.sort(function(a, b) {
+			if (a.equal < b.equal)
+				return 1;
+			if (a.equal > b.equal)
+				return -1;
+			return 0;
+		});
 
-	    return comparisonList;
+		return comparisonList;
 	}
 
-    /**
-	* Counts the number of the same attributes.
-	*
-	* @param a - subGraph A to compare
-    * @param b - subGraph B to compare
-	* @returns {number} 
-	*/
+	/**
+	 * Counts the number of the same attributes.
+	 *
+	 * @param a - subGraph A to compare
+	 * @param b - subGraph B to compare
+	 * @returns {number}
+	 */
 	function countEqualAttributes(a, b) {
-	    var numberOfEqual = 0;
-	    for (var i = 0; i < a.attributes.length; i++) {
-	        for (var j = 0; j < b.attributes.length; j++) {
-	            if (b.attributes[j].id == a.attributes[i].id) {
-	                numberOfEqual++;
-	                break;
-	            }
-	        }
-	    }
-	    return numberOfEqual;
+		var numberOfEqual = 0;
+		for (var i = 0; i < a.attributes.length; i++) {
+			for (var j = 0; j < b.attributes.length; j++) {
+				if (b.attributes[j].id == a.attributes[i].id) {
+					numberOfEqual++;
+					break;
+				}
+			}
+		}
+		return numberOfEqual;
 	}
 
-    /**
-	* Finds all subGraphGroups
-	*
-	* @param comparisonList - List with all possible subGraph combinations
-	* @returns {object} 
-	*/
+	/**
+	 * Finds all subGraphGroups
+	 *
+	 * @param comparisonList - List with all possible subGraph combinations
+	 * @returns {object}
+	 */
 	function getSubGraphGroups(comparisonList) {
-	    var subGraphGroups = [];
+		var subGraphGroups = [];
 
-	    for (var i = 0; i < comparisonList.length; i++) {
-	        var nodeGroup = comparisonList[i],
+		for (var i = 0; i < comparisonList.length; i++) {
+			var nodeGroup = comparisonList[i],
 				frequencyA = _subGraphs[nodeGroup.indexA].frequency,
 				frequencyB = _subGraphs[nodeGroup.indexB].frequency;
 
-	        var condition = false;
-	        for (var j = 0; j < _frequencies.length; j++) {
-	            if (_frequencies[j].frequency.label == frequencyA.label || _frequencies[j].frequency.label == frequencyB.label) {
-	                condition = true;
-	                break;
-	            }
-	        }
+			var condition = false;
+			for (var j = 0; j < _frequencies.length; j++) {
+				if (_frequencies[j].frequency.label == frequencyA.label || _frequencies[j].frequency.label == frequencyB.label) {
+					condition = true;
+					break;
+				}
+			}
 
-	        // if (_frequencies contains A or B => true)
-	        if (!condition) {
-	            var item = {
-	                subGraphA: _subGraphs[nodeGroup.indexA],
-	                subGraphB: _subGraphs[nodeGroup.indexB]
-	            }
-	            subGraphGroups.push(item);
-	            _frequencies.push(item.subGraphA);
-	            _frequencies.push(item.subGraphB);
-	        }
-	    }
+			// if (_frequencies contains A or B => true)
+			if (!condition) {
+				var item = {
+					subGraphA: _subGraphs[nodeGroup.indexA],
+					subGraphB: _subGraphs[nodeGroup.indexB]
+				}
+				subGraphGroups.push(item);
+				_frequencies.push(item.subGraphA);
+				_frequencies.push(item.subGraphB);
+			}
+		}
 
-	    // if there are an odd number of frequencies, the single subGraph has to be added too
-	    if ((_subGraphs.length % 2) != 0) {
-	        for (var i = 0; i < _subGraphs.length; i++) {
-	            var found = false;
-	            for (var j = 0; j < _frequencies.length; j++) {
-	                if (_subGraphs[i].frequency.label == _frequencies[j].frequency.label) {
-	                    found = true;
-	                    break;
-	                }
-	            }
-	            if (!found) {
-	                var item = {
-	                    subGraphA: _subGraphs[i],
-	                    subGraphB: null
-	                }
-	                subGraphGroups.push(item);
-	                _frequencies.push(item.subGraphA);
-	            }
-	        }
-	    }
+		// if there are an odd number of frequencies, the single subGraph has to be added too
+		if ((_subGraphs.length % 2) != 0) {
+			for (var i = 0; i < _subGraphs.length; i++) {
+				var found = false;
+				for (var j = 0; j < _frequencies.length; j++) {
+					if (_subGraphs[i].frequency.label == _frequencies[j].frequency.label) {
+						found = true;
+						break;
+					}
+				}
+				if (!found) {
+					var item = {
+						subGraphA: _subGraphs[i],
+						subGraphB: null
+					}
+					subGraphGroups.push(item);
+					_frequencies.push(item.subGraphA);
+				}
+			}
+		}
 
-	    return subGraphGroups;
+		return subGraphGroups;
 	}
 
-    /**
-	* Creates sorted attribute lists
-	*
-	* @param subGraphGroups - all SubGraphGroups
-	*/
+	/**
+	 * Creates sorted attribute lists
+	 *
+	 * @param subGraphGroups - all SubGraphGroups
+	 */
 	function createSortedAttributLists(subGraphGroups) {
-	    for (var i = 0; i < subGraphGroups.length; i++) {
+		for (var i = 0; i < subGraphGroups.length; i++) {
 
-	        var attributes = subGraphGroups[i].subGraphA.attributes,
-                tempMultipleLinkedAttributes = new InternalGraphBuilder();
+			var attributes = subGraphGroups[i].subGraphA.attributes,
+				tempMultipleLinkedAttributes = new InternalGraphBuilder();
 
-	        var sortedAttributes = sortAttributes(attributes, tempMultipleLinkedAttributes);
-	        _singleLinkedAttributes.push(sortedAttributes.single);
+			var sortedAttributes = sortAttributes(attributes, tempMultipleLinkedAttributes);
+			_singleLinkedAttributes.push(sortedAttributes.single);
 
-	        if (subGraphGroups[i].subGraphB != null) {
-	            attributes = subGraphGroups[i].subGraphB.attributes;
-	            sortedAttributes = sortAttributes(attributes, tempMultipleLinkedAttributes);
-	            _singleLinkedAttributes.push(sortedAttributes.single);
-	        }
+			if (subGraphGroups[i].subGraphB != null) {
+				attributes = subGraphGroups[i].subGraphB.attributes;
+				sortedAttributes = sortAttributes(attributes, tempMultipleLinkedAttributes);
+				_singleLinkedAttributes.push(sortedAttributes.single);
+			}
 
-	        sortedAttributes.multi.nodes.sort(function (a, b) {
-	            if (a.numberOfLinks > b.numberOfLinks)
-	                return 1;
-	            if (a.numberOfLinks < b.numberOfLinks)
-	                return -1;
-	            return 0;
-	        });
+			sortedAttributes.multi.nodes.sort(function(a, b) {
+				if (a.numberOfLinks > b.numberOfLinks)
+					return 1;
+				if (a.numberOfLinks < b.numberOfLinks)
+					return -1;
+				return 0;
+			});
 
-	        for (var j = 0; j < sortedAttributes.multi.nodes.length; j++) {
-	            _multipleLinkedAttributes.addNode(sortedAttributes.multi.nodes[j]);
-	        }
-	    }
+			for (var j = 0; j < sortedAttributes.multi.nodes.length; j++) {
+				_multipleLinkedAttributes.addNode(sortedAttributes.multi.nodes[j]);
+			}
+		}
 
 	}
 
-    /**
+	/**
 	 * Sorts the attributes based on their link levels
 	 *
 	 * @param attributes - all attributes of a subGraph
-     * @param {InternalGraphBuilder} tempMultipleLinkedAttributes
-	 * @returns {object} 
+	 * @param {InternalGraphBuilder} tempMultipleLinkedAttributes
+	 * @returns {object}
 	 */
 	function sortAttributes(attributes, tempMultipleLinkedAttributes) {
-	    var tempSingleLinkedAttributes = [];
+		var tempSingleLinkedAttributes = [];
 
-	    for (var j = 0; j < attributes.length; j++) {
-	        if (attributes[j].numberOfLinks == 1) {
-	            tempSingleLinkedAttributes.push(attributes[j]);
-	        } else {
-	            tempMultipleLinkedAttributes.addNode(attributes[j]);
-	        }
-	    }
+		for (var j = 0; j < attributes.length; j++) {
+			if (attributes[j].numberOfLinks == 1) {
+				tempSingleLinkedAttributes.push(attributes[j]);
+			} else {
+				tempMultipleLinkedAttributes.addNode(attributes[j]);
+			}
+		}
 
-	    return {
-	        single: tempSingleLinkedAttributes,
-	        multi: tempMultipleLinkedAttributes
-	    };
-	}    
+		return {
+			single: tempSingleLinkedAttributes,
+			multi: tempMultipleLinkedAttributes
+		};
+	}
 
-    /**
+	/**
 	 * Calculates the Coordinates of all nodes
 	 *
 	 * @param {InternalGraphBuilder} nodeBuilder - nodeBuilder to store the nodes
 	 */
 	function calculateKoordinates(nodeBuilder) {
 
-	    var fRadius = getMaxRadius(),
-            x = getXKoordinates(fRadius),
-            y = 0;
+		var fRadius = getMaxRadius(),
+			x = getXKoordinates(fRadius),
+			y = 0;
 
-        // sets Koordinates of all multipleLinkAttributes (column 3)
-	    for (var i = 0; i < _multipleLinkedAttributes.nodes.length; i++) {
-	        _multipleLinkedAttributes.nodes[i].x = x.column3;
-	        _multipleLinkedAttributes.nodes[i].y = y;
-	        y += ATTRIBUTE_HEIGHT + ATTRIBUTE_PADDING;
+		// sets Koordinates of all multipleLinkAttributes (column 3)
+		for (var i = 0; i < _multipleLinkedAttributes.nodes.length; i++) {
+			_multipleLinkedAttributes.nodes[i].x = x.column3;
+			_multipleLinkedAttributes.nodes[i].y = y;
+			y += ATTRIBUTE_HEIGHT + ATTRIBUTE_PADDING;
 
-	        nodeBuilder.addNode(_multipleLinkedAttributes.nodes[i]);
-	    }
+			nodeBuilder.addNode(_multipleLinkedAttributes.nodes[i]);
+		}
 
-        // sets Koordinates of all frequencies
-	    var multiAttr = _multipleLinkedAttributes.nodes.length;
-	    y = ((multiAttr * ATTRIBUTE_HEIGHT) + ((multiAttr - 1) * ATTRIBUTE_PADDING)) / 2;
+		// sets Koordinates of all frequencies
+		var multiAttr = _multipleLinkedAttributes.nodes.length;
+		y = ((multiAttr * ATTRIBUTE_HEIGHT) + ((multiAttr - 1) * ATTRIBUTE_PADDING)) / 2;
 
-	    for (var i = 0; i < _frequencies.length; i++) {
-	        var frequency = _frequencies[i].frequency;
-	        var singleAttr = _singleLinkedAttributes[i].length;
+		for (var i = 0; i < _frequencies.length; i++) {
+			var frequency = _frequencies[i].frequency;
+			var singleAttr = _singleLinkedAttributes[i].length;
 
-            // set X-Koordinate of the left side
-	        if (i % 2 == 0) {
-	            frequency.x = x.column2;
-	            for (var j = 0; j < singleAttr; j++) {
-	                _singleLinkedAttributes[i][j].x = x.column1;
-	            }
-	        // set X-Koordinate of the right side
-	        } else {
-	            frequency.x = x.column4;
-	            for (var j = 0; j < singleAttr; j++) {
-	                _singleLinkedAttributes[i][j].x = x.column5;
-	            }
-	        }
+			// set X-Koordinate of the left side
+			if (i % 2 == 0) {
+				frequency.x = x.column2;
+				for (var j = 0; j < singleAttr; j++) {
+					_singleLinkedAttributes[i][j].x = x.column1;
+				}
+				// set X-Koordinate of the right side
+			} else {
+				frequency.x = x.column4;
+				for (var j = 0; j < singleAttr; j++) {
+					_singleLinkedAttributes[i][j].x = x.column5;
+				}
+			}
 
-            // TODO: Bug fixen
-	        if (i >= 2) {
-	            y += (2 * fRadius) + FREQUENCY_PADDING;
-	        }
-	        frequency.y = y;
+			// TODO: Bug fixen
+			if (i >= 2) {
+				y += (2 * fRadius) + FREQUENCY_PADDING;
+			}
+			frequency.y = y;
 
-            // sets Y-Koordinate of the singleLinkedAttributes
-	        var attrY = y - ((singleAttr * ATTRIBUTE_HEIGHT) + ((singleAttr - 1) * ATTRIBUTE_PADDING)) / 2;
-	        for (var j = 0; j < singleAttr; j++) {
-	            _singleLinkedAttributes[i][j].y = attrY;
-	            nodeBuilder.addNode(_singleLinkedAttributes[i][j]);
+			// sets Y-Koordinate of the singleLinkedAttributes
+			var attrY = y - ((singleAttr * ATTRIBUTE_HEIGHT) + ((singleAttr - 1) * ATTRIBUTE_PADDING)) / 2;
+			for (var j = 0; j < singleAttr; j++) {
+				_singleLinkedAttributes[i][j].y = attrY;
+				nodeBuilder.addNode(_singleLinkedAttributes[i][j]);
 
-	            attrY += ATTRIBUTE_HEIGHT + ATTRIBUTE_PADDING;
-	        }
-	        nodeBuilder.addNode(frequency);
-	    }
+				attrY += ATTRIBUTE_HEIGHT + ATTRIBUTE_PADDING;
+			}
+			nodeBuilder.addNode(frequency);
+		}
 
-	    // translate the Hypergraphe to the center of the display
-	    translateHypergraph(nodeBuilder, fRadius);
+		// translate the Hypergraphe to the center of the display
+		translateHypergraph(nodeBuilder, fRadius);
 	}
 
-    /**
+	/**
 	 * Returns the largest radius of all frequencies
 	 *
 	 * @returns {number} - the largest radius
 	 */
 	function getMaxRadius() {
-	    var fRadius = normalize(_frequencies[0].frequency.intervals[0].percentage);
-	    for (var i = 0; i < _frequencies.length; i++) {
-	        for (var j = 0; j < _frequencies[i].frequency.intervals.length; j++) {
-	            var radius = normalize(_frequencies[i].frequency.intervals[j].percentage);
-	            if (radius > fRadius)
-	                fRadius = radius;
-	        }
-	    }
-	    return fRadius;
+		var fRadius = normalize(_frequencies[0].frequency.intervals[0].percentage);
+		for (var i = 0; i < _frequencies.length; i++) {
+			for (var j = 0; j < _frequencies[i].frequency.intervals.length; j++) {
+				var radius = normalize(_frequencies[i].frequency.intervals[j].percentage);
+				if (radius > fRadius)
+					fRadius = radius;
+			}
+		}
+		return fRadius;
 	}
 
-    /**
+	/**
 	 * Returns a list with the X-Koordinates of the five layout-columns
 	 *
-     * @param {number} radius - the largest radius
+	 * @param {number} radius - the largest radius
 	 * @returns {object}
 	 */
 	function getXKoordinates(radius) {
-	    var x3 = (_width / 2) - (ATTRIBUTE_WIDTH / 2),
-	    	x2 = x3 - FREQUENCY_PADDING - radius,
-	    	x1 = x2 - radius - FREQUENCY_PADDING - ATTRIBUTE_WIDTH,
-	    	x4 = x3 + ATTRIBUTE_WIDTH + FREQUENCY_PADDING + radius,
-	    	x5 = x4 + radius + FREQUENCY_PADDING;
-	    return {
-	        column1: x1,
-	        column2: x2,
-	        column3: x3,
-	        column4: x4,
-	        column5: x5
-	    }
+		var x3 = (_width / 2) - (ATTRIBUTE_WIDTH / 2),
+			x2 = x3 - FREQUENCY_PADDING - radius,
+			x1 = x2 - radius - FREQUENCY_PADDING - ATTRIBUTE_WIDTH,
+			x4 = x3 + ATTRIBUTE_WIDTH + FREQUENCY_PADDING + radius,
+			x5 = x4 + radius + FREQUENCY_PADDING;
+		return {
+			column1: x1,
+			column2: x2,
+			column3: x3,
+			column4: x4,
+			column5: x5
+		}
 	}
 
-    /**
+	/**
 	 * Translate the hypergraphe to the center of the display.
 	 *
-     * @param {InternalGraphBuilder} nodeBuilder - nodeBuilder with the stored nodes
-     * @param {number} radius - the largest radius
+	 * @param {InternalGraphBuilder} nodeBuilder - nodeBuilder with the stored nodes
+	 * @param {number} radius - the largest radius
 	 */
 	function translateHypergraph(nodeBuilder, radius) {
 
-        // find the Y-Position of the last Node in the Hypergraph
-	    var index1 = _frequencies.length - 1,
-            index2 = _singleLinkedAttributes[index1].length - 1,
-            yPos = [];
+		// find the Y-Position of the last Node in the Hypergraph
+		var index1 = _frequencies.length - 1,
+			index2 = _singleLinkedAttributes[index1].length - 1,
+			yPos = [];
 
-	    yPos.push(_singleLinkedAttributes[index1][index2].y + ATTRIBUTE_HEIGHT);
-	    yPos.push(_frequencies[_frequencies.length - 1].frequency.y + radius);
-	    yPos.push(_multipleLinkedAttributes.nodes[_multipleLinkedAttributes.nodes.length - 1].y + ATTRIBUTE_HEIGHT);
-	    if (_frequencies.length > 1) {
-	        index1 = _frequencies.length - 2;
-	        index2 = _singleLinkedAttributes[index1].length - 1;
-	        yPos.push(_singleLinkedAttributes[index1][index2].y + ATTRIBUTE_HEIGHT);
-	        yPos.push(_frequencies[_frequencies.length - 2].frequency.y + radius);
-	    }
+		yPos.push(_singleLinkedAttributes[index1][index2].y + ATTRIBUTE_HEIGHT);
+		yPos.push(_frequencies[_frequencies.length - 1].frequency.y + radius);
+		yPos.push(_multipleLinkedAttributes.nodes[_multipleLinkedAttributes.nodes.length - 1].y + ATTRIBUTE_HEIGHT);
+		if (_frequencies.length > 1) {
+			index1 = _frequencies.length - 2;
+			index2 = _singleLinkedAttributes[index1].length - 1;
+			yPos.push(_singleLinkedAttributes[index1][index2].y + ATTRIBUTE_HEIGHT);
+			yPos.push(_frequencies[_frequencies.length - 2].frequency.y + radius);
+		}
 
-	    var lastY = yPos[0];
-	    for (var i = 1; i > yPos.length; i++) {
-	        if (yPos[i] > lastY)
-	            lastY = yPos[i];
-	    }
+		var lastY = yPos[0];
+		for (var i = 1; i > yPos.length; i++) {
+			if (yPos[i] > lastY)
+				lastY = yPos[i];
+		}
 
-        // translate all Nodes
-	    var translation = (_height - lastY) / 2
-	    for (var i = 0; i < nodeBuilder.nodes.length; i++) {
-	        nodeBuilder.nodes[i].y += translation;
-	    }
+		// translate all Nodes
+		var translation = (_height - lastY) / 2
+		for (var i = 0; i < nodeBuilder.nodes.length; i++) {
+			nodeBuilder.nodes[i].y += translation;
+		}
 	}
 
-    /**
+	/**
 	 * link all attributes with their frequencies.
 	 *
-     * @param {InternalGraphBuilder} nodeBuilder - nodeBuilder with the stored nodes
+	 * @param {InternalGraphBuilder} nodeBuilder - nodeBuilder with the stored nodes
 	 */
 	function linkAllNodes(nodeBuilder) {
-	    for (var i = 0; i < _frequencies.length; i++) {
-	        for (var j = 0; j < _frequencies[i].attributes.length; j++) {
-	            nodeBuilder.link(_frequencies[i].frequency, nodeBuilder.nodes[nodeBuilder.getKey(_frequencies[i].attributes[j])]);
-	        }
-	    }
+		for (var i = 0; i < _frequencies.length; i++) {
+			for (var j = 0; j < _frequencies[i].attributes.length; j++) {
+				nodeBuilder.link(_frequencies[i].frequency, nodeBuilder.nodes[nodeBuilder.getKey(_frequencies[i].attributes[j])]);
+			}
+		}
 	}
 
 	return {
