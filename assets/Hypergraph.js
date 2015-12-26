@@ -110,7 +110,7 @@ var Hypergraph = (function(layoutEngine) {
 				var data = JSON.parse(this.response);
 
 				data.forEach(function(subgraph) {
-					var frequency = subgraph.frequency;
+				    var frequency = subgraph[subgraph.length - 1];
 					_noOfIntervals = frequency.intervals.length > _noOfIntervals ? frequency.intervals.length : _noOfIntervals;
 				});
 
