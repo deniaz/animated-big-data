@@ -17,10 +17,10 @@
     "type": "git",
     "url": "git+https://github.com/deniaz/animated-big-data.git"
   },
-  "author": "Robert Vogt <robert.vogt@hsr.ch>",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/deniaz/animated-big-data/issues"
   },
-  "homepage": "https://github.com/deniaz/animated-big-data#readme"
+  "homepage": "https://github.com/deniaz/animated-big-data#readme",
+  "private": true
 }
