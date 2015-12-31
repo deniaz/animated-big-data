@@ -79,7 +79,7 @@ var LayoutEngine = (function() {
 		if (this.containsNode(el)) {
 			return this.nodes[this.getKey(el)];
 		} else {
-			return this.nodes.push(el) - 1;
+			return this.nodes[this.nodes.push(el) - 1];
 		}
 	};
 
@@ -87,7 +87,7 @@ var LayoutEngine = (function() {
 		this.links.push({
 			source: source,
 			target: target
-		})
+		});
 	};
 
 	var _nodes = [];
@@ -117,13 +117,13 @@ var LayoutEngine = (function() {
 	/**
 	 * builds the Layout of the Hypergraph
 	 *
-	 * @param {object} subGraphs - List of all subGraphs
+	 * @param {object} graphData - serialized graph data
 	 * @param {number} width - Width of the display
 	 * @param {number} height - Heigth of the display
 	 */
-	function buildFromArray(subGraphs, width, height) {
+	function buildFromArray(graphData, width, height) {
 
-		_subGraphs = subGraphs;
+		_subGraphs = convertData(graphData);
 		_width = width;
 		_height = height;
 
@@ -141,6 +141,41 @@ var LayoutEngine = (function() {
 	}
 
 	/**
+	 * Converts the Json data.
+	 *
+	 * @param graphData - serialized Json input
+	 * @returns {object} - List of all subGraphs
+	 */
+	function convertData(graphData) {
+		var attributeBuilder = new InternalGraphBuilder();
+		var convertedSubGraph = [];
+
+		graphData.forEach(function(subgraph) {
+			var frequency = subgraph[subgraph.length - 1],
+				attributes = [];
+
+			for (var i = 0; i < subgraph.length - 1; i++) {
+				var attribute;
+				if (attributeBuilder.containsNode(subgraph[i])) {
+					attribute = attributeBuilder.nodes[attributeBuilder.getKey(subgraph[i])];
+					attribute.numberOfLinks++;
+				} else {
+					attribute = attributeBuilder.nodes[attributeBuilder.nodes.push(subgraph[i]) - 1];
+					attribute.numberOfLinks = 1;
+				}
+
+				attributes.push(attribute);
+			}
+			convertedSubGraph.push({
+				frequency: frequency,
+				attributes: attributes
+			});
+		});
+
+		return convertedSubGraph;
+	}
+
+	/**
 	 * Compares all SubGraphs on their quantity of same attributes and sort them.
 	 *
 	 * @returns {number}
@@ -153,7 +188,7 @@ var LayoutEngine = (function() {
 					indexA: i,
 					indexB: j,
 					equal: countEqualAttributes(_subGraphs[i], _subGraphs[j])
-				}
+				};
 				comparisonList.push(result);
 			}
 		}
@@ -203,48 +238,60 @@ var LayoutEngine = (function() {
 				frequencyA = _subGraphs[nodeGroup.indexA].frequency,
 				frequencyB = _subGraphs[nodeGroup.indexB].frequency;
 
-			var condition = false;
+			var containsFrequency = false;
 			for (var j = 0; j < _frequencies.length; j++) {
 				if (_frequencies[j].frequency.label == frequencyA.label || _frequencies[j].frequency.label == frequencyB.label) {
-					condition = true;
+					containsFrequency = true;
 					break;
 				}
 			}
 
 			// if (_frequencies contains A or B => true)
-			if (!condition) {
-				var item = {
-					subGraphA: _subGraphs[nodeGroup.indexA],
-					subGraphB: _subGraphs[nodeGroup.indexB]
-				}
-				subGraphGroups.push(item);
-				_frequencies.push(item.subGraphA);
-				_frequencies.push(item.subGraphB);
+			if (!containsFrequency) {
+				subGraphGroups.push(createSubGraphGroup(_subGraphs[nodeGroup.indexA], _subGraphs[nodeGroup.indexB]));
 			}
 		}
 
 		// if there are an odd number of frequencies, the single subGraph has to be added too
-		if ((_subGraphs.length % 2) != 0) {
+		if ((_subGraphs.length % 2) !== 0) {
 			for (var i = 0; i < _subGraphs.length; i++) {
-				var found = false;
+				var frequencyFound = false;
 				for (var j = 0; j < _frequencies.length; j++) {
 					if (_subGraphs[i].frequency.label == _frequencies[j].frequency.label) {
-						found = true;
+						frequencyFound = true;
 						break;
 					}
 				}
-				if (!found) {
-					var item = {
-						subGraphA: _subGraphs[i],
-						subGraphB: null
-					}
-					subGraphGroups.push(item);
-					_frequencies.push(item.subGraphA);
+				if (!frequencyFound) {
+
+					subGraphGroups.push(createSubGraphGroup(_subGraphs[i], null));
 				}
 			}
 		}
 
 		return subGraphGroups;
+	}
+
+	/**
+	 * Creates a subGraphGroup
+	 *
+	 * @param {subGraph} subGraphA - subGraph to add to the group
+	 * @param {subGraph} subGraphB - subGraph to add to the group
+	 * @returns {object}
+	 */
+	function createSubGraphGroup(subGraphA, subGraphB) {
+		var subGraphGroup = {
+			subGraphA: subGraphA,
+			subGraphB: subGraphB
+		};
+
+		_frequencies.push(subGraphGroup.subGraphA);
+
+		if (subGraphGroup.subGraphB !== null) {
+			_frequencies.push(subGraphGroup.subGraphB);
+		}
+
+		return subGraphGroup;
 	}
 
 	/**
@@ -261,7 +308,7 @@ var LayoutEngine = (function() {
 			var sortedAttributes = sortAttributes(attributes, tempMultipleLinkedAttributes);
 			_singleLinkedAttributes.push(sortedAttributes.single);
 
-			if (subGraphGroups[i].subGraphB != null) {
+			if (subGraphGroups[i].subGraphB !== null) {
 				attributes = subGraphGroups[i].subGraphB.attributes;
 				sortedAttributes = sortAttributes(attributes, tempMultipleLinkedAttributes);
 				_singleLinkedAttributes.push(sortedAttributes.single);
@@ -335,7 +382,7 @@ var LayoutEngine = (function() {
 			var singleAttr = _singleLinkedAttributes[i].length;
 
 			// set X-Koordinate of the left side
-			if (i % 2 == 0) {
+			if (i % 2 === 0) {
 				frequency.x = x.column2;
 				for (var j = 0; j < singleAttr; j++) {
 					_singleLinkedAttributes[i][j].x = x.column1;
@@ -404,7 +451,7 @@ var LayoutEngine = (function() {
 			column3: x3,
 			column4: x4,
 			column5: x5
-		}
+		};
 	}
 
 	/**
@@ -437,7 +484,7 @@ var LayoutEngine = (function() {
 		}
 
 		// translate all Nodes
-		var translation = (_height - lastY) / 2
+		var translation = (_height - lastY) / 2;
 		for (var i = 0; i < nodeBuilder.nodes.length; i++) {
 			nodeBuilder.nodes[i].y += translation;
 		}
