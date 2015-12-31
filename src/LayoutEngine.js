@@ -185,11 +185,26 @@ var LayoutEngine = (function() {
 			}
 		}
 
+		// Add array index to every element in the array.
+		// You'll see why.
+		comparisonList.forEach(function(el, i) {
+			el.index = i;
+		});
+
 		comparisonList.sort(function(a, b) {
 			if (a.equal < b.equal)
 				return 1;
 			if (a.equal > b.equal)
 				return -1;
+
+			// If both elements have the same amount of equal, sort by the elements position in the array.
+			// This guarantees a stable sort and consistent results across browsers (looking at you, Chrome).
+			if (a.index < b.index)
+				return -1;
+
+			if (a.index > b.index)
+				return 1;
+
 			return 0;
 		});
 
@@ -306,11 +321,26 @@ var LayoutEngine = (function() {
 				_singleLinkedAttributes.push(sortedAttributes.single);
 			}
 
+			// Add array index to every element in the array.
+			// You'll see why.
+			sortedAttributes.multi.nodes.forEach(function(el, i) {
+				el.index = i;
+			});
+
 			sortedAttributes.multi.nodes.sort(function(a, b) {
 				if (a.numberOfLinks > b.numberOfLinks)
 					return 1;
 				if (a.numberOfLinks < b.numberOfLinks)
 					return -1;
+
+				// If both elements have the same amount of equal, sort by the elements position in the array.
+				// This guarantees a stable sort and consistent results across browsers (looking at you, Chrome).
+				if (a.index > b.index)
+					return 1;
+
+				if (a.index < b.index)
+					return -1;
+
 				return 0;
 			});
 
