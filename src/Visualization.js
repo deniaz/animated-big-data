@@ -41,6 +41,8 @@ var Visualization = (function() {
 	 */
 	var _s;
 
+	var _normalize;
+
 	/**
 	 * Injects all <line> Elements in the DOM without any positioning and adds relations to link objects.
 	 */
@@ -133,10 +135,11 @@ var Visualization = (function() {
 	 * @param nodes
 	 * @param links
 	 */
-	function start(s, nodes, links) {
+	function start(s, nodes, links, normalize) {
 		_s = s;
 		_nodes = nodes;
 		_links = links;
+		_normalize = normalize;
 
 		injectLinks();
 
@@ -161,13 +164,12 @@ var Visualization = (function() {
 	 * @param node
 	 */
 	function circle(node) {
-		var r = Math.pow(node.intervals[0].percentage, 4) / 30;
+		var r = _normalize(node.intervals[0].percentage);
 		node._ui = _s.circle(node.x, node.y, r);
 		node._ui.attr({
 			'fill': '#3498db'
 		});
 	}
-
 	/**
 	 * Make node-text groups draggable.
 	 * @param group

@@ -40,16 +40,6 @@ var LayoutEngine = (function() {
 	 */
 	var FREQUENCY_PADDING = 50;
 
-	/**
-	 * Calculates the radius of a frequency
-	 *
-	 * @param n - percentage-value of the frequency
-	 * @returns {number} - radius of the frequency
-	 */
-	function normalize(n) {
-		return Math.pow(n, 4) / 30;
-	}
-
 	function InternalGraphBuilder() {
 		this.nodes = [];
 		this.links = [];
@@ -100,6 +90,8 @@ var LayoutEngine = (function() {
 
 	var _height;
 
+	var _normalize;
+
 	var _singleLinkedAttributes = [];
 
 	var _multipleLinkedAttributes = new InternalGraphBuilder();
@@ -121,11 +113,11 @@ var LayoutEngine = (function() {
 	 * @param {number} width - Width of the display
 	 * @param {number} height - Heigth of the display
 	 */
-	function buildFromArray(graphData, width, height) {
-
+	function buildFromArray(graphData, width, height, normalize) {
 		_subGraphs = convertData(graphData);
 		_width = width;
 		_height = height;
+		_normalize = normalize;
 
 		var comparisonList = compareAllSubGraphs();
 		var subGraphGroups = getSubGraphGroups(comparisonList);
@@ -422,10 +414,10 @@ var LayoutEngine = (function() {
 	 * @returns {number} - the largest radius
 	 */
 	function getMaxRadius() {
-		var fRadius = normalize(_frequencies[0].frequency.intervals[0].percentage);
+		var fRadius = _normalize(_frequencies[0].frequency.intervals[0].percentage);
 		for (var i = 0; i < _frequencies.length; i++) {
 			for (var j = 0; j < _frequencies[i].frequency.intervals.length; j++) {
-				var radius = normalize(_frequencies[i].frequency.intervals[j].percentage);
+				var radius = _normalize(_frequencies[i].frequency.intervals[j].percentage);
 				if (radius > fRadius)
 					fRadius = radius;
 			}

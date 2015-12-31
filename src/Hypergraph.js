@@ -93,6 +93,11 @@ var Hypergraph = (function(layoutEngine) {
 	 */
 	var _width = 0;
 
+	var normalize = function(n) {
+		return n * 2;
+		return Math.pow(n, 2);
+	};
+
 	/**
 	 * Loads JSON
 	 */
@@ -114,7 +119,9 @@ var Hypergraph = (function(layoutEngine) {
 					_noOfIntervals = frequency.intervals.length > _noOfIntervals ? frequency.intervals.length : _noOfIntervals;
 				});
 
-				_layoutEngine.buildFromArray(data, _width, _height);
+				_layoutEngine.buildFromArray(data, _width, _height, function(n) {
+					return n * 3;
+				});
 				draw();
 			}
 		};
@@ -136,7 +143,9 @@ var Hypergraph = (function(layoutEngine) {
 		_container.appendChild(svg);
 
 		_visualization = Visualization;
-		_visualization.start(new Snap(svg), nodes, links);
+		_visualization.start(new Snap(svg), nodes, links, function(n) {
+			return Math.pow(n, 2) * 1.5;
+		});
 	}
 
 	/**
