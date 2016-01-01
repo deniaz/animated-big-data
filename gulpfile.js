@@ -104,24 +104,30 @@ function readItemset(line, step) {
 		rawAttributes = line.split(' ');
 
 	for (var i = 0; i < rawAttributes.length - 1; i++) {
-		var attr = rawAttributes[i];
+		var attr = rawAttributes[i].split(',');
+		var id = attr[0];
+		var label = attr[1].replace(/\"/g, '');
+
 		itemset.push({
 			type: 'attribute',
-			id: attr.split(',')[0],
-			label: attr.split(',')[1].replace(/\"/g, '')
+			id: id,
+			label: label
 		});
 	}
 
 	var rawFrequency = rawAttributes[rawAttributes.length - 1].replace('(', '').replace(')', '');
 	var splitted = rawFrequency.split(',');
 	var percentage = parseFloat(splitted[0]).toFixed(2);
+	var id = parseInt(splitted[1]);
+
 	itemset.push({
 		type: 'frequency',
-		id: splitted[1],
+		id: id,
+		label: id,
 		intervals: [
 			{
 				percentage: parseFloat(percentage),
-				label: rawFrequency.split(',')[1]
+				label: id
 			}
 		]
 	});

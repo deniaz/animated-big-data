@@ -49,6 +49,18 @@
 				{
 					"percentage": 7.02,
 					"label": 1234783
+				},
+				{
+					"percentage": 6.33,
+					"label": 1425396
+				},
+				{
+					"percentage": 5.33,
+					"label": 1987845
+				},
+				{
+					"percentage": 5.03,
+					"label": 2102623
 				}
 			]
 		}
@@ -93,6 +105,10 @@
 				{
 					"percentage": 6.65,
 					"label": 1169750
+				},
+				{
+					"percentage": 12.12,
+					"label": 2728159
 				}
 			]
 		}
@@ -101,7 +117,7 @@
 		{
 			"type": "attribute",
 			"id": "lIP_2.0.0.0",
-			"label": "locIP=xxx.xx.x.xx"
+			"label": "locIP=3.0.0.0"
 		},
 		{
 			"type": "attribute",
@@ -147,6 +163,18 @@
 				{
 					"percentage": 6.77,
 					"label": 1190665
+				},
+				{
+					"percentage": 6.76,
+					"label": 1520846
+				},
+				{
+					"percentage": 7.63,
+					"label": 2843996
+				},
+				{
+					"percentage": 5.57,
+					"label": 2328743
 				}
 			]
 		}
@@ -198,7 +226,7 @@
 	[
 		{
 			"type": "attribute",
-			"id": "lIP_3.0.0.0",
+			"id": "lIP_4.0.0.0",
 			"label": "locIP=xxx.xxx.x.xx"
 		},
 		{
@@ -250,6 +278,10 @@
 				{
 					"percentage": 7.24,
 					"label": 1273476
+				},
+				{
+					"percentage": 5.78,
+					"label": 1301553
 				}
 			]
 		}
@@ -300,6 +332,18 @@
 				{
 					"percentage": 4.9,
 					"label": 862649
+				},
+				{
+					"percentage": 5.71,
+					"label": 1286000
+				},
+				{
+					"percentage": 7.14,
+					"label": 2661677
+				},
+				{
+					"percentage": 6.91,
+					"label": 2887513
 				},
 				{
 					"percentage": 4.9,
@@ -358,6 +402,10 @@
 				{
 					"percentage": 6.4,
 					"label": 1125425
+				},
+				{
+					"percentage": 4.91,
+					"label": 1105338
 				}
 			]
 		}
@@ -404,6 +452,244 @@
 				{
 					"percentage": 5.29,
 					"label": 939490
+				}
+			]
+		}
+	],
+	[
+		{
+			"type": "attribute",
+			"id": "lPo_80",
+			"label": "locPort=80"
+		},
+		{
+			"type": "attribute",
+			"id": "rCc_CH",
+			"label": "CH"
+		},
+		{
+			"type": "attribute",
+			"id": "pro_6",
+			"label": "prot=TCP"
+		},
+		{
+			"type": "attribute",
+			"id": "dir_4",
+			"label": "biflow"
+		},
+		{
+			"type": "frequency",
+			"id": 1379214,
+			"label": 1379214,
+			"intervals": [
+				{
+					"percentage": 0,
+					"label": null
+				},
+				{
+					"percentage": 0,
+					"label": null
+				},
+				{
+					"percentage": 0,
+					"label": null
+				},
+				{
+					"percentage": 0,
+					"label": null
+				},
+				{
+					"percentage": 0,
+					"label": null
+				},
+				{
+					"percentage": 6.13,
+					"label": 1379214
+				},
+				{
+					"percentage": 5.43,
+					"label": 2025862
+				},
+				{
+					"percentage": 5.45,
+					"label": 2278566
+				}
+			]
+		}
+	],
+	[
+		{
+			"type": "attribute",
+			"id": "rAS_15169",
+			"label": "remAS=15169"
+		},
+		{
+			"type": "attribute",
+			"id": "rCc_US",
+			"label": "US"
+		},
+		{
+			"type": "attribute",
+			"id": "dir_4",
+			"label": "biflow"
+		},
+		{
+			"type": "frequency",
+			"id": 1884948,
+			"label": 1884948,
+			"intervals": [
+				{
+					"percentage": 0,
+					"label": null
+				},
+				{
+					"percentage": 0,
+					"label": null
+				},
+				{
+					"percentage": 0,
+					"label": null
+				},
+				{
+					"percentage": 0,
+					"label": null
+				},
+				{
+					"percentage": 0,
+					"label": null
+				},
+				{
+					"percentage": 0,
+					"label": null
+				},
+				{
+					"percentage": 5.06,
+					"label": 1884948
+				},
+				{
+					"percentage": 5.01,
+					"label": 2092766
+				},
+				{
+					"percentage": 6.28,
+					"label": 2624197
+				}
+			]
+		}
+	],
+	[
+		{
+			"type": "attribute",
+			"id": "lPo_123",
+			"label": "locPort=123"
+		},
+		{
+			"type": "attribute",
+			"id": "pro_17",
+			"label": "prot=UDP"
+		},
+		{
+			"type": "attribute",
+			"id": "dir_4",
+			"label": "biflow"
+		},
+		{
+			"type": "frequency",
+			"id": 2437186,
+			"label": 2437186,
+			"intervals": [
+				{
+					"percentage": 0,
+					"label": null
+				},
+				{
+					"percentage": 0,
+					"label": null
+				},
+				{
+					"percentage": 0,
+					"label": null
+				},
+				{
+					"percentage": 0,
+					"label": null
+				},
+				{
+					"percentage": 0,
+					"label": null
+				},
+				{
+					"percentage": 0,
+					"label": null
+				},
+				{
+					"percentage": 6.54,
+					"label": 2437186
+				},
+				{
+					"percentage": 5.63,
+					"label": 2352785
+				}
+			]
+		}
+	],
+	[
+		{
+			"type": "attribute",
+			"id": "rPo_80",
+			"label": "remPort=80"
+		},
+		{
+			"type": "attribute",
+			"id": "rCc_US",
+			"label": "US"
+		},
+		{
+			"type": "attribute",
+			"id": "pro_6",
+			"label": "prot=TCP"
+		},
+		{
+			"type": "attribute",
+			"id": "dir_4",
+			"label": "biflow"
+		},
+		{
+			"type": "frequency",
+			"id": 1899645,
+			"label": 1899645,
+			"intervals": [
+				{
+					"percentage": 0,
+					"label": null
+				},
+				{
+					"percentage": 0,
+					"label": null
+				},
+				{
+					"percentage": 0,
+					"label": null
+				},
+				{
+					"percentage": 0,
+					"label": null
+				},
+				{
+					"percentage": 0,
+					"label": null
+				},
+				{
+					"percentage": 0,
+					"label": null
+				},
+				{
+					"percentage": 5.1,
+					"label": 1899645
+				},
+				{
+					"percentage": 7.37,
+					"label": 3079375
 				}
 			]
 		}

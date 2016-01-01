@@ -2,7 +2,7 @@
 	[
 		{
 			"type": "attribute",
-			"id": "lIP_1.0.0.0",
+			"id": "lIP_0.0.0.0",
 			"label": "locIP=xxx.xx.xxx.xx"
 		},
 		{
@@ -41,14 +41,6 @@
 				{
 					"percentage": 6.28,
 					"label": 1115971
-				},
-				{
-					"percentage": 6.82,
-					"label": 1159765
-				},
-				{
-					"percentage": 7.02,
-					"label": 1234783
 				}
 			]
 		}
@@ -85,14 +77,6 @@
 				{
 					"percentage": 5.3,
 					"label": 941571
-				},
-				{
-					"percentage": 6.12,
-					"label": 1040434
-				},
-				{
-					"percentage": 6.65,
-					"label": 1169750
 				}
 			]
 		}
@@ -139,14 +123,6 @@
 				{
 					"percentage": 6.11,
 					"label": 1086580
-				},
-				{
-					"percentage": 6.51,
-					"label": 1105800
-				},
-				{
-					"percentage": 6.77,
-					"label": 1190665
 				}
 			]
 		}
@@ -183,14 +159,6 @@
 				{
 					"percentage": 7.4,
 					"label": 1315664
-				},
-				{
-					"percentage": 8.08,
-					"label": 1373297
-				},
-				{
-					"percentage": 9.65,
-					"label": 1697568
 				}
 			]
 		}
@@ -242,14 +210,6 @@
 				{
 					"percentage": 7.07,
 					"label": 1257023
-				},
-				{
-					"percentage": 7.46,
-					"label": 1267639
-				},
-				{
-					"percentage": 7.24,
-					"label": 1273476
 				}
 			]
 		}
@@ -292,14 +252,6 @@
 				{
 					"percentage": 4.94,
 					"label": 843069
-				},
-				{
-					"percentage": 4.78,
-					"label": 811821
-				},
-				{
-					"percentage": 4.9,
-					"label": 862649
 				},
 				{
 					"percentage": 4.9,
@@ -350,14 +302,6 @@
 				{
 					"percentage": 6.5,
 					"label": 1154350
-				},
-				{
-					"percentage": 6.77,
-					"label": 1150739
-				},
-				{
-					"percentage": 6.4,
-					"label": 1125425
 				}
 			]
 		}
