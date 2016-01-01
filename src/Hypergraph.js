@@ -22,7 +22,7 @@ var Hypergraph = (function(layoutEngine) {
 	 * @type {number}
 	 * @private
 	 */
-	var _velocity = 1000;
+	var _velocity = 2500;
 
 	/**
 	 * The lower threshold to display/hide subgraphs.
