@@ -95,18 +95,27 @@ var Visualization = (function() {
 				x, y, text;
 
 			if ('frequency' === node.type) {
+				var data = node.intervals[0];
 				circle(node);
 				x = parseFloat(node._ui.attr('cx'));
 				y = parseFloat(node._ui.attr('cy'));
 				group.append(node._ui);
 
 				group.append(
-					_s.text(x-15, y-10, node.intervals[0].percentage.toFixed(2) + '%').addClass('bold')
+					_s.text(
+						x - 15,
+						y - 10,
+						data.percentage.toFixed(2) + '%'
+					).addClass('bold percentage')
 				);
 
 				group.append(
-					_s.text(x-25, y+10, '(' + node.label + ')')
+					_s.text(x-25, y+10, '(' + data.label + ')').addClass('id-label')
 				);
+
+				if (data.percentage === 0) {
+					hideSubgraph(node, group, 0);
+				}
 
 				_groupped.push({
 					group: group,
@@ -164,7 +173,10 @@ var Visualization = (function() {
 	 * @param node
 	 */
 	function circle(node) {
+		//var r = Math.pow(node.intervals[0].percentage, 4) / 30;
+		//var r = Math.pow(node.intervals[0].percentage, 2);
 		var r = _normalize(node.intervals[0].percentage);
+
 		node._ui = _s.circle(node.x, node.y, r);
 		node._ui.attr({
 			'fill': '#3498db'
@@ -206,19 +218,36 @@ var Visualization = (function() {
 		});
 	}
 
+	function updateText(group, percentage, label) {
+		var elements = group.children().filter(function(el) {return el.type === 'text'; });
+		elements.forEach(function(el) {
+			var node = el.node;
+			if (node.classList.contains('percentage')) {
+				node.textContent = percentage + '%';
+			} else if (node.classList.contains('id-label')) {
+				node.textContent = label;
+			}
+		});
+		//temp1.children().filter(function(el) { return el.type === 'text' &&
+		// el.node.classList.contains('percentage'); })[0].node.textContent = 'Bla';
+	}
+
 	/**
 	 * Hides a subgraph based on its frequency.
 	 * @param frequency
 	 * @param group
 	 * @todo Refactoring! This and showSubgraph() Are quite alike and stuff could be done easier with lambdas.
 	 */
-	function hideSubgraph(frequency, group) {
+	function hideSubgraph(frequency, group, delay) {
+		if (typeof delay === 'undefined') {
+			delay = 500;
+		}
 		// Only do something if frequency is visible
 		if (parseInt(group.attr('opacity')) == 1) {
 			// Hide the frequency/label
 			group.animate({
 				opacity: 0
-			}, 500, mina.easeinout);
+			}, delay, mina.easeinout);
 
 			// Loop through all the frequency's links and therefore their targets
 			frequency._links.forEach(function(link) {
@@ -226,7 +255,7 @@ var Visualization = (function() {
 				if (link.target.numberOfLinks === 1) {
 					link.target._ui.animate({
 						opacity: 0
-					}, 500, mina.easeinout);
+					}, delay, mina.easeinout);
 				}
 
 				// Decrement the target's number of links as the link is going to be hidden in the next few lines
@@ -235,7 +264,7 @@ var Visualization = (function() {
 				// See, as I promised you, the link is hidden! Wow!
 				link._ui.animate({
 					opacity: 0
-				}, 500, mina.easeinout);
+				}, delay, mina.easeinout);
 			});
 		}
 	}
@@ -290,6 +319,11 @@ var Visualization = (function() {
 				} else {
 					showSubgraph(_group.node, _group.group);
 				}
+				_group.node._ui.animate({
+					r: _normalize(intervals[step].percentage)
+				}, 500, mina.easeinout);
+
+				updateText(_group.group, intervals[step].percentage, intervals[step].label);
 			}
 		});
 	}
