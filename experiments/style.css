@@ -34,7 +34,8 @@ ol a {
 	transition: color .25s ease-in-out;
 }
 
-p a:hover {
+p a:hover,
+ol a:hover {
 	color: #27ae60;
 }
 
