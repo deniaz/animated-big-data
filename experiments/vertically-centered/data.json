@@ -47,9 +47,9 @@
       },
       "attributes": [
         {
-          "id": "lIP_130.59.211.10",
+          "id": "lIP_1.0.0.0",
           "type": "attribute",
-          "label": "locIP=130.59.211.10",
+          "label": "locIP=xxx.xx.xxx.xx",
           "numberOfLinks": 1,
           "fixed":"TRUE",
           "x": null,
@@ -205,9 +205,9 @@
       },
       "attributes": [
         {
-          "id": "lIP_130.59.1.80",
+          "id": "lIP_2.0.0.0",
           "type": "attribute",
-          "label": "locIP=130.59.1.80",
+          "label": "locIP=xxx.xx.x.xx",
           "numberOfLinks": 1,
           "fixed":"TRUE",
           "x": null,

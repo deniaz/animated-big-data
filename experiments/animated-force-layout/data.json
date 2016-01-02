@@ -7,8 +7,8 @@
 			"data": [
 				{
 					"type": "attribute",
-					"id": "lIP_130.59.211.10",
-					"label": "locIP=130.59.211.10"
+					"id": "lIP_1.0.0.0",
+					"label": "locIP=xxx.xx.xxx.xx"
 				},
 				{
 					"type": "attribute",
@@ -127,8 +127,8 @@
 			"data": [
 				{
 					"type": "attribute",
-					"id": "lIP_130.59.1.80",
-					"label": "locIP=130.59.1.80"
+					"id": "lIP_2.0.0.0",
+					"label": "locIP=xxx.xx.x.xx"
 				},
 				{
 					"type": "attribute",
