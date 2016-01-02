@@ -168,26 +168,6 @@
 		if (window.sortNodes) {
 			this.nodes.sort(window.sortNodes);
 		}
-
-		/**
-		 * Randomizing the links-array doesn't change anything at all.
-		 */
-		//function shuffle(arr) {
-		//	var counter = arr.length,
-		//		tmp,
-		//		i;
-		//
-		//	while (counter > 0) {
-		//		i = Math.floor(Math.random() * counter--);
-		//		tmp = arr[counter];
-		//		arr[counter] = arr[i];
-		//		arr[i] = tmp;
-		//	}
-		//
-		//	return arr;
-		//}
-		//
-		//this.links = shuffle(this.links);
 	};
 
 	/**
@@ -240,16 +220,6 @@
 			var subGraph = data.nodes[i].data,
 				frequency = subGraph[subGraph.length - 1];
 
-			/**
-			 * Currently the nodes are inserted as in the file:
-			 * [attr, attr, attr, attr, freq]
-			 *
-			 * The commented code puts freq in front:
-			 * [freq, attr, attr, attr, attr]
-			 */
-			//builder.addNode(frequency);
-			//for (var j = 0; j < subGraph.length-1; j++) {
-
 			for (var j = 0; j < subGraph.length; j++) {
 				var node = builder.addNode(subGraph[j]);
 				builder.link(frequency, node);
@@ -270,7 +240,7 @@
 
 		var svg = this.svg =
 			d3
-				.select('.js-graph')
+				.select('main')
 				.append('svg')
 				.attr('width', this.width)
 				.attr('height', this.height);
@@ -582,6 +552,6 @@
 	document.addEventListener('DOMContentLoaded', function() {
 		log('DOMContentLoaded');
 
-		(new Hypergraph(document.querySelector('.graph'))).load();
+		(new Hypergraph(document.querySelector('main'))).load();
 	});
 })(window, document, d3);
