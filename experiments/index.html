@@ -15,9 +15,11 @@
 		<h2>Experiments</h2>
 
 		<p>
-			This is the overview page for all available experiments. For more theoretical information about these,
-			please refer to the research paper.
+			This is the overview page for all available experiments. All of these are based on
+			<a href="http://d3js.org/" target="_blank">D3.js</a>. The first two make use of its Force-Directed Layout Algorithm or
+			a related concept. The later two use it as an SVG/Visualization library but implement their own Layout Algorithm.
 		</p>
+
 		<nav>
 			<ol>
 				<li>
@@ -34,6 +36,19 @@
 				</li>
 			</ol>
 		</nav>
+
+		<p>
+			The <a href="animated-force-layout">Animated Force-Directed Layout</a> proves the possibility of a chronological
+			animation with the chosen toolset, but has layout issues. <a href="multiple-focal-points">Multiple Focal Points</a>
+			is an approach to solve these layout issues by implementing a custom variation of the force-directed layout. It works
+			quite well in theory, but provides no collision detection.
+		</p>
+		<p>
+			<a href="horizontally-centered">Horizontally Centered Layout</a> solves the layout issue better. The graph is
+			stringently structured and reduces crossings and collisions, but is not scalable. <a href="vertically-centered">
+			Vertically Centered Layout</a> attempts to solve the scalability issue by rotating the hypergraph by 90° and is
+			the final experiment.
+		</p>
 	</main>
 
 	<footer>
