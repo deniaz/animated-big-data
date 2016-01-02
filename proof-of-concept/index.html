@@ -3,53 +3,78 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="x-ua-compatible" content="ie=edge">
-	<title>Animated Big Data Visualization</title>
+	<title>Animated Big Data Visualization &mdash; Vertically Centered Layout</title>
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 
-	<link href="styles.css" rel="stylesheet" type="text/css">
+	<link href="reset.css" rel="stylesheet" type="text/css">
+	<link href="style.css" rel="stylesheet" type="text/css">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
 </head>
 <body>
+<main></main>
 
-<aside>
-	<div class="content">
-		<h1>Animated Big Data Visualization</h1>
-		<p>
-			Animated Visualization of Frequent Itemsets as Hypergraphs.
-		</p>
+<div class="scroll">
+	<a href="#" class="js-scroll-btn">
+		Scroll down<br>
+		<i class="fa fa-angle-down"></i>
+	</a>
 
-		<form class="controls">
-			<label>
-				<strong data-alt-text="Playing" class="js-play-label">Paused</strong>
-				<input class="js-play" type="button" value="&#9658;" data-alt-symbol="&#10074;&#10074;">
-			</label>
-			<label>
-				<strong>Velocity</strong>
+	<form class="controls">
+		<label>
+			<strong data-alt-text="Playing" class="js-play-label">Paused</strong>
+			<input class="js-play" type="button" value="&#9658;" data-alt-symbol="&#10074;&#10074;">
+		</label>
+		<label>
+			<strong>Velocity</strong>
 				<span class="block">
 					<span class="js-velocity-label">2500</span>ms
 				</span>
-				<input class="js-velocity" type="range" min="1000" max="10000" step="500" value="2500">
-			</label>
+			<input class="js-velocity" type="range" min="1000" max="10000" step="500" value="2500">
+		</label>
 
-			<label>
-				<strong>Threshold</strong>
+		<label>
+			<strong>Threshold</strong>
 				<span class="block">
 					<span class="js-threshold-label">6.25</span>%
 				</span>
-				<input class="js-threshold" type="number" step="0.01" value="6.25">
-			</label>
-		</form>
-	</div>
-</aside>
-<main>
-	<div class="graph js-graph"></div>
-</main>
+			<input class="js-threshold" type="number" step="0.01" value="6.25">
+		</label>
+	</form>
+</div>
 
-<script src="dist/abdv-0.1.0.min.js"></script>
+<aside>
+	<h1>Proof Of Concept</h1>
+	<h2>Animated Visualization of Frequent Itemsets as Hypergraphs</h2>
+
+	<p>
+		This Proof Of Concept is a consolidation of the results of the previous <a href="../experiments">experiments</a>.
+		The layout algorithm is based on the <a href="../experiments/vertically-centered">Vertically Centered Layout</a> experiment
+		and the animation algorithm on the <a href="../experiments/animated-force-layout">Animated Force Layout</a>.
+	</p>
+
+	<p>
+		The library <a href="http://d3js.org/" target="_blank">D3</a> was dropped in favour of a custom Custom Layout Algorithm
+		and the SVG Library <a href="http://snapsvg.io/" target="_blank">Snap.svg</a>.
+	</p>
+
+</aside>
+<footer>
+	<p>
+		&copy; 2015 Robert Vogt and Peter Frick
+	</p>
+</footer>
+<script src="abdv-0.1.0.min.js"></script>
+
 <script type="text/javascript">
 	document.addEventListener('DOMContentLoaded', function() {
 		var graph = Hypergraph;
 		Controls.start(graph);
-		graph.start('.js-graph');
+		graph.start('main');
+	});
+
+	document.querySelector('.js-scroll-btn').addEventListener('click', function(e) {
+		e.preventDefault();
+		document.querySelector('aside').scrollIntoView({ block: 'start', behavior: 'smooth' });
 	});
 </script>
 </body>
