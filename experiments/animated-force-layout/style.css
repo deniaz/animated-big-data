@@ -39,14 +39,14 @@ p {
 	letter-spacing: -0.025em;
 }
 
-p a {
+a {
 	color: #2ecc71;
 	text-decoration: none;
 	border-bottom: 1px solid #27ae60;
 	transition: color .25s ease-in-out;
 }
 
-p a:hover {
+a:hover {
 	color: #27ae60;
 }
 
@@ -83,12 +83,17 @@ main text {
 	bottom: 0;
 	text-align: center;
 	padding: 20px 0;
+	pointer-events: none;
 }
 
 .scroll a {
 	color: #333;
 	border-bottom: none;
 	display: inline-block;
+	font-family: 'Josefin Slab', sans-serif;
+	font-weight: 400;
+	font-size: 1.5em;
+	pointer-events: all;
 }
 
 footer {
