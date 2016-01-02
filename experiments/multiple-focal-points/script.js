@@ -274,7 +274,7 @@
 				function normalize(n) { return Math.pow(n, 4) / 25; }
 				return normalize(d.intervals[this.current_interval].percentage);
 			}.bind(this))
-			.attr('fill', 'deepskyblue');
+			.attr('fill', '#3498db');
 
 		frequencyEnter.append('text')
 			.attr('class', 'label')
@@ -318,7 +318,7 @@
 			.attr('y', function(d) { return d.y; })
 			.attr('width', 175)
 			.attr('height', 60)
-			.attr('fill', 'deeppink');
+			.attr('fill', '#e74c3c');
 
 		attributeEnter.append('text')
 			.attr('class', 'label')
@@ -386,19 +386,7 @@
 
 	document.addEventListener('DOMContentLoaded', function() {
 		log('DOMContentLoaded');
-		var graph = new Hypergraph(document.querySelector('.graph'));
+		var graph = new Hypergraph(document.querySelector('main'));
 		graph.load();
-
-		document.querySelector('.js-interval').addEventListener('change', function(e) {
-			document.querySelector('.js-current-interval').textContent = graph.setInterval(e.target.value);
-		});
-
-		document.querySelector('.js-threshold').addEventListener('change', function(e) {
-			document.querySelector('.js-current-threshold').textContent = graph.setThreshold(e.target.value);
-		});
-
-		document.querySelector('.js-collision').addEventListener('change', function(e) {
-			graph.toggleCollisionDetection();
-		});
 	});
 })(window, document, d3);

@@ -3,53 +3,53 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="x-ua-compatible" content="ie=edge">
-	<title>D3 Presentation</title>
+	<title>Animated Big Data Visualization &mdash; Multiple Focal Points</title>
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 
-	<link href="assets/layout.css" rel="stylesheet" type="text/css">
-	<link href="assets/graph.css" rel="stylesheet" type="text/css">
+	<link href="reset.css" rel="stylesheet" type="text/css">
+	<link href="style.css" rel="stylesheet" type="text/css">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
 </head>
 <body>
-
+<main></main>
+<div class="scroll">
+	<a href="#" class="js-scroll-btn">
+		Scroll down<br>
+		<i class="fa fa-angle-down"></i>
+	</a>
+</div>
 <aside>
-	<div class="content">
-		<h1>D3 Timeline Experiment</h1>
-		<h2>Multiple Gravity Focii</h2>
-		<p>
-			In this experiment every frequency represents a gravity focus for attributes. It attracts connected attributes.
-			The global/central gravity is set to almost 0.
-		</p>
-		<p>
-			The idea works alright, but the d3 problems (rectangle collisions, etc.) still exist.
-		</p>
+	<h1>Multiple Focal Points</h1>
+	<h2>Use Frequency as Focal Point rather than one global gravitation.</h2>
 
-		<form class="controls">
-			<label>
-				<strong>Interval</strong>
-				<span class="js-current-interval">2500</span>
-				<input class="js-interval" type="range" min="1000" max="10000" step="500" value="2500">
-			</label>
+	<p>
+		This experiment tries to solve the issues overlapping links and nodes. The code is still using
+		<a href="http://d3js.org/" target="_blank">D3</a> and its
+		<a href="https://github.com/mbostock/d3/wiki/Force-Layout" target="_blank">Force Layout</a>, but
+		rather than having one central gravitational force every frequency node acts a focal point.
+	</p>
 
-			<label>
-				<strong>Threshold</strong>
-				<span class="js-current-threshold">6.25</span>
-				<input class="js-threshold" type="number" step="0.01" value="6.25">
-			</label>
+	<p>
+		The concept of multiple focal points seem to work quite well, although there is still a problem of overlapping
+		nodes. This seems to be more of an issue with D3's implementation and ideas than the concept of multiple focal
+		points. As the experiment <a href="../horizontally-centered">Horizontally Centered Layout</a> provided more
+		promising results, this approach was dropped.
+	</p>
 
-			<label>
-				<strong>Use Collision Detection</strong>
-				<input class="js-collision" type="checkbox">
-			</label>
-		</form>
-	</div>
 </aside>
+<footer>
+	<p>
+		&copy; 2015 Robert Vogt and Peter Frick
+	</p>
+</footer>
+<script src="d3-3.5.6.js"></script>
+<script src="script.js"></script>
 
-<main>
-	<div class="graph js-graph"></div>
-</main>
-
-<!--<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js" charset="utf-8"></script>-->
-<script src="assets/d3-3.5.6.js"></script>
-<script src="assets/graph.js"></script>
+<script type="text/javascript">
+	document.querySelector('.js-scroll-btn').addEventListener('click', function(e) {
+		e.preventDefault();
+		document.querySelector('aside').scrollIntoView({ block: 'start', behavior: 'smooth' });
+	});
+</script>
 </body>
 </html>
