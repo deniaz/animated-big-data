@@ -3,6 +3,7 @@
 html,
 body {
 	font-size: 1em;
+	color: #333;
 }
 
 h1,
@@ -13,7 +14,6 @@ h5,
 h6 {
 	font-family: 'Lato', sans-serif;
 	font-weight: 900;
-	color: #333;
 }
 
 p {
