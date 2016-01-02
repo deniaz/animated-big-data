@@ -3,28 +3,56 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="x-ua-compatible" content="ie=edge">
-	<title>D3 Presentation</title>
+	<title>Animated Big Data Visualization &mdash; Horizontally Centered Layout</title>
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 
-	<link href="assets/layout.css" rel="stylesheet" type="text/css">
-	<link href="assets/graph.css" rel="stylesheet" type="text/css">
+	<link href="reset.css" rel="stylesheet" type="text/css">
+	<link href="style.css" rel="stylesheet" type="text/css">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
 </head>
 <body>
-
+<main></main>
+<div class="scroll">
+	<a href="#" class="js-scroll-btn">
+		Scroll down<br>
+		<i class="fa fa-angle-down"></i>
+	</a>
+</div>
 <aside>
-	<div class="content">
-		<h1>D3 Centered Attribute Experiment</h1>
-		<p>
-			In this experiment the approach to center all Attributes and surround them with frequencies was tested.
-		</p>
-	</div>
+	<h1>Horizontally Centered Layout</h1>
+	<h2>Graph Layout Algorithm without the use of Force Layout, which assigns all items centrally</h2>
+
+	<p>
+		This experiment tries to solve the issues overlapping links and nodes. The code is still using
+		<a href="http://d3js.org/" target="_blank">D3</a>, but only as some kind of view library rather than a graph visualization.
+		The use of D3's Force Layout was entirely dropped.
+	</p>
+
+	<p>
+		This approach aligns all items horizontally centered. The frequency nodes are positioned above or below the attributes.
+		As shown above this reduces overlapping of both links and nodes drastically. User Interaction is still possible through
+		draggable nodes. Thus a user can re-draw a graph by dragging nodes to another position.
+	</p>
+
+	<p>
+		This graph layout was tested in a Usability Audit. Some of the feedback from the audit was implemented and resulted in
+		the following experiment <a href="../vertically-centered">Vertically Centered Layout</a>.
+	</p>
+
 </aside>
+<footer>
+	<p>
+		&copy; 2015 Robert Vogt and Peter Frick
+	</p>
+</footer>
+<script src="d3-3.5.6.js"></script>
+<script src="script.js"></script>
 
-<main>
-	<div class="graph js-graph"></div>
-</main>
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js" charset="utf-8"></script>
-<script src="assets/graph.js"></script>
+<script type="text/javascript">
+	document.querySelector('.js-scroll-btn').addEventListener('click', function(e) {
+		e.preventDefault();
+		document.querySelector('aside').scrollIntoView({ block: 'start', behavior: 'smooth' });
+	});
+</script>
 </body>
 </html>
