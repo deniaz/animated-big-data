@@ -461,7 +461,7 @@
 
 		var svg = this.svg =
 			d3
-				.select('.js-graph')
+				.select('main')
 				.append('svg')
 				.attr('width', this.width)
 				.attr('height', this.height);
@@ -655,35 +655,7 @@
 	 * Adjusts node/graph on animation iterations.
 	 */
 	Hypergraph.prototype.step = function() {
-		 //log('Interval ' + STEPS);
-		 //if (STEPS === this.interval_count - 1) {
-		 //    window.clearInterval(this.interval);
-		 //    log('Done with intervals');
-		 //    return;
-		 //}
 
-		 //++STEPS;
-
-		 //console.info(this);
-
-		 //this.frequency.node
-		 //    .transition()
-		 //    .duration(D3_TRANSITION_DURATION)
-		 //    .attr('r', function(d) {
-		 //   	 if (d.intervals[STEPS].percentage >= this.threshold) {
-		 //   		 return normalize(d.intervals[STEPS].percentage);
-		 //   	 } else {
-		 //   		 return FREQUENCY_HIDE_SIZE;
-		 //   	 }				
-		 //    }.bind(this));
-
-		 //this.frequency.value
-		 //    .text(function(d) {
-		 //   	 return d.intervals[STEPS].percentage + '%';
-		 //    }.bind(this))
-		 //    .style('opacity', function(d) {
-		 //   	 return d.intervals[STEPS].percentage >= this.threshold ? 1 : 0;
-		 //    }.bind(this));
 	};
 
 	/**
@@ -692,6 +664,6 @@
 	document.addEventListener('DOMContentLoaded', function() {
 		log('DOMContentLoaded');
 
-		(new Hypergraph(document.querySelector('.graph'))).load();
+		(new Hypergraph(document.querySelector('main'))).load();
 	});
 })(window, document, d3);

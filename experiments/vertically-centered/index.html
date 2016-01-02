@@ -3,28 +3,52 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="x-ua-compatible" content="ie=edge">
-	<title>D3 Presentation</title>
+	<title>Animated Big Data Visualization &mdash; Vertically Centered Layout</title>
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 
-	<link href="assets/layout.css" rel="stylesheet" type="text/css">
-	<link href="assets/graph.css" rel="stylesheet" type="text/css">
+	<link href="reset.css" rel="stylesheet" type="text/css">
+	<link href="style.css" rel="stylesheet" type="text/css">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
 </head>
 <body>
-
+<main></main>
+<div class="scroll">
+	<a href="#" class="js-scroll-btn">
+		Scroll down<br>
+		<i class="fa fa-angle-down"></i>
+	</a>
+</div>
 <aside>
-	<div class="content">
-		<h1>D3 Vertical Centered Attribute Experiment</h1>
-		<p>
-			In this experiment the approach to center all Attributes vertical and surround them with frequencies was tested.
-		</p>
-	</div>
+	<h1>Vertically Centered Layout</h1>
+	<h2>Rotated Horizontally Centered Layout with Spiky Leaves</h2>
+
+	<p>
+		This experiment implements improvements from the Usability Audit and a feedback interview with Prof. Dr. Eduard Glatz.
+	</p>
+	<p>
+		Instead of aligning all attributes, singly linked attributes (only occuring in one itemset) are not in the
+		same list as the other attributes. They are positioned on the other side of the frequency node.
+	</p>
+	<p>
+		Rather than aligning the attributes horizontally they are now aligned vertically. These two improvements make the
+		graph layout a lot more scalable. The algorithm is only a first version and thus not faultless. Nevertheless, it looks
+		very promising and is being adapted for the <a href="../../proof-of-concept">Proof Of Concept</a>.
+	</p>
+
 </aside>
+<footer>
+	<p>
+		&copy; 2015 Robert Vogt and Peter Frick
+	</p>
+</footer>
+<script src="d3-3.5.6.js"></script>
+<script src="script.js"></script>
 
-<main>
-	<div class="graph js-graph"></div>
-</main>
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js" charset="utf-8"></script>
-<script src="assets/graph.js"></script>
+<script type="text/javascript">
+	document.querySelector('.js-scroll-btn').addEventListener('click', function(e) {
+		e.preventDefault();
+		document.querySelector('aside').scrollIntoView({ block: 'start', behavior: 'smooth' });
+	});
+</script>
 </body>
 </html>
