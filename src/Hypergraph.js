@@ -115,7 +115,7 @@ var Hypergraph = (function(layoutEngine) {
 				});
 
 				_layoutEngine.buildFromArray(data, _width, _height, function(n) {
-					return n * 3;
+					return n * 2;
 				});
 				draw();
 			}
