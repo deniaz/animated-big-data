@@ -113,6 +113,8 @@ var Hypergraph = (function(layoutEngine) {
 			file = 'data.json';
 		}
 
+		file += '?_' + new Date().getTime();
+
 		var xhr = new XMLHttpRequest();
 		xhr.open('GET', file, true);
 
@@ -124,6 +126,9 @@ var Hypergraph = (function(layoutEngine) {
 					var frequency = subgraph[subgraph.length-1];
 					_noOfIntervals = frequency.intervals.length > _noOfIntervals ? frequency.intervals.length-1 : _noOfIntervals;
 				});
+
+				document.querySelector('.max-steps').textContent = '/' + (_noOfIntervals + 1);
+				document.querySelector('.step-progress').setAttribute('max', _noOfIntervals);
 
 				_layoutEngine.buildFromArray(data, _width, _height, _normalize);
 				draw();
@@ -207,8 +212,12 @@ var Hypergraph = (function(layoutEngine) {
 			_currentInterval = 0;
 			_isPlaying = false;
 			_visualization.next(_currentInterval);
+			document.querySelector('.current-step').textContent = _currentInterval+1;
+			document.querySelector('.step-progress').setAttribute('value', 0);
 		} else {
 			_visualization.next(++_currentInterval);
+			document.querySelector('.current-step').textContent = _currentInterval+1;
+			document.querySelector('.step-progress').setAttribute('value', _currentInterval);
 		}
 	}
 
