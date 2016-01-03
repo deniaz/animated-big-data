@@ -31,6 +31,8 @@ gulp.task('lint', function() {
 });
 
 gulp.task('convert', function() {
+	var MAX_ITEMSET_COUNT = 8;
+	var cannedItemsets = 0;
 	fs.readdir('./data', function(err, files) {
 		if (err) throw err;
 
@@ -54,24 +56,29 @@ gulp.task('convert', function() {
 				var existingItemset = find(graph, newItemset);
 
 				if (!existingItemset) {
-					// If itemset is not already in the graph and the it's not in the first interval file,
-					// the interval-steps before this one need to be mocked (set to zero).
-					if (i > 0) {
-						console.log('New itemset found (which is not in the first interval).');
-						var frequency = newItemset[newItemset.length-1];
-						var interval = frequency.intervals[0];
-						frequency.intervals = [];
-						for (var j = 0; j < i; j++) {
-							frequency.intervals.push({
-								percentage: 0,
-								label: null
-							})
+					// For proper test data, limit the number of itemsets in the graph.
+					if (graph.length < MAX_ITEMSET_COUNT) {
+						// If itemset is not already in the graph and the it's not in the first interval file,
+						// the interval-steps before this one need to be mocked (set to zero).
+						if (i > 0) {
+							console.log('New itemset found (which is not in the first interval).');
+							var frequency = newItemset[newItemset.length-1];
+							var interval = frequency.intervals[0];
+							frequency.intervals = [];
+							for (var j = 0; j < i; j++) {
+								frequency.intervals.push({
+									percentage: 0,
+									label: null
+								})
+							}
+
+							frequency.intervals.push(interval);
 						}
 
-						frequency.intervals.push(interval);
+						graph.push(newItemset);
+					} else {
+						cannedItemsets++;
 					}
-
-					graph.push(newItemset);
 				} else {
 					var newFrequency = newItemset[newItemset.length - 1];
 					var existingFrequency = existingItemset[existingItemset.length - 1];
@@ -83,6 +90,8 @@ gulp.task('convert', function() {
 			if (i === dataFiles.length - 1) {
 				reader.on('close', function() {
 					write(graph);
+
+					console.log(cannedItemsets + ' itemsets were not converted for the POC data.');
 				});
 			}
 		});
