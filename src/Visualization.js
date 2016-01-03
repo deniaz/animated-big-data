@@ -28,7 +28,7 @@ var Visualization = (function() {
 	 * @const
 	 * @type {string}
 	 */
-	var C_PETER_RIVER = '#3498db';
+	var C_PETER_RIVER = '#4DAEF0';
 
 	/**
 	 * Color Belize Hole (Blue Dark)
@@ -42,7 +42,7 @@ var Visualization = (function() {
 	 * @const
 	 * @type {string}
 	 */
-	var C_ALIZARIN = '#e74c3c';
+	var C_ALIZARIN = '#FA5746';
 
 	/**
 	 * Color Pomegranate (Red Dark)
@@ -56,7 +56,7 @@ var Visualization = (function() {
 	 * @const
 	 * @type {string}
 	 */
-	var C_WET_ASPHALT = '#34495e';
+	var AMETHYST = '#9b59b6';
 
 	/**
 	 * Color Midnight Blue (Gray Dark)
@@ -367,7 +367,7 @@ var Visualization = (function() {
 
 				links.forEach(function(link) {
 					link.animate({
-						fill: C_WET_ASPHALT,
+						stroke: AMETHYST,
 						strokeWidth: 2
 					}, 250, mina.easeinout);
 				});
@@ -385,7 +385,7 @@ var Visualization = (function() {
 
 			links.forEach(function(link) {
 				link.animate({
-					fill: C_MIDNIGHT_BLUE,
+					stroke: C_MIDNIGHT_BLUE,
 					strokeWidth: 1
 				}, 250, mina.easeinout);
 			});
@@ -420,7 +420,7 @@ var Visualization = (function() {
 
 				links.forEach(function(link) {
 					link.animate({
-						fill: C_WET_ASPHALT,
+						stroke: AMETHYST,
 						strokeWidth: 2
 					}, 250, mina.easeinout);
 				});
@@ -438,7 +438,7 @@ var Visualization = (function() {
 
 			links.forEach(function(link) {
 				link.animate({
-					fill: C_MIDNIGHT_BLUE,
+					stroke: C_MIDNIGHT_BLUE,
 					strokeWidth: 1
 				}, 250, mina.easeinout);
 			});
