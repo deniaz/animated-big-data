@@ -114,8 +114,9 @@ var Hypergraph = (function(layoutEngine) {
 					_noOfIntervals = frequency.intervals.length > _noOfIntervals ? frequency.intervals.length-1 : _noOfIntervals;
 				});
 
-				_layoutEngine.buildFromArray(data, _width, _height, function(n) {
-				    return Math.pow(n, 2);
+				_layoutEngine.buildFromArray(data, _width, _height, function (n) {
+				    return n * 7;
+				    //return Math.pow(n, 2);
 				});
 				draw();
 			}
@@ -143,7 +144,8 @@ var Hypergraph = (function(layoutEngine) {
 			paper: new Snap(svg),
 			nodes: nodes,
 			links: links,
-			normalize: function(n) { return Math.pow(n, 2); },
+		    //normalize: function(n) { return Math.pow(n, 2); },
+			normalize: function (n) { return n * 7 },
 			threshold: _threshold
 		});
 	}
