@@ -407,7 +407,7 @@ var Visualization = (function() {
 		});
 
 		g.hover(function() {
-			if (g.isVisible) {
+			if (g._isVisible) {
 				attribute.animate({
 					fill: C_ALIZARIN
 				}, 250, mina.easeinout);
@@ -499,6 +499,8 @@ var Visualization = (function() {
 				link.target._ui.animate({
 					opacity: g._isVisible ? 1 : 0
 				}, 500, mina.easeinout).toggleClass('is-visible');
+
+				link.target._ui._isVisible = g._isVisible;
 			}
 
 			if (g._isVisible) {
