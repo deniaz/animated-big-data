@@ -69,8 +69,8 @@ main {
 	cursor: default;
 }
 
-main circle,
-main rect {
+main .is-visible,
+main .is-visible text {
 	cursor: pointer;
 }
 
@@ -83,6 +83,11 @@ main .label { margin-bottom: 1em; }
 
 main text {
 	font-family: 'Lato', sans-serif;
+	fill: #FFF;
+}
+
+main text.bold {
+	font-weight: bold;
 }
 
 .scroll {
