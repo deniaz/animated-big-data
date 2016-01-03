@@ -24,25 +24,46 @@ var Visualization = (function() {
 	var ATTRIBUTE_HEIGHT = 45;
 
 	/**
-	 * Color Peter River (Blue)
+	 * Color Peter River (Blue Light)
 	 * @const
 	 * @type {string}
 	 */
 	var C_PETER_RIVER = '#3498db';
 
 	/**
-	 * Color Alizarin (Red)
+	 * Color Belize Hole (Blue Dark)
+	 * @const
+	 * @type {string}
+	 */
+	var C_BELIZE_HOLE = '#2980b9';
+
+	/**
+	 * Color Alizarin (Red Light)
 	 * @const
 	 * @type {string}
 	 */
 	var C_ALIZARIN = '#e74c3c';
 
 	/**
-	 * Color Wet Asphalt (Gray)
+	 * Color Pomegranate (Red Dark)
+	 * @const
+	 * @type {string}
+	 */
+	var C_POMEGRANATE = '#c0392b';
+
+	/**
+	 * Color Wet Asphalt (Gray Light)
 	 * @const
 	 * @type {string}
 	 */
 	var C_WET_ASPHALT = '#34495e';
+
+	/**
+	 * Color Midnight Blue (Gray Dark)
+	 * @const
+	 * @type {string}
+	 */
+	var C_MIDNIGHT_BLUE = '#2c3e50';
 
 	/**
 	 * Snap.svg instance
@@ -112,6 +133,7 @@ var Visualization = (function() {
 			}
 
 			draggable(g);
+			highlightable(g);
 		});
 	}
 
@@ -138,7 +160,7 @@ var Visualization = (function() {
 			var el = _paper.line(x1, y1, x2, y2);
 
 			el.attr({
-				stroke: C_WET_ASPHALT,
+				stroke: C_MIDNIGHT_BLUE,
 				opacity: 0
 			});
 
@@ -205,7 +227,7 @@ var Visualization = (function() {
 		var r = _normalize(node.intervals[0].percentage);
 		var el = _paper.circle(node.x, node.y, r);
 		el.attr({
-			fill: C_PETER_RIVER
+			fill: C_BELIZE_HOLE
 		});
 		return el;
 	}
@@ -218,7 +240,7 @@ var Visualization = (function() {
 	function rect(node) {
 		var el = _paper.rect(node.x, node.y, ATTRIBUTE_WIDTH, ATTRIBUTE_HEIGHT);
 		el.attr({
-			fill: C_ALIZARIN
+			fill: C_POMEGRANATE
 		});
 		return el;
 	}
@@ -309,6 +331,116 @@ var Visualization = (function() {
 		});
 	}
 
+	function highlightable(g) {
+		if (g._node.type === 'frequency') {
+			highlightItemset(g);
+		} else {
+			highlightItem(g);
+		}
+	}
+
+	/**
+	 * Adds a mouseover/-out event listener to a frequency group.
+	 * The underlying node will be highlighted along with its edges and connected nodes.
+	 * @param g
+	 */
+	function highlightItemset(g) {
+		var frequency = g.select('circle');
+		var targets = g._node._links.map(function(link) {
+			return link.target._ui.select('rect');
+		});
+		var links = g._node._links.map(function(link) {
+			return link._ui;
+		});
+
+		g.hover(function() {
+			frequency.animate({
+				fill: C_PETER_RIVER
+			}, 250, mina.easeinout);
+
+			targets.forEach(function(target) {
+				target.animate({
+					fill: C_ALIZARIN
+				}, 250, mina.easeinout);
+			});
+
+			links.forEach(function(link) {
+				link.animate({
+					fill: C_WET_ASPHALT,
+					strokeWidth: 2
+				}, 250, mina.easeinout);
+			});
+		}, function() {
+			frequency.animate({
+				fill: C_BELIZE_HOLE
+			}, 250, mina.easeinout);
+
+			targets.forEach(function(target) {
+				target.animate({
+					fill: C_POMEGRANATE
+				}, 250, mina.easeinout);
+			});
+
+			links.forEach(function(link) {
+				link.animate({
+					fill: C_MIDNIGHT_BLUE,
+					strokeWidth: 1
+				}, 250, mina.easeinout);
+			});
+		});
+	}
+
+	/**
+	 * Adds a mouseover/-out event listener to an attribute group.
+	 * The underlying node will be highlighted along with its edges and connected nodes.
+	 * @param g
+	 */
+	function highlightItem(g) {
+		var attribute = g.select('rect');
+		var sources = g._node._links.map(function(link) {
+			return link.source._ui.select('circle');
+		});
+		var links = g._node._links.map(function(link) {
+			return link._ui;
+		});
+
+		g.hover(function() {
+			attribute.animate({
+				fill: C_ALIZARIN
+			}, 250, mina.easeinout);
+
+			sources.forEach(function(source) {
+				source.animate({
+					fill: C_PETER_RIVER
+				}, 250, mina.easeinout);
+			});
+
+			links.forEach(function(link) {
+				link.animate({
+					fill: C_WET_ASPHALT,
+					strokeWidth: 2
+				}, 250, mina.easeinout);
+			});
+		}, function() {
+			attribute.animate({
+				fill: C_POMEGRANATE
+			}, 250, mina.easeinout);
+
+			sources.forEach(function(target) {
+				target.animate({
+					fill: C_BELIZE_HOLE
+				}, 250, mina.easeinout);
+			});
+
+			links.forEach(function(link) {
+				link.animate({
+					fill: C_MIDNIGHT_BLUE,
+					strokeWidth: 1
+				}, 250, mina.easeinout);
+			});
+		});
+	}
+
 	/**
 	 * Checks if a node is above the required threshold for a given step.
 	 * @param node
@@ -352,10 +484,6 @@ var Visualization = (function() {
 	function toggleVisibility(g) {
 		g._isVisible = !g._isVisible;
 
-		g.animate({
-			opacity: g._isVisible ? 1 : 0
-		}, 500, mina.easeinout).toggleClass('is-visible');
-
 		g._node._links.forEach(function(link) {
 			// If the itemset is going to be hidden but the connected node has more than one active node, it should stay
 			// visible. Therefore only hide the connected node if it only has one active link.
@@ -379,6 +507,10 @@ var Visualization = (function() {
 				opacity: g._isVisible ? 1 : 0
 			}, 500, mina.easeinout);
 		});
+
+		g.animate({
+			opacity: g._isVisible ? 1 : 0
+		}, 500, mina.easeinout).toggleClass('is-visible');
 	}
 
 	/**
