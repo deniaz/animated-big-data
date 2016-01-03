@@ -382,9 +382,10 @@ var LayoutEngine = (function() {
 	 */
 	function calculateKoordinates(nodeBuilder) {
 
-		var fRadius = getMaxRadius(),
-			x = getXKoordinates(fRadius),
-			y = 0,
+	    var mRadius = getMaxRadius(),
+			x = getXKoordinates(mRadius),
+			yLeft = 0,
+            yRight = 0,
             lastY = 0,
             counter = 0;
 
@@ -392,54 +393,60 @@ var LayoutEngine = (function() {
 		for (var i = 0; i < _frequencies.length; i++) {
 			var frequency = _frequencies[i].frequency;
 			var singleAttr = _singleLinkedAttributes[i].length;
+			var radius = getRadius(frequency);
+			var attrY;
 
-			// set X-Koordinate of the left side
+			// left side
 			if (i % 2 === 0) {
-				frequency.x = x.column2;
+			    frequency.x = x.column2;			    
+			    frequency.y = yLeft += (radius + FREQUENCY_PADDING);			    
+
+                // sets Koordinates of all single linked Attributes of the frequency
+			    attrY = yLeft - ((singleAttr * ATTRIBUTE_HEIGHT) + ((singleAttr - 1) * ATTRIBUTE_PADDING)) / 2;
 				for (var j = 0; j < singleAttr; j++) {
-					_singleLinkedAttributes[i][j].x = x.column1;
+				    _singleLinkedAttributes[i][j].x = x.column1;
+				    _singleLinkedAttributes[i][j].y = attrY;
+				    nodeBuilder.addNode(_singleLinkedAttributes[i][j]);
+				    attrY += ATTRIBUTE_HEIGHT + ATTRIBUTE_PADDING;
 				}
-				// set X-Koordinate of the right side
+				yLeft += radius;
+
+			// right side
 			} else {
-				frequency.x = x.column4;
+			    frequency.x = x.column4;
+			    frequency.y = yRight += (radius + FREQUENCY_PADDING);
+
+			    // sets Koordinates of all single linked Attributes of the frequency
+			    attrY = yRight - ((singleAttr * ATTRIBUTE_HEIGHT) + ((singleAttr - 1) * ATTRIBUTE_PADDING)) / 2;
 				for (var j = 0; j < singleAttr; j++) {
-					_singleLinkedAttributes[i][j].x = x.column5;
+				    _singleLinkedAttributes[i][j].x = x.column5;
+				    _singleLinkedAttributes[i][j].y = attrY;
+				    nodeBuilder.addNode(_singleLinkedAttributes[i][j]);
+				    attrY += ATTRIBUTE_HEIGHT + ATTRIBUTE_PADDING;
 				}
+				yRight += radius;
 			}
 
-			if (counter === 2) {
-			    counter = 0;
-			    y += (2 * fRadius) + FREQUENCY_PADDING;
-			}
-			frequency.y = y;
-			lastY = y;
-			counter++;
-
-			// sets Y-Koordinate of the singleLinkedAttributes
-			var attrY = y - ((singleAttr * ATTRIBUTE_HEIGHT) + ((singleAttr - 1) * ATTRIBUTE_PADDING)) / 2;
-			for (var j = 0; j < singleAttr; j++) {
-				_singleLinkedAttributes[i][j].y = attrY;
-				nodeBuilder.addNode(_singleLinkedAttributes[i][j]);
-
-				attrY += ATTRIBUTE_HEIGHT + ATTRIBUTE_PADDING;
-			}
 			nodeBuilder.addNode(frequency);
+
+			if (frequency.y > lastY)
+			    lastY = frequency.y;
 		}
 
-		var multiAttr = _multipleLinkedAttributes.nodes.length;
-		y = (lastY / 2) - (((multiAttr * ATTRIBUTE_HEIGHT) + ((multiAttr - 1) * ATTRIBUTE_PADDING)) / 2);
+	    var multiAttr = _multipleLinkedAttributes.nodes.length;
+	    attrY = (lastY / 2) - (((multiAttr * ATTRIBUTE_HEIGHT) + ((multiAttr - 1) * ATTRIBUTE_PADDING)) / 2);
 
 	    // sets Koordinates of all multipleLinkAttributes (column 3)
 	    for (var i = 0; i < _multipleLinkedAttributes.nodes.length; i++) {
 	    	_multipleLinkedAttributes.nodes[i].x = x.column3;
-	    	_multipleLinkedAttributes.nodes[i].y = y;
-	    	y += ATTRIBUTE_HEIGHT + ATTRIBUTE_PADDING;
+	    	_multipleLinkedAttributes.nodes[i].y = attrY;
+	    	attrY += ATTRIBUTE_HEIGHT + ATTRIBUTE_PADDING;
 
 	    	nodeBuilder.addNode(_multipleLinkedAttributes.nodes[i]);
 	    }
 
 		// translate the Hypergraphe to the center of the display
-		translateHypergraph(nodeBuilder, fRadius);
+		translateHypergraph(nodeBuilder, mRadius);
 	}
 
 	/**
@@ -448,16 +455,30 @@ var LayoutEngine = (function() {
 	 * @returns {number} - the largest radius
 	 */
 	function getMaxRadius() {
-		var fRadius = _normalize(_frequencies[0].frequency.intervals[0].percentage);
+	    var mRadius = 0;
 		for (var i = 0; i < _frequencies.length; i++) {
-			for (var j = 0; j < _frequencies[i].frequency.intervals.length; j++) {
-				var radius = _normalize(_frequencies[i].frequency.intervals[j].percentage);
-				if (radius > fRadius)
-				    fRadius = radius;
-					
-			}
+		    var radius = getRadius(_frequencies[i].frequency);
+		    if (radius > mRadius)
+		        mRadius = radius;
 		}
-		return fRadius;
+		return mRadius;
+	}
+
+    /**
+	 * Returns the largest radius of a single frequency
+	 *
+	 * @param {object} frequency
+	 * @returns {object} - the largest radius
+	 */
+	function getRadius(frequency) {
+	    var mRadius = 0;
+	    for (var i = 0; i < frequency.intervals.length; i++) {
+	        var radius = _normalize(frequency.intervals[i].percentage);
+	        if (radius > mRadius)
+	            mRadius = radius;
+
+	    }
+	    return mRadius;
 	}
 
 	/**
@@ -524,8 +545,13 @@ var LayoutEngine = (function() {
 	 */
 	function linkAllNodes(nodeBuilder) {
 		for (var i = 0; i < _frequencies.length; i++) {
-			for (var j = 0; j < _frequencies[i].attributes.length; j++) {
-				nodeBuilder.link(_frequencies[i].frequency, nodeBuilder.nodes[nodeBuilder.getKey(_frequencies[i].attributes[j])]);
+		    for (var j = 0; j < _frequencies[i].attributes.length; j++) {
+		        try {
+		            nodeBuilder.link(_frequencies[i].frequency, nodeBuilder.nodes[nodeBuilder.getKey(_frequencies[i].attributes[j])]);
+		        } catch (e) {
+                    // do nothing
+		        }
+				
 			}
 		}
 	}
