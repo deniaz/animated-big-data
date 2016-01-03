@@ -239,6 +239,10 @@ var Hypergraph = (function(layoutEngine) {
 		 * @param threshold
 		 * @returns {*}
 		 */
-		setThreshold: function(threshold) { _threshold = threshold; _visualization.setThreshold(threshold); }
+		setThreshold: function(threshold) {
+			_threshold = threshold;
+			_visualization.setThreshold(threshold);
+			_visualization.next(_currentInterval);
+		}
 	};
 })(LayoutEngine);
