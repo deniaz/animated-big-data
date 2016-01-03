@@ -354,22 +354,24 @@ var Visualization = (function() {
 		});
 
 		g.hover(function() {
-			frequency.animate({
-				fill: C_PETER_RIVER
-			}, 250, mina.easeinout);
-
-			targets.forEach(function(target) {
-				target.animate({
-					fill: C_ALIZARIN
+			if (g._isVisible) {
+				frequency.animate({
+					fill: C_PETER_RIVER
 				}, 250, mina.easeinout);
-			});
 
-			links.forEach(function(link) {
-				link.animate({
-					fill: C_WET_ASPHALT,
-					strokeWidth: 2
-				}, 250, mina.easeinout);
-			});
+				targets.forEach(function(target) {
+					target.animate({
+						fill: C_ALIZARIN
+					}, 250, mina.easeinout);
+				});
+
+				links.forEach(function(link) {
+					link.animate({
+						fill: C_WET_ASPHALT,
+						strokeWidth: 2
+					}, 250, mina.easeinout);
+				});
+			}
 		}, function() {
 			frequency.animate({
 				fill: C_BELIZE_HOLE
@@ -405,22 +407,24 @@ var Visualization = (function() {
 		});
 
 		g.hover(function() {
-			attribute.animate({
-				fill: C_ALIZARIN
-			}, 250, mina.easeinout);
-
-			sources.forEach(function(source) {
-				source.animate({
-					fill: C_PETER_RIVER
+			if (g._isVisible) {
+				attribute.animate({
+					fill: C_ALIZARIN
 				}, 250, mina.easeinout);
-			});
 
-			links.forEach(function(link) {
-				link.animate({
-					fill: C_WET_ASPHALT,
-					strokeWidth: 2
-				}, 250, mina.easeinout);
-			});
+				sources.forEach(function(source) {
+					source.animate({
+						fill: C_PETER_RIVER
+					}, 250, mina.easeinout);
+				});
+
+				links.forEach(function(link) {
+					link.animate({
+						fill: C_WET_ASPHALT,
+						strokeWidth: 2
+					}, 250, mina.easeinout);
+				});
+			}
 		}, function() {
 			attribute.animate({
 				fill: C_POMEGRANATE
@@ -495,6 +499,8 @@ var Visualization = (function() {
 				link.target._ui.animate({
 					opacity: g._isVisible ? 1 : 0
 				}, 500, mina.easeinout).toggleClass('is-visible');
+
+				link.target._ui._isVisible = g._isVisible;
 			}
 
 			if (g._isVisible) {
