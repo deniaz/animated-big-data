@@ -94,6 +94,17 @@ var Hypergraph = (function(layoutEngine) {
 	var _width = 0;
 
 	/**
+	 * Normalize function to be used in Visualization and LayoutEngine.
+	 * Calculates the radius based on a percentage value for a frequency node.
+	 * @param n
+	 * @returns {number}
+	 * @private
+	 */
+	var _normalize = function(n) {
+		return n * 7;
+	};
+
+	/**
 	 * Loads JSON
 	 */
 	function load(file) {
@@ -114,10 +125,7 @@ var Hypergraph = (function(layoutEngine) {
 					_noOfIntervals = frequency.intervals.length > _noOfIntervals ? frequency.intervals.length-1 : _noOfIntervals;
 				});
 
-				_layoutEngine.buildFromArray(data, _width, _height, function (n) {
-				    return n * 7;
-				    //return Math.pow(n, 2);
-				});
+				_layoutEngine.buildFromArray(data, _width, _height, _normalize);
 				draw();
 			}
 		};
@@ -144,8 +152,7 @@ var Hypergraph = (function(layoutEngine) {
 			paper: new Snap(svg),
 			nodes: nodes,
 			links: links,
-		    //normalize: function(n) { return Math.pow(n, 2); },
-			normalize: function (n) { return n * 7 },
+			normalize: _normalize,
 			threshold: _threshold
 		});
 	}
