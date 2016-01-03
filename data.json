@@ -2,7 +2,7 @@
 	[
 		{
 			"type": "attribute",
-			"id": "lIP_1.0.0.0",
+			"id": "lIP_0.0.0.0",
 			"label": "locIP=xxx.xx.xxx.xx"
 		},
 		{
@@ -49,6 +49,58 @@
 				{
 					"percentage": 7.02,
 					"label": 1234783
+				},
+				{
+					"percentage": 6.33,
+					"label": 1425396
+				},
+				{
+					"percentage": 5.33,
+					"label": 1987845
+				},
+				{
+					"percentage": 5.03,
+					"label": 2102623
+				},
+				{
+					"percentage": 4.76,
+					"label": 2170641
+				},
+				{
+					"percentage": 4.54,
+					"label": 2145821
+				},
+				{
+					"percentage": 5.35,
+					"label": 1342982
+				},
+				{
+					"percentage": 6.28,
+					"label": 1578417
+				},
+				{
+					"percentage": 5.9,
+					"label": 1483315
+				},
+				{
+					"percentage": 5.76,
+					"label": 1448319
+				},
+				{
+					"percentage": 6.09,
+					"label": 1529315
+				},
+				{
+					"percentage": 6.15,
+					"label": 1545401
+				},
+				{
+					"percentage": 6.03,
+					"label": 1513653
+				},
+				{
+					"percentage": 5.38,
+					"label": 1351014
 				}
 			]
 		}
@@ -93,6 +145,34 @@
 				{
 					"percentage": 6.65,
 					"label": 1169750
+				},
+				{
+					"percentage": 12.12,
+					"label": 2728159
+				},
+				{
+					"percentage": 7.99,
+					"label": 2006077
+				},
+				{
+					"percentage": 7.97,
+					"label": 2002485
+				},
+				{
+					"percentage": 7.86,
+					"label": 1975164
+				},
+				{
+					"percentage": 7.76,
+					"label": 1950083
+				},
+				{
+					"percentage": 7.05,
+					"label": 1771069
+				},
+				{
+					"percentage": 6.25,
+					"label": 1569446
 				}
 			]
 		}
@@ -100,7 +180,7 @@
 	[
 		{
 			"type": "attribute",
-			"id": "lIP_2.0.0.0",
+			"id": "lIP_1.0.0.0",
 			"label": "locIP=xxx.xx.x.xx"
 		},
 		{
@@ -147,6 +227,82 @@
 				{
 					"percentage": 6.77,
 					"label": 1190665
+				},
+				{
+					"percentage": 6.76,
+					"label": 1520846
+				},
+				{
+					"percentage": 7.63,
+					"label": 2843996
+				},
+				{
+					"percentage": 5.57,
+					"label": 2328743
+				},
+				{
+					"percentage": 5.32,
+					"label": 2423056
+				},
+				{
+					"percentage": 5.2,
+					"label": 2460995
+				},
+				{
+					"percentage": 5.71,
+					"label": 1433861
+				},
+				{
+					"percentage": 5.37,
+					"label": 1348700
+				},
+				{
+					"percentage": 5.37,
+					"label": 1349562
+				},
+				{
+					"percentage": 6.26,
+					"label": 1572049
+				},
+				{
+					"percentage": 5.41,
+					"label": 1359917
+				},
+				{
+					"percentage": 5.72,
+					"label": 1437323
+				},
+				{
+					"percentage": 6.28,
+					"label": 1578385
+				},
+				{
+					"percentage": 6.22,
+					"label": 1563633
+				},
+				{
+					"percentage": 7.95,
+					"label": 1996746
+				},
+				{
+					"percentage": 6.85,
+					"label": 1721162
+				},
+				{
+					"percentage": 6.56,
+					"label": 1646849
+				},
+				{
+					"percentage": 5.99,
+					"label": 1504396
+				},
+				{
+					"percentage": 6.09,
+					"label": 1530707
+				},
+				{
+					"percentage": 5.17,
+					"label": 1299444
 				}
 			]
 		}
@@ -191,6 +347,14 @@
 				{
 					"percentage": 9.65,
 					"label": 1697568
+				},
+				{
+					"percentage": 7.87,
+					"label": 1977884
+				},
+				{
+					"percentage": 8.34,
+					"label": 2094811
 				}
 			]
 		}
@@ -198,7 +362,7 @@
 	[
 		{
 			"type": "attribute",
-			"id": "lIP_3.0.0.0",
+			"id": "lIP_2.0.0.0",
 			"label": "locIP=xxx.xxx.x.xx"
 		},
 		{
@@ -250,6 +414,30 @@
 				{
 					"percentage": 7.24,
 					"label": 1273476
+				},
+				{
+					"percentage": 5.78,
+					"label": 1301553
+				},
+				{
+					"percentage": 5.06,
+					"label": 1270370
+				},
+				{
+					"percentage": 5.25,
+					"label": 1320165
+				},
+				{
+					"percentage": 5.53,
+					"label": 1390306
+				},
+				{
+					"percentage": 5.7,
+					"label": 1432155
+				},
+				{
+					"percentage": 5.81,
+					"label": 1458424
 				}
 			]
 		}
@@ -300,6 +488,82 @@
 				{
 					"percentage": 4.9,
 					"label": 862649
+				},
+				{
+					"percentage": 5.71,
+					"label": 1286000
+				},
+				{
+					"percentage": 7.14,
+					"label": 2661677
+				},
+				{
+					"percentage": 6.91,
+					"label": 2887513
+				},
+				{
+					"percentage": 6.82,
+					"label": 3109019
+				},
+				{
+					"percentage": 6.8,
+					"label": 3215457
+				},
+				{
+					"percentage": 6.61,
+					"label": 1661405
+				},
+				{
+					"percentage": 6.71,
+					"label": 1685679
+				},
+				{
+					"percentage": 6.87,
+					"label": 1726426
+				},
+				{
+					"percentage": 7.09,
+					"label": 1780859
+				},
+				{
+					"percentage": 6.75,
+					"label": 1695620
+				},
+				{
+					"percentage": 6.71,
+					"label": 1686257
+				},
+				{
+					"percentage": 6.15,
+					"label": 1544826
+				},
+				{
+					"percentage": 5.74,
+					"label": 1443222
+				},
+				{
+					"percentage": 5.82,
+					"label": 1463074
+				},
+				{
+					"percentage": 5.37,
+					"label": 1348454
+				},
+				{
+					"percentage": 5.3,
+					"label": 1332292
+				},
+				{
+					"percentage": 5.38,
+					"label": 1351898
+				},
+				{
+					"percentage": 5.75,
+					"label": 1444762
+				},
+				{
+					"percentage": 5.01,
+					"label": 1257949
 				},
 				{
 					"percentage": 4.9,
@@ -358,6 +622,30 @@
 				{
 					"percentage": 6.4,
 					"label": 1125425
+				},
+				{
+					"percentage": 4.91,
+					"label": 1105338
+				},
+				{
+					"percentage": 5.11,
+					"label": 1284612
+				},
+				{
+					"percentage": 5.4,
+					"label": 1355629
+				},
+				{
+					"percentage": 5.71,
+					"label": 1435077
+				},
+				{
+					"percentage": 5.79,
+					"label": 1455474
+				},
+				{
+					"percentage": 5.66,
+					"label": 1421782
 				}
 			]
 		}
