@@ -30,7 +30,7 @@ var Hypergraph = (function(layoutEngine) {
 	 * @type {number}
 	 * @private
 	 */
-	var _threshold = 6.25;
+	var _threshold = 5.00;
 
 	/**
 	 * If an animation is in progress, this is the current interval.
@@ -93,11 +93,6 @@ var Hypergraph = (function(layoutEngine) {
 	 */
 	var _width = 0;
 
-	var normalize = function(n) {
-		return n * 2;
-		return Math.pow(n, 2);
-	};
-
 	/**
 	 * Loads JSON
 	 */
@@ -116,7 +111,7 @@ var Hypergraph = (function(layoutEngine) {
 
 				data.forEach(function(subgraph) {
 					var frequency = subgraph[subgraph.length-1];
-					_noOfIntervals = frequency.intervals.length > _noOfIntervals ? frequency.intervals.length : _noOfIntervals;
+					_noOfIntervals = frequency.intervals.length > _noOfIntervals ? frequency.intervals.length-1 : _noOfIntervals;
 				});
 
 				_layoutEngine.buildFromArray(data, _width, _height, function(n) {
@@ -143,8 +138,12 @@ var Hypergraph = (function(layoutEngine) {
 		_container.appendChild(svg);
 
 		_visualization = Visualization;
-		_visualization.start(new Snap(svg), nodes, links, function(n) {
-			return Math.pow(n, 2) * 1.5;
+		_visualization.start({
+			paper: new Snap(svg),
+			nodes: nodes,
+			links: links,
+			normalize: function(n) { return Math.pow(n, 2) * 1.5; },
+			threshold: _threshold
 		});
 	}
 
@@ -197,8 +196,9 @@ var Hypergraph = (function(layoutEngine) {
 			window.clearInterval(_interval);
 			_currentInterval = 0;
 			_isPlaying = false;
+			_visualization.next(_currentInterval);
 		} else {
-			_visualization.step(_currentInterval++, _threshold);
+			_visualization.next(++_currentInterval);
 		}
 	}
 
@@ -229,6 +229,6 @@ var Hypergraph = (function(layoutEngine) {
 		 * @param threshold
 		 * @returns {*}
 		 */
-		setThreshold: function(threshold) { _threshold = threshold; }
+		setThreshold: function(threshold) { _threshold = threshold; _visualization.setThreshold(threshold); }
 	};
 })(LayoutEngine);

@@ -69,8 +69,8 @@ main {
 	cursor: default;
 }
 
-main circle,
-main rect {
+main .is-visible,
+main .is-visible text {
 	cursor: pointer;
 }
 

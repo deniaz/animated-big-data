@@ -10,7 +10,49 @@ var Visualization = (function() {
 	'use strict';
 
 	/**
-	 * Array containing all hypergraph nodes.
+	 * Attribute Node Width
+	 * @const
+	 * @type {number}
+	 */
+	var ATTRIBUTE_WIDTH = 120;
+
+	/**
+	 * Attribtue Node Height
+	 * @const
+	 * @type {number}
+	 */
+	var ATTRIBUTE_HEIGHT = 45;
+
+	/**
+	 * Color Peter River (Blue)
+	 * @const
+	 * @type {string}
+	 */
+	var C_PETER_RIVER = '#3498db';
+
+	/**
+	 * Color Alizarin (Red)
+	 * @const
+	 * @type {string}
+	 */
+	var C_ALIZARIN = '#e74c3c';
+
+	/**
+	 * Color Wet Asphalt (Gray)
+	 * @const
+	 * @type {string}
+	 */
+	var C_WET_ASPHALT = '#34495e';
+
+	/**
+	 * Snap.svg instance
+	 * @type {Paper}
+	 * @private
+	 */
+	var _paper;
+
+	/**
+	 * Array containing all nodes
 	 *
 	 * @type {Array}
 	 * @private
@@ -18,7 +60,7 @@ var Visualization = (function() {
 	var _nodes;
 
 	/**
-	 * Array containing all hypergraph edges/links.
+	 * Array containing all edges
 	 *
 	 * @type {Array}
 	 * @private
@@ -26,170 +68,220 @@ var Visualization = (function() {
 	var _links;
 
 	/**
-	 * Array containing all node-text groups.
+	 * Normalize function
+	 *
+	 * @type {Function}
+	 * @private
+	 */
+	var _normalize;
+
+	/**
+	 * Threshold
+	 *
+	 * @type {Number}
+	 * @private
+	 */
+	var _threshold;
+
+	/**
+	 * Visualised Graph (all g Elements)
 	 *
 	 * @type {Array}
 	 * @private
 	 */
-	var _groupped = [];
+	var _vertices = [];
 
 	/**
-	 * Snap.svg instance
+	 * Constructor.
 	 *
-	 * @type {Paper}
-	 * @private
+	 * @param config
 	 */
-	var _s;
+	function start(config) {
+		_paper = config.paper;
+		_nodes = config.nodes;
+		_links = config.links;
+		_normalize = config.normalize;
+		_threshold = config.threshold;
 
-	var _normalize;
+		linkFactory();
+		nodeFactory();
+
+		_vertices.forEach(function(g) {
+			if (aboveThreshold(g._node)) {
+				showItemset(g);
+			}
+
+			draggable(g);
+		});
+	}
 
 	/**
-	 * Injects all <line> Elements in the DOM without any positioning and adds relations to link objects.
+	 * Factory for Edges/Links.
 	 */
-	function injectLinks() {
+	function linkFactory() {
 		_links.forEach(function(link) {
-			// Lines are repositioned in placeLinks(). As there is no z-index in SVG the Links need to be injected
-			// before the nodes.
-			link._ui = _s.line(
-				0, 0, 0, 0
-			);
+			var x1 = link.source.x,
+				y1 = link.source.y,
+				x2 = link.target.x,
+				y2 = link.target.y;
 
-			link._ui.attr({
-				stroke: '#333'
+			if (link.source.type === 'attribute') {
+				x1 += ATTRIBUTE_WIDTH / 2;
+				y1 += ATTRIBUTE_HEIGHT / 2;
+			}
+
+			if (link.target.type === 'attribute') {
+				x2 += ATTRIBUTE_WIDTH / 2;
+				y2 += ATTRIBUTE_HEIGHT / 2;
+			}
+
+			var el = _paper.line(x1, y1, x2, y2);
+
+			el.attr({
+				stroke: C_WET_ASPHALT,
+				opacity: 0
 			});
+
+			link._ui = el;
 
 			if (!!link.source._links) {
 				link.source._links.push(link);
 			} else {
-				link.source._links = [link];
+				link.source._links = [ link ];
 			}
 
 			if (!!link.target._links) {
 				link.target._links.push(link);
 			} else {
-				link.target._links = [link];
+				link.target._links = [ link ];
 			}
 		});
 	}
 
 	/**
-	 * Adds positioning to links based on their source/target nodes bound box values.
+	 * Factory for Nodes.
 	 */
-	function placeLinks() {
-		_links.forEach(function(link) {
-			link._ui.attr({
-				x1: link.source._ui.getBBox().cx,
-				x2: link.target._ui.getBBox().cx,
-				y1: link.source._ui.getBBox().cy,
-				y2: link.target._ui.getBBox().cy
-			});
-		});
-	}
-
-	/**
-	 * Injects nodes with text labels into the DOM.
-	 */
-	function createNodes() {
+	function nodeFactory() {
 		_nodes.forEach(function(node) {
-			var group = _s.group(),
-				x, y, text;
+			var g = group();
 
-			if ('frequency' === node.type) {
-				var data = node.intervals[0];
-				circle(node);
-				x = parseFloat(node._ui.attr('cx'));
-				y = parseFloat(node._ui.attr('cy'));
-				group.append(node._ui);
-
-				group.append(
-					_s.text(
-						x - 15,
-						y - 10,
-						data.percentage.toFixed(2) + '%'
-					).addClass('bold percentage')
-				);
-
-				group.append(
-					_s.text(x-25, y+10, '(' + data.label + ')').addClass('id-label')
-				);
-
-				if (data.percentage === 0) {
-					hideSubgraph(node, group, 0);
-				}
-
-				_groupped.push({
-					group: group,
-					node: node
-				});
-			} else if ('attribute' === node.type) {
-				rect(node);
-				x = parseFloat(node._ui.attr('x'));
-				y = parseFloat(node._ui.attr('y'));
-				y += 28;
-				x += 5;
-				group.append(node._ui);
-				group.append(
-					_s.text(x, y, node.label)
-				);
+			if (node.type === 'frequency') {
+				g.append(circle(node));
+				g.append(frequencyValue(node));
+				g.append(frequencyId(node));
+			} else if (node.type === 'attribute') {
+				node.activeLinks = 0;
+				g.append(rect(node));
+				g.append(itemLabel(node));
 			}
 
-			draggable(group, node);
+			node._ui = g;
+			g._node = node;
+			_vertices.push(g);
 		});
 	}
 
 	/**
-	 * Constructor.
-	 *
-	 * @param s
-	 * @param nodes
-	 * @param links
+	 * Creates and returns an SVG Node "g".
+	 * @returns {*}
 	 */
-	function start(s, nodes, links, normalize) {
-		_s = s;
-		_nodes = nodes;
-		_links = links;
-		_normalize = normalize;
-
-		injectLinks();
-
-		createNodes();
-
-		placeLinks();
-	}
-
-	/**
-	 * Draws a rectangle based on a node's positioning.
-	 * @param node
-	 */
-	function rect(node) {
-		node._ui = _s.rect(node.x, node.y, 120, 45);
-		node._ui.attr({
-			'fill': '#e74c3c'
+	function group() {
+		var g = _paper.group();
+		g.attr({
+			opacity: 0
 		});
+
+		g._isVisible = false;
+
+		return g;
 	}
 
 	/**
-	 * Draws a circle based on a node's positioning and size.
+	 * Creates and returns an SVG Node "circle".
 	 * @param node
+	 * @returns {*}
 	 */
 	function circle(node) {
-		//var r = Math.pow(node.intervals[0].percentage, 4) / 30;
-		//var r = Math.pow(node.intervals[0].percentage, 2);
 		var r = _normalize(node.intervals[0].percentage);
-
-		node._ui = _s.circle(node.x, node.y, r);
-		node._ui.attr({
-			'fill': '#3498db'
+		var el = _paper.circle(node.x, node.y, r);
+		el.attr({
+			fill: C_PETER_RIVER
 		});
+		return el;
 	}
-	/**
-	 * Make node-text groups draggable.
-	 * @param group
-	 * @param node
-	 */
-	function draggable(group, node) {
-		group.drag(function(dx, dy, x, y) {
 
+	/**
+	 * Creates and returns an SVG Node "rect".
+	 * @param node
+	 * @returns {*}
+	 */
+	function rect(node) {
+		var el = _paper.rect(node.x, node.y, ATTRIBUTE_WIDTH, ATTRIBUTE_HEIGHT);
+		el.attr({
+			fill: C_ALIZARIN
+		});
+		return el;
+	}
+
+	/**
+	 * Creates and returns an SVG Node "text".
+	 * It contains the initial percentage value of a frequency and is thus
+	 * positioned within the circle.
+	 *
+	 * @param node
+	 * @param step
+	 */
+	function frequencyValue(node, step) {
+		if (!step) { step = 0; }
+		var text = node.intervals[step].percentage.toFixed(2) + '%';
+
+		return _paper.text(
+			node.x - 15,
+			node.y - 10,
+			text
+		).addClass('bold percentage');
+	}
+
+	/**
+	 * Creates and returns an SVG Node "text".
+	 * It contains the initial label of a frequency and is thus
+	 * positioned within the circle.
+	 * @param node
+	 * @param step
+	 */
+	function frequencyId(node, step) {
+		if (!step) { step = 0; }
+		var text = '(' + node.intervals[step].label + ')';
+
+		return _paper.text(
+			node.x - 25,
+			node.y + 10,
+			text
+		).addClass('freq-id');
+	}
+
+	/**
+	 * Creates and returns an SVG Node "text".
+	 * It contains the label of an item and is thus positioned within the rect.
+	 * @param node
+	 * @returns {*}
+	 */
+	function itemLabel(node) {
+		return _paper.text(
+			node.x + 10,
+			node.y + 28,
+			node.label
+		);
+	}
+
+	/**
+	 * Enable dragging for group elements.
+	 * When dragging, the position of the links and the node have to be tracked.
+	 * @param g
+	 */
+	function draggable(g) {
+		var node = g._node;
+		g.drag(function(dx, dy, x, y) {
 			this.attr({
 				transform: this.data('transform') + (this.data('transform') ? 'T' : 't') + [dx, dy]
 			});
@@ -197,7 +289,7 @@ var Visualization = (function() {
 			node.x = x;
 			node.y = y;
 
-			var boundingBox = group.getBBox();
+			var boundingBox = g.getBBox();
 
 			node._links.forEach(function(link) {
 				if (link.source === node) {
@@ -212,124 +304,132 @@ var Visualization = (function() {
 					});
 				}
 			});
-
 		}, function() {
 			this.data('transform', this.transform().local);
 		});
 	}
 
-	function updateText(group, percentage, label) {
-		var elements = group.children().filter(function(el) {return el.type === 'text'; });
-		elements.forEach(function(el) {
-			var node = el.node;
-			if (node.classList.contains('percentage')) {
-				node.textContent = percentage + '%';
-			} else if (node.classList.contains('id-label')) {
-				node.textContent = label;
-			}
-		});
-		//temp1.children().filter(function(el) { return el.type === 'text' &&
-		// el.node.classList.contains('percentage'); })[0].node.textContent = 'Bla';
-	}
-
 	/**
-	 * Hides a subgraph based on its frequency.
-	 * @param frequency
-	 * @param group
-	 * @todo Refactoring! This and showSubgraph() Are quite alike and stuff could be done easier with lambdas.
-	 */
-	function hideSubgraph(frequency, group, delay) {
-		if (typeof delay === 'undefined') {
-			delay = 500;
-		}
-		// Only do something if frequency is visible
-		if (parseInt(group.attr('opacity')) == 1) {
-			// Hide the frequency/label
-			group.animate({
-				opacity: 0
-			}, delay, mina.easeinout);
-
-			// Loop through all the frequency's links and therefore their targets
-			frequency._links.forEach(function(link) {
-				// If the target only has one link (to the frequency), hide the target.
-				if (link.target.numberOfLinks === 1) {
-					link.target._ui.animate({
-						opacity: 0
-					}, delay, mina.easeinout);
-				}
-
-				// Decrement the target's number of links as the link is going to be hidden in the next few lines
-				link.target.numberOfLinks--;
-
-				// See, as I promised you, the link is hidden! Wow!
-				link._ui.animate({
-					opacity: 0
-				}, delay, mina.easeinout);
-			});
-		}
-	}
-
-	/**
-	 * Shows a subgraph based on its frequency.
-	 * @param frequency
-	 * @param group
-	 */
-	function showSubgraph(frequency, group) {
-		// Only do something if frequency i shidden
-		if (parseInt(group.attr('opacity')) === 0) {
-			// Show the frequency/label
-			group.animate({
-				opacity: 1
-			}, 500, mina.easeinout);
-
-			// Loop through all the frequency's links and therefore their targets
-			frequency._links.forEach(function(link) {
-				// If the target has no links, show the target.
-				if (link.target.numberOfLinks === 0) {
-					link.target._ui.animate({
-						opacity: 1
-					}, 500, mina.easeinout);
-				}
-
-				// Increment the target's number of links as the link is going to be shown in the next few lines
-				link.target.numberOfLinks++;
-
-				// See, as I promised you, the link is shown! Even more wow!
-				link._ui.animate({
-					opacity: 1
-				}, 500, mina.easeinout);
-			});
-		}
-	}
-
-	/**
-	 * Interval step, called from the Hypergraph.
+	 * Checks if a node is above the required threshold for a given step.
+	 * @param node
 	 * @param step
-	 * @param threshold
+	 * @returns {boolean}
 	 */
-	function next(step, threshold) {
-		// Iterate over all subgraphs/frequencies
-		_groupped.forEach(function(_group) {
-			var intervals = _group.node.intervals;
+	function aboveThreshold(node, step) {
+		if (!step) { step = 0; }
 
-			// Checks if the current step is actually defined for the subgraph
-			if (!!intervals[step]) {
-				if (intervals[step].percentage < threshold) {
-					hideSubgraph(_group.node, _group.group);
-				} else {
-					showSubgraph(_group.node, _group.group);
+		if (node.type === 'frequency' && !!node.intervals[step]) {
+			return node.intervals[step].percentage >= _threshold;
+		}
+
+		return false;
+	}
+
+	/**
+	 * Sets an itemset to visible.
+	 * @param g
+	 */
+	function showItemset(g) {
+		if (!g._isVisible) {
+			toggleVisibility(g);
+		}
+	}
+
+	/**
+	 * Sets an itemset to hidden.
+	 * @param g
+	 */
+	function hideItemset(g) {
+		if (g._isVisible) {
+			toggleVisibility(g);
+		}
+	}
+
+	/**
+	 * Change opacity of an itemset.
+	 * @param g
+	 */
+	function toggleVisibility(g) {
+		g._isVisible = !g._isVisible;
+
+		g.animate({
+			opacity: g._isVisible ? 1 : 0
+		}, 500, mina.easeinout).toggleClass('is-visible');
+
+		g._node._links.forEach(function(link) {
+			// If the itemset is going to be hidden but the connected node has more than one active node, it should stay
+			// visible. Therefore only hide the connected node if it only has one active link.
+
+			// The second condition checks if the connected node has no active links, as with active links it is already
+			// visible.
+			var toggleTarget = (!g._isVisible && link.target.activeLinks === 1 || g._isVisible && link.target.activeLinks === 0);
+			if (toggleTarget) {
+				link.target._ui.animate({
+					opacity: g._isVisible ? 1 : 0
+				}, 500, mina.easeinout).toggleClass('is-visible');
+			}
+
+			if (g._isVisible) {
+				link.target.activeLinks++;
+			} else {
+				link.target.activeLinks--;
+			}
+
+			link._ui.animate({
+				opacity: g._isVisible ? 1 : 0
+			}, 500, mina.easeinout);
+		});
+	}
+
+	/**
+	 * Updates the radius of a circular node based on the current step.
+	 * @param g
+	 * @param step
+	 */
+	function updateRadius(g, step) {
+		var r = _normalize(g._node.intervals[step].percentage);
+		g.select('circle').animate({
+			r: r
+		}, 500, mina.easeinout);
+	}
+
+	/**
+	 * Updates the text labels of a circular node based on the current step.
+	 * @param g
+	 * @param step
+	 */
+	function updateLabels(g, step) {
+		var val = g.select('.percentage');
+		val.node.textContent = g._node.intervals[step].percentage.toFixed(2) + '%';
+
+		var id = g.select('.freq-id');
+		id.node.textContent = '(' + g._node.intervals[step].label + ')';
+	}
+
+	/**
+	 * Animation step. Iterates over the graph and triggers changes.
+	 * @param step
+	 */
+	function next(step) {
+		_vertices.forEach(function(g) {
+			if (g._node.type === 'frequency') {
+				if (!!g._node.intervals[step]) {
+					updateLabels(g, step);
+					updateRadius(g, step);
 				}
-				_group.node._ui.animate({
-					r: _normalize(intervals[step].percentage)
-				}, 500, mina.easeinout);
 
-				updateText(_group.group, intervals[step].percentage, intervals[step].label);
+				if (aboveThreshold(g._node, step)) {
+					showItemset(g);
+				} else {
+					hideItemset(g);
+				}
 			}
 		});
 	}
 
 	return {
 		start: start,
-		step: next
+		next: next,
+		setThreshold: function(t) { _threshold = t; }
 	};
 })();
