@@ -120,7 +120,8 @@ var Hypergraph = (function(layoutEngine) {
 				});
 
 				_layoutEngine.buildFromArray(data, _width, _height, function(n) {
-					return n * 3;
+				    //return n * 3;
+				    return Math.pow(n, 2);
 				});
 				draw();
 			}
@@ -144,7 +145,8 @@ var Hypergraph = (function(layoutEngine) {
 
 		_visualization = Visualization;
 		_visualization.start(new Snap(svg), nodes, links, function(n) {
-			return Math.pow(n, 2) * 1.5;
+		    //return Math.pow(n, 2) * 1.5;
+		    return Math.pow(n, 2);
 		});
 	}
 

@@ -384,21 +384,11 @@ var LayoutEngine = (function() {
 
 		var fRadius = getMaxRadius(),
 			x = getXKoordinates(fRadius),
-			y = 0;
+			y = 0,
+            lastY = 0,
+            counter = 0;
 
-		// sets Koordinates of all multipleLinkAttributes (column 3)
-		for (var i = 0; i < _multipleLinkedAttributes.nodes.length; i++) {
-			_multipleLinkedAttributes.nodes[i].x = x.column3;
-			_multipleLinkedAttributes.nodes[i].y = y;
-			y += ATTRIBUTE_HEIGHT + ATTRIBUTE_PADDING;
-
-			nodeBuilder.addNode(_multipleLinkedAttributes.nodes[i]);
-		}
-
-		// sets Koordinates of all frequencies
-		var multiAttr = _multipleLinkedAttributes.nodes.length;
-		y = ((multiAttr * ATTRIBUTE_HEIGHT) + ((multiAttr - 1) * ATTRIBUTE_PADDING)) / 2;
-
+	    // sets Koordinates of all frequencies
 		for (var i = 0; i < _frequencies.length; i++) {
 			var frequency = _frequencies[i].frequency;
 			var singleAttr = _singleLinkedAttributes[i].length;
@@ -417,11 +407,13 @@ var LayoutEngine = (function() {
 				}
 			}
 
-			// TODO: Bug fixen
-			if (i >= 2) {
-				y += (2 * fRadius) + FREQUENCY_PADDING;
+			if (counter === 2) {
+			    counter = 0;
+			    y += (2 * fRadius) + FREQUENCY_PADDING;
 			}
 			frequency.y = y;
+			lastY = y;
+			counter++;
 
 			// sets Y-Koordinate of the singleLinkedAttributes
 			var attrY = y - ((singleAttr * ATTRIBUTE_HEIGHT) + ((singleAttr - 1) * ATTRIBUTE_PADDING)) / 2;
@@ -433,6 +425,18 @@ var LayoutEngine = (function() {
 			}
 			nodeBuilder.addNode(frequency);
 		}
+
+		var multiAttr = _multipleLinkedAttributes.nodes.length;
+		y = (lastY / 2) - (((multiAttr * ATTRIBUTE_HEIGHT) + ((multiAttr - 1) * ATTRIBUTE_PADDING)) / 2);
+
+	    // sets Koordinates of all multipleLinkAttributes (column 3)
+	    for (var i = 0; i < _multipleLinkedAttributes.nodes.length; i++) {
+	    	_multipleLinkedAttributes.nodes[i].x = x.column3;
+	    	_multipleLinkedAttributes.nodes[i].y = y;
+	    	y += ATTRIBUTE_HEIGHT + ATTRIBUTE_PADDING;
+
+	    	nodeBuilder.addNode(_multipleLinkedAttributes.nodes[i]);
+	    }
 
 		// translate the Hypergraphe to the center of the display
 		translateHypergraph(nodeBuilder, fRadius);
@@ -449,7 +453,8 @@ var LayoutEngine = (function() {
 			for (var j = 0; j < _frequencies[i].frequency.intervals.length; j++) {
 				var radius = _normalize(_frequencies[i].frequency.intervals[j].percentage);
 				if (radius > fRadius)
-					fRadius = radius;
+				    fRadius = radius;
+					
 			}
 		}
 		return fRadius;
