@@ -221,7 +221,7 @@ var Hypergraph = (function(layoutEngine) {
 		 */
 		start: function(el, file) {
 			_container = document.querySelector(el);
-			_height = window.innerHeight;
+			_height = window.innerHeight - 45;
 			_width = _container.offsetWidth;
 			load(file);
 		},
